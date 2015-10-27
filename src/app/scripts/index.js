@@ -7,14 +7,14 @@ $(function() {
         header: ".studyTitle"
     });
 
+    // initialize button using jquery ui
+    $("button").button();
+
+    $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 });
 
 $(window).load(function() {
-    // retrive options from server
-    retrieve_pathways();
-
     $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
-
 });
 
 function clickCalculate(e) {
@@ -22,8 +22,9 @@ function clickCalculate(e) {
         var proceed = $(pathForm).valid();
 
         if (proceed) {
-            $(e.target).hide().next().show();
-            sendForm();
+            $("#calculate").hide();
+            $("progress").show();
+            sendForm().then(submission_result, submission_error).always(post_request);
         }
 }
 
