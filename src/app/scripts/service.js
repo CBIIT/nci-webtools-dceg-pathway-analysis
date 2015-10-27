@@ -1,5 +1,9 @@
 // handle sevice call and actions here
 var serviceBase = window.location.hostname + "/Pathway/";
+$(function(){
+    // retrive options from server
+    retrieve_pathways().then(apply_options, get_options_error).always(post_request);
+});
 
 function pre_request() {
     // display spinner
@@ -7,6 +11,17 @@ function pre_request() {
 
     // disable controls
     $(pathForm).find(":input").prop("disabled",true);
+    $("button").button("disable");
+}
+
+function post_request() {
+    // hide progressbar and spinner
+    $("button#calculate").show();
+    $("progress, #spinner").hide();
+
+    // enable controls
+    $("button").button("enable");
+    $(pathForm).find(":input").removeAttr("disabled");
 }
 
 function submission_result(data) {
@@ -33,28 +48,13 @@ function get_options_error(request, statusText, error) {
     displayErrors("#errorDisplay", ["There was a problem retrieving the pathway options from the server. Try again later."]);
 }
 
-function post_request() {
-    // hide progressbar and spinner
-    $("button#calculate").show();
-    $("progress, #spinner").hide();
-
-    // enable controls
-    $(pathForm).find(":input").removeAttr("disabled");
-}
-
 function sendForm() {
     var formData = new FormData(pathForm);
 
-//    $.each(pathForm, function(ind,el) {
-//        var key = el.id;
-//
-//        if(el.type == "file")
-//            formData.append(key, ind, el.files);
-//        if(el.type == "text" || el.type == "select")
-//            formData.append(key, el.value);
-//        if(el.type == "checkbox")
-//            formData.append(key, el.checked);
-//    });
+    $.each(pathForm, function(ind, el) {
+        // have to manually add checkbox value to FormData object
+        if(el.type == "checkbox") formData.append(el.id, el.checked);
+    });
 
     return $.ajax({
         url: pathForm.action,
@@ -75,16 +75,16 @@ function sendForm() {
         processData: false,
         dataType: "json",
         cache: false
-    }).then(submission_result,submission_error).always(post_request);
+    });
 }
 
 function retrieve_pathways(){
-        return $.ajax({
+    return $.ajax({
         url: "/options/pathway_options",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
         dataType: "json",
         cache: false
-    }).then(apply_options, get_options_error).always(post_request);
+    });
 }
