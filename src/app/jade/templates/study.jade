@@ -1,0 +1,19 @@
+// dynamic template for a study entry
+// display in accordion/collapsible manner
+.studies
+        .studyTitle Study #
+        ul
+            li
+                label(for='study') Browse and select study file:
+                .input
+                    input#study(type='file', name='study',  required='')
+                    img.tooltip(name='study', alt='')
+            li
+                label(for="lambda") Lambda (&lambda;):
+                .input
+                    input#lambda(type="text", name="lambda", required='')
+                    img.tooltip(name='lambda', alt='')
+            li
+                label(for="num_resource") Number of data resources in this study:
+                .input
+                    input#num_resource(type="text", name="num_resource", required='')

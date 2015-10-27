@@ -1,0 +1,47 @@
+$(function() {
+    $("#calculate").on("click", clickCalculate);
+    $("#errorDisplay, progress").hide();
+    $("#studyEntry").accordion({
+        collapsible: true,
+        heightStyle: "content",
+        header: ".studyTitle"
+    });
+
+});
+
+$(window).load(function() {
+    // retrive options from server
+    retrieve_pathways();
+
+    $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
+
+});
+
+function clickCalculate(e) {
+        e.preventDefault();
+        var proceed = $(pathForm).valid();
+
+        if (proceed) {
+            $(e.target).hide().next().show();
+            sendForm();
+        }
+}
+
+function changeRadioSelection(){
+    $("input[name='pathway_type'][value='" + this.name + "']").prop("checked", true);
+}
+
+function checkedStateToValue(e) {
+    return $(this).val(this.checked);
+}
+
+function displayErrors(el, messagesArray){
+    $(el).empty();
+
+    messagesArray.forEach(function(message, index){
+        $(el).append(message + "<br />");
+    });
+
+    $(el).show();
+    document.querySelector(el).scrollIntoView(true);
+}

@@ -1,0 +1,232 @@
+
+<html lang="en">
+  <head>
+    <title>Pathway Tool</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta http-equiv="Pragma" content="no-cache"/>
+    <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
+    <link href="styles.css" rel="stylesheet" type="text/css"/>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
+    <script src="main.js" type="application/javascript"></script>
+  </head>
+  <body>
+    <header><a href="http://dceg.cancer.gov/" target="_blank" class="col-xs-12"><img src="/common/images/DCEG-logo.svg" alt="Division of Cancer Epidemiology &amp; Genetics" class="division-logo"/></a></header>
+    <h1 id="mainTitle">Pathway Analysis Tool</h1>
+    <div id="content">
+      <div id="subHeading">Calculate gene and pathway using the ARTP test and summary data.</div>
+      <div id="errorDisplay" class="ui-state-error"></div>
+      <form name="pathForm" action="calculate/" method="POST" enctype="multipart/form-data">
+        <ol>
+          <fieldset>
+            <legend>Study Selection</legend>
+            <div id="studyEntry"></div>
+            <button class="addControl">Add Study</button>
+          </fieldset>
+          <fieldset>
+            <legend>Select or upload the pathway file:</legend>
+            <ul>
+              <li>
+                <label for="database_pathway">
+                  <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>Select from the server:
+                </label>
+                <div class="input">
+                  <select id="database_pathway" name="database_pathway">
+                    <option value="" selected="selected">-- Select an existing pathway --</option>
+                  </select><img name="file_pathway" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="file_pathway">
+                  <input id="file_pathway_option" type="radio" name="pathway_type" value="file_pathway"/>Upload from the client:
+                </label>
+                <div class="input">
+                  <input id="file_pathway" type="file" name="file_pathway"/>
+                </div>
+              </li>
+            </ul>
+          </fieldset>
+          <fieldset>
+            <legend for="population">Select the population:</legend>
+            <div class="input">
+              <select id="population" name="population" required="">
+                <optgroup label="AFR">
+                  <option value="YRI">Yoruba in Ibadan, Nigeria</option>
+                  <option value="LWK">Luhya in Webuye, Kenya</option>
+                  <option value="GWD">Gambian in Western Divisions in the Gambia</option>
+                  <option value="MSL">Mende in Sierra Leone</option>
+                  <option value="ESN">Esan in Nigeria</option>
+                  <option value="ASW">Americans of African Ancestry in SW USA</option>
+                  <option value="ACB">African Caribbeans in Barbados</option>
+                </optgroup>
+                <optgroup label="AMR">
+                  <option value="MXL">Mexican Ancestry from Los Angeles USA</option>
+                  <option value="PUR">Puerto Ricans from Puerto Rico</option>
+                  <option value="CLM">Colombians from Medellin, Colombia</option>
+                  <option value="PEL">Peruvians from Lima, Peru</option>
+                </optgroup>
+                <optgroup label="EAS">
+                  <option value="CHB" selected="">Han Chinese in Bejing, China</option>
+                  <option value="JPT">Japanese in Tokyo, Japan</option>
+                  <option value="CHS">Southern Han Chinese</option>
+                  <option value="CDX">Chinese Dai in Xishuangbanna, China</option>
+                  <option value="KHV">Kinh in Ho Chi Minh City, Vietnam</option>
+                </optgroup>
+                <optgroup label="EUR">
+                  <option value="CEU">Utah Residents (CEPH) with Northern and Western European Ancestry</option>
+                  <option value="TSI">Toscani in Italia</option>
+                  <option value="FIN">Finnish in Finland</option>
+                  <option value="GBR">British in England and Scotland</option>
+                  <option value="IBS">Iberian Population in Spain</option>
+                </optgroup>
+                <optgroup label="SAS">
+                  <option value="GIH">Gujarati Indian from Houston, Texas</option>
+                  <option value="PJL">Punjabi from Lahore, Pakistan</option>
+                  <option value="BEB">Bengali from Bangladesh</option>
+                  <option value="STU">Sri Lankan Tamil from the UK</option>
+                  <option value="ITU">Indian Telugu from the UK</option>
+                </optgroup>
+              </select><img name="population" alt="" class="tooltip"/>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Set the following options:</legend>
+            <ul>
+              <li>
+                <label for="nperm">nperm:</label>
+                <div class="input">
+                  <input id="nperm" type="text" name="nperm" value="1e5"/><img name="nperm" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <div id="refinep_div">
+                  <input id="refinep" type="checkbox" name="refinep"/>
+                  <label for="refinep">Refine p-Value</label>
+                </div>
+              </li>
+              <li>
+                <label for="miss_rate">snp.miss.rate:</label>
+                <div class="input">
+                  <input id="miss_rate" type="number" name="miss_rate" value="0.05" required=""/><img name="miss_rate" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="maf">maf:</label>
+                <div class="input">
+                  <input id="maf" type="number" name="maf" value="0.05" required=""/><img name="maf" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="hwep">HWE.p:</label>
+                <div class="input">
+                  <input id="hwep" type="text" name="hwep" value="1e-5" required=""/><img name="hwep" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="gene">Gene.R2:</label>
+                <div class="input">
+                  <input id="gene" type="number" name="gene" value="0.95" required=""/><img name="gene" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="chr">Chr.R2:</label>
+                <div class="input">
+                  <input id="chr" type="number" name="chr" value="0.95" required=""/><img name="chr" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="gene_subset">rm.gene.subset:</label>
+                <div class="input">
+                  <input id="gene_subset" type="checkbox" name="gene_subset"/><img name="gene_subset" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="snp_n">inspect.snp.n:</label>
+                <div class="input">
+                  <input id="snp_n" type="number" name="snp_n" value="5" required=""/><img name="snp_n" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="snp_percent">inspect.snp.percent:</label>
+                <div class="input">
+                  <input id="snp_percent" type="number" name="snp_percent" value="0.0" required=""/><img name="snp_percent" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="gene_n">inspect.gene.n:</label>
+                <div class="input">
+                  <input id="gene_n" type="number" name="gene_n" value="10" required=""/><img name="gene_n" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="gene_percent">inspect.gene.percent:</label>
+                <div class="input">
+                  <input id="gene_percent" type="number" name="gene_percent" step=".01" value="0.05" required=""/><img name="gene_percent" alt="" class="tooltip"/>
+                </div>
+              </li>
+              <li>
+                <label for="email">E-mail (Results will be sent here):</label>
+                <div class="input">
+                  <input id="email" type="email" name="email" required=""/>
+                </div>
+              </li>
+            </ul>
+          </fieldset>
+          <button id="calculate" type="button">Calculation</button>
+          <progress value="0"></progress>
+          <div id="spinner"></div>
+        </ol>
+      </form>
+    </div>
+    <footer>
+      <ul>
+        <li><a href="http://www.cancer.gov/" target="_blank" title="National Cancer Institute Home">Home</a></li>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <li><a href="mailto:NCIMeansToRiskWebAdmin@mail.nih.gov" target="_blank" title="Contact us for technical support">Support</a></li>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <li><a href="http://www.cancer.gov/global/web/policies" target="_blank" title="Web Policies">Policies</a></li>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <li><a href="http://www.cancer.gov/global/web/policies/accessibility" target="_blank" title="Document Viewers, Multimedia Players and Accessibility Policy">Accessibility</a></li>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <li><a href="http://www.cancer.gov/global/web/policies/foia" target="_blank" title="Freedom of Information Act (FOIA)">FOIA</a></li>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <li><a target="_blank" href="http://www.dhhs.gov/">Department of Health and Human Services</a></li><br/><br/>
+        <li><a target="_blank" href="http://www.nih.gov/">National Institutes of Health</a></li>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <li><a target="_blank" href="http://www.cancer.gov/">National Cancer Institute</a></li>&nbsp;&nbsp;|&nbsp;&nbsp;
+        <li><a target="_blank" href="http://www.usa.gov/">USA.gov</a></li>
+      </ul>NIH...Turning Discovery Into Health<sup>&reg;</sup>
+    </footer>
+    <div id="snippets">
+      <!-- dynamic template for a study entry-->
+      <!-- display in accordion/collapsible manner-->
+      <div class="studies">
+        <div class="studyTitle">Study #</div>
+        <ul>
+          <li>
+            <label for="study">Browse and select study file:</label>
+            <div class="input">
+              <input id="study" type="file" name="study" required=""/><img name="study" alt="" class="tooltip"/>
+            </div>
+          </li>
+          <li>
+            <label for="lambda">Lambda (&lambda;):</label>
+            <div class="input">
+              <input id="lambda" type="text" name="lambda" required=""/><img name="lambda" alt="" class="tooltip"/>
+            </div>
+          </li>
+          <li>
+            <label for="num_resource">Number of data resources in this study:</label>
+            <div class="input">
+              <input id="num_resource" type="text" name="num_resource" required=""/>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <li class="studyResources">
+        <label for="sample_size">Enter the sample size for resource</label>
+        <div class="input">
+          <input id="sample_size" type="number" name="sample_size" min="1" value="1"/>
+        </div>
+      </li>
+    </div>
+  </body>
+</html>
