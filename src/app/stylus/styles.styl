@@ -43,6 +43,20 @@ header
     text-align center
     padding 1%
     clear both
+
+#errorDisplay
+    padding 1%
+    margin 10px auto
+    clear both
+    text-align center
+    li
+        list-style none
+        margin  0 auto
+        &.error
+            width inherit
+            float none
+            color inherit
+
 ol li
     margin 2% auto
 ul
@@ -95,19 +109,7 @@ input[type="file"],input[type="text"],input[type="number"],input[type="email"],s
         width auto
         float none
 
-#errorDisplay
-    padding 1%
-    margin 10px auto
-    clear both
-    text-align center
-    width 350px
-    li
-        list-style none
-        margin  0 auto
-        &.error
-            width inherit
-            float none
-            color inherit
+
 .error
     color red
 
@@ -128,7 +130,6 @@ input[type="file"],input[type="text"],input[type="number"],input[type="email"],s
     margin 0 auto
     display none
 
-
 #snippets
     display none
 footer
@@ -138,5 +139,7 @@ footer
     li
         list-style none
         display inline-block
+        :not(:first-child):not(:last-child)
+            content "  |  "
         a
             color black

@@ -1,21 +1,107 @@
-/* ----------- Non-Retina Screens ----------- */
-/* ----------- Retina Screens ----------- */
-/* ----------- Kindle Fire HD 7" ----------- */
-/* Portrait and Landscape */
-/* Portrait */
-/* Landscape */
-/* ----------- Kindle Fire HD 8.9" ----------- */
-/* Portrait and Landscape */
-/* Portrait */
-/* Landscape */
-/* ----------- Galaxy Tab 10.1 ----------- */
-/* Portrait and Landscape */
-/* Portrait */
-/* Landscape */
-/* ----------- Asus Nexus 7 ----------- */
-/* Portrait and Landscape */
-/* Portrait */
-/* Landscape */
+@media screen and (min-device-width: 320px) and (max-device-width: 1200px) {
+  body {
+    width: 99% !important;
+  }
+  a {
+    font-size: 1.1em;
+  }
+  footer li {
+    width: 100%;
+  }
+  #content {
+    width: 95% !important;
+  }
+}
+@media screen and (min-device-width: 320px) and (max-device-width: 479px) and (-webkit-min-device-pixel-ratio: 1) {
+  .input {
+    width: 100%;
+  }
+  .input input[type="text"],
+  .input input[type="number"],
+  .input input[type="email"],
+  .input select,
+  .input button,
+  .input progress {
+    width: 90%;
+    height: 40px !important;
+  }
+  #refinep_div {
+    float: inherit;
+    width: 50%;
+  }
+}
+@media screen and (min-device-width: 480px) and (max-device-width: 599px) and (-webkit-min-device-pixel-ratio: 2) and (min-resolution: 192dpi) {
+  .input {
+    width: 100%;
+  }
+  .input input[type="text"],
+  .input input[type="number"],
+  .input input[type="email"],
+  .input select,
+  .input button,
+  .input progress {
+    width: 90%;
+    height: 40px !important;
+  }
+  #refinep_div {
+    float: inherit;
+    width: 50%;
+  }
+}
+@media only screen and (min-device-width: 600px) and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 1.5) {
+  .input {
+    width: 100%;
+  }
+  .input input[type="text"],
+  .input input[type="number"],
+  .input input[type="email"],
+  .input select,
+  .input button,
+  .input progress {
+    width: 90%;
+    height: 40px !important;
+  }
+  #refinep_div {
+    float: inherit;
+    width: 50%;
+  }
+}
+@media screen and (min-device-width: 768px) and (max-device-width: 989px) and (-webkit-min-device-pixel-ratio: 1) {
+  .input {
+    width: 60%;
+  }
+  .input input[type="text"],
+  .input input[type="number"],
+  .input input[type="email"],
+  .input select,
+  .input button,
+  .input progress {
+    width: 90%;
+    height: 40px !important;
+  }
+  #refinep_div {
+    float: inherit;
+    width: 20%;
+  }
+}
+@media screen and (min-device-width: 990px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) and (min-resolution: 192dpi) {
+  .input {
+    width: 60%;
+  }
+  .input input[type="text"],
+  .input input[type="number"],
+  .input input[type="email"],
+  .input select,
+  .input button,
+  .input progress {
+    width: 90%;
+    height: 40px !important;
+  }
+  #refinep_div {
+    float: inherit;
+    width: 20%;
+  }
+}
 
 html {
   background: #d3d3d3;
@@ -62,6 +148,21 @@ header {
   text-align: center;
   padding: 1%;
   clear: both;
+}
+#errorDisplay {
+  padding: 1%;
+  margin: 10px auto;
+  clear: both;
+  text-align: center;
+}
+#errorDisplay li {
+  list-style: none;
+  margin: 0 auto;
+}
+#errorDisplay li.error {
+  width: inherit;
+  float: none;
+  color: inherit;
 }
 ol li {
   margin: 2% auto;
@@ -126,22 +227,6 @@ progress {
   width: auto;
   float: none;
 }
-#errorDisplay {
-  padding: 1%;
-  margin: 10px auto;
-  clear: both;
-  text-align: center;
-  width: 350px;
-}
-#errorDisplay li {
-  list-style: none;
-  margin: 0 auto;
-}
-#errorDisplay li.error {
-  width: inherit;
-  float: none;
-  color: inherit;
-}
 .error {
   color: #f00;
 }
@@ -173,6 +258,9 @@ footer {
 footer li {
   list-style: none;
   display: inline-block;
+}
+footer li :not(:first-child):not(:last-child) {
+  content: "  |  ";
 }
 footer li a {
   color: #000;
