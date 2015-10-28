@@ -7,14 +7,14 @@ $(function() {
         header: ".studyTitle"
     });
 
+   
+    $("button").button();
+
+    $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 });
 
 $(window).load(function() {
-   
-    retrieve_pathways();
-
     $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
-
 });
 
 function clickCalculate(e) {
@@ -22,8 +22,9 @@ function clickCalculate(e) {
         var proceed = $(pathForm).valid();
 
         if (proceed) {
-            $(e.target).hide().next().show();
-            sendForm();
+            $("#calculate").hide();
+            $("progress").show();
+            sendForm().then(submission_result, submission_error).always(post_request);
         }
 }
 
@@ -48,6 +49,10 @@ function displayErrors(el, messagesArray){
 
 
 var serviceBase = window.location.hostname + "/Pathway/";
+$(function(){
+   
+    retrieve_pathways().then(apply_options, get_options_error).always(post_request);
+});
 
 function pre_request() {
    
@@ -55,6 +60,17 @@ function pre_request() {
 
    
     $(pathForm).find(":input").prop("disabled",true);
+    $("button").button("disable");
+}
+
+function post_request() {
+   
+    $("button#calculate").show();
+    $("progress, #spinner").hide();
+
+   
+    $("button").button("enable");
+    $(pathForm).find(":input").removeAttr("disabled");
 }
 
 function submission_result(data) {
@@ -81,27 +97,13 @@ function get_options_error(request, statusText, error) {
     displayErrors("#errorDisplay", ["There was a problem retrieving the pathway options from the server. Try again later."]);
 }
 
-function post_request() {
-   
-    $("button#calculate").show();
-    $("progress, #spinner").hide();
-
-   
-    $(pathForm).find(":input").removeAttr("disabled");
-}
-
 function sendForm() {
     var formData = new FormData(pathForm);
 
-
-
-
-
-
-
-
-
-
+    $.each(pathForm, function(ind, el) {
+       
+        if(el.type == "checkbox") formData.append(el.id, el.checked);
+    });
 
     return $.ajax({
         url: pathForm.action,
@@ -122,18 +124,18 @@ function sendForm() {
         processData: false,
         dataType: "json",
         cache: false
-    }).then(submission_result,submission_error).always(post_request);
+    });
 }
 
 function retrieve_pathways(){
-        return $.ajax({
+    return $.ajax({
         url: "/options/pathway_options",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
         dataType: "json",
         cache: false
-    }).then(apply_options, get_options_error).always(post_request);
+    });
 }
 
 
@@ -184,19 +186,21 @@ $(window).on('load', function(){
         $("#studyEntry .studies:last")
             .find("input[id*='num_resource']")
             .on("change", function(e) {
-                if(Number(this.value)) {
-                    $("#studyEntry .studies:last").each(function(i, el) {
-                        removeStudyResource($(this), i);
-                    });
+            if(Number(this.value)) {
+                $("#studyEntry .studies:last").each(function(i, el) {
+                    removeStudyResource($(this), i);
+                });
 
-                    for(var i = 0; i != this.value; i++) {
-                       
-                       
-                        $($(this).parent().parent()[0]).append(
-                            addStudyResource((i+1))
-                        );
-                    }
+                $(pathForm).find(".studyResources").detach();
+
+                for(var i = 0; i != this.value; i++) {
+                   
+                   
+                    $($(this).parent().parent()[0]).append(
+                        addStudyResource((i+1))
+                    );
                 }
+            }
         });
 
         $(pathForm).find(".studies:last")
@@ -207,12 +211,26 @@ $(window).on('load', function(){
         $(pathForm).find(".studies:last")
             .find("input, select")
             .each(function(i, el) {
-            $(this).rules("add", {
-                required: true,
-                messages: {
-                    required: "The " + this.id + " is required"
-                }
-            });
+            if(this.type != "file") {
+                $(this).rules("add", {
+                    required: true,
+                    number: true,
+                    min: 1,
+                    messages: {
+                        required: "The " + this.id + " field is required",
+                        number: "The " + this.id + " value must be a number",
+                        min: "The " + this.id + " value must be greater than or equal to 1"
+                    }
+                });
+            }
+            else {
+                $(this).rules("add", {
+                    required: true,
+                    messages: {
+                        required: "The " + this.id + " field is required",
+                    }
+                });
+            }
         });
 
        
@@ -231,7 +249,7 @@ $(window).on('load', function(){
         var elementInput = resource_element.find("input");
 
         var LabelFor = elementLabel.attr("for") + "_" + ind;
-        var labelText = elementLabel[0].innerHTML + " " + ind + ":";
+        var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
 
         var inputId = elementInput.attr("id") + "_" + ind;
 
@@ -247,9 +265,6 @@ $(window).on('load', function(){
         parentElement.find(".studyResources:nth(" + ind + ") input").each(function(){
             $(this).rules("remove");
         });
-
-       
-        parentElement.find(".studyResources:nth(" + ind + ")").empty().html("");
     }
 });
 
