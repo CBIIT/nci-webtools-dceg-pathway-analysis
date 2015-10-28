@@ -1,129 +1,128 @@
 form(name='pathForm', action='calculate/', method='POST', enctype='multipart/form-data')
-    ol
-        fieldset
-            legend Study Selection
-            #studyEntry
-            button.addControl Add Study
-        fieldset
-          legend Select or upload the pathway file:
-          ul
-            li
-              label(for='database_pathway')
-                input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-                | Select from the server:
-              .input
-                select#database_pathway(name='database_pathway')
-                    option(value='', selected) -- Select an existing pathway --
-                img.tooltip(name='file_pathway', alt='')
-            li
-                label(for='file_pathway')
-                    input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
-                    | Upload from the client:
-                .input
-                    input#file_pathway(type='file', name='file_pathway')
-        fieldset
-          legend(for='population') Select the population:
+    fieldset
+        legend Study Selection
+        #studyEntry
+        button.addControl Add Study
+    fieldset
+      legend Select or upload the pathway file:
+      ul
+        li
+          label(for='database_pathway')
+            input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
+            | Select from the server:
           .input
-            select#population(name='population', required='')
-              optgroup(label='AFR')
-                option(value='YRI') Yoruba in Ibadan, Nigeria
-                option(value='LWK') Luhya in Webuye, Kenya
-                option(value='GWD') Gambian in Western Divisions in the Gambia
-                option(value='MSL') Mende in Sierra Leone
-                option(value='ESN') Esan in Nigeria
-                option(value='ASW') Americans of African Ancestry in SW USA
-                option(value='ACB') African Caribbeans in Barbados
-              optgroup(label='AMR')
-                option(value='MXL') Mexican Ancestry from Los Angeles USA
-                option(value='PUR') Puerto Ricans from Puerto Rico
-                option(value='CLM') Colombians from Medellin, Colombia
-                option(value='PEL') Peruvians from Lima, Peru
-              optgroup(label='EAS')
-                option(value='CHB', selected='') Han Chinese in Bejing, China
-                option(value='JPT') Japanese in Tokyo, Japan
-                option(value='CHS') Southern Han Chinese
-                option(value='CDX') Chinese Dai in Xishuangbanna, China
-                option(value='KHV') Kinh in Ho Chi Minh City, Vietnam
-              optgroup(label='EUR')
-                option(value='CEU') Utah Residents (CEPH) with Northern and Western European Ancestry
-                option(value='TSI') Toscani in Italia
-                option(value='FIN') Finnish in Finland
-                option(value='GBR') British in England and Scotland
-                option(value='IBS') Iberian Population in Spain
-              optgroup(label='SAS')
-                option(value='GIH') Gujarati Indian from Houston, Texas
-                option(value='PJL') Punjabi from Lahore, Pakistan
-                option(value='BEB') Bengali from Bangladesh
-                option(value='STU') Sri Lankan Tamil from the UK
-                option(value='ITU') Indian Telugu from the UK
-            img.tooltip(name='population', alt='')
+            select#database_pathway(name='database_pathway')
+                option(value='', selected) -- Select an existing pathway --
+            img.tooltip(name='file_pathway', alt='')
+        li
+            label(for='file_pathway')
+                input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
+                | Upload from the client:
+            .input
+                input#file_pathway(type='file', name='file_pathway')
+    fieldset
+      legend(for='population') Select the population:
+      .input
+        select#population(name='population', required='')
+          optgroup(label='AFR')
+            option(value='YRI') Yoruba in Ibadan, Nigeria
+            option(value='LWK') Luhya in Webuye, Kenya
+            option(value='GWD') Gambian in Western Divisions in the Gambia
+            option(value='MSL') Mende in Sierra Leone
+            option(value='ESN') Esan in Nigeria
+            option(value='ASW') Americans of African Ancestry in SW USA
+            option(value='ACB') African Caribbeans in Barbados
+          optgroup(label='AMR')
+            option(value='MXL') Mexican Ancestry from Los Angeles USA
+            option(value='PUR') Puerto Ricans from Puerto Rico
+            option(value='CLM') Colombians from Medellin, Colombia
+            option(value='PEL') Peruvians from Lima, Peru
+          optgroup(label='EAS')
+            option(value='CHB', selected='') Han Chinese in Bejing, China
+            option(value='JPT') Japanese in Tokyo, Japan
+            option(value='CHS') Southern Han Chinese
+            option(value='CDX') Chinese Dai in Xishuangbanna, China
+            option(value='KHV') Kinh in Ho Chi Minh City, Vietnam
+          optgroup(label='EUR')
+            option(value='CEU') Utah Residents (CEPH) with Northern and Western European Ancestry
+            option(value='TSI') Toscani in Italia
+            option(value='FIN') Finnish in Finland
+            option(value='GBR') British in England and Scotland
+            option(value='IBS') Iberian Population in Spain
+          optgroup(label='SAS')
+            option(value='GIH') Gujarati Indian from Houston, Texas
+            option(value='PJL') Punjabi from Lahore, Pakistan
+            option(value='BEB') Bengali from Bangladesh
+            option(value='STU') Sri Lankan Tamil from the UK
+            option(value='ITU') Indian Telugu from the UK
+        img.tooltip(name='population', alt='')
 
-        fieldset
-          legend Set the following options:
-          ul
-            li
-                label(for='nperm') nperm:
-                .input
-                    input#nperm(type='text', name='nperm', value='1e5')
-                    img.tooltip(name='nperm', alt='')
-            li
-                #refinep_div
-                    input#refinep(type='checkbox', name='refinep')
-                    label(for='refinep') Refine p-Value
-            li
-                label(for='miss_rate') snp.miss.rate:
-                .input
-                    input#miss_rate(type='number', name='miss_rate', value='0.05', required='')
-                    img.tooltip(name='miss_rate', alt='')
-            li
-                label(for='maf') maf:
-                .input
-                    input#maf(type='number', name='maf', value='0.05', required='')
-                    img.tooltip(name='maf', alt='')
-            li
-                label(for='hwep') HWE.p:
-                .input
-                    input#hwep(type='text', name='hwep', value='1e-5', required='')
-                    img.tooltip(name='hwep', alt='')
-            li
-                label(for='gene') Gene.R2:
-                .input
-                    input#gene(type='number', name='gene', value='0.95', required='')
-                    img.tooltip(name='gene', alt='')
-            li
-                label(for='chr') Chr.R2:
-                .input
-                    input#chr(type='number', name='chr', value='0.95', required='')
-                    img.tooltip(name='chr', alt='')
-            li
-                label(for='gene_subset') rm.gene.subset:
-                .input
-                    input#gene_subset(type='checkbox', name='gene_subset')
-                    img.tooltip(name='gene_subset', alt='')
-            li
-                label(for='snp_n') inspect.snp.n:
-                .input
-                    input#snp_n(type='number', name='snp_n', value='5', required='')
-                    img.tooltip(name='snp_n', alt='')
-            li
-                label(for='snp_percent') inspect.snp.percent:
-                .input
-                    input#snp_percent(type='number', name='snp_percent', value='0.0', required='')
-                    img.tooltip(name='snp_percent', alt='')
-            li
-                label(for='gene_n') inspect.gene.n:
-                .input
-                    input#gene_n(type='number', name='gene_n', value='10', required='')
-                    img.tooltip(name='gene_n', alt='')
-            li
-                label(for='gene_percent') inspect.gene.percent:
-                .input
-                    input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
-                    img.tooltip(name='gene_percent', alt='')
-            li
-                label(for='email') E-mail (Results will be sent here):
-                .input
-                    input#email(type='email', name='email', required='')
-        button#calculate(type='button') Calculation
-        progress(value='0')
-        #spinner
+    fieldset
+      legend Set the following options:
+      ul
+        li
+            label(for='nperm') nperm:
+            .input
+                input#nperm(type='text', name='nperm', value='1e5')
+                img.tooltip(name='nperm', alt='')
+        li
+            #refinep_div
+                input#refinep(type='checkbox', name='refinep')
+                label(for='refinep') Refine p-Value
+        li
+            label(for='miss_rate') snp.miss.rate:
+            .input
+                input#miss_rate(type='number', name='miss_rate', value='0.05', required='')
+                img.tooltip(name='miss_rate', alt='')
+        li
+            label(for='maf') maf:
+            .input
+                input#maf(type='number', name='maf', value='0.05', required='')
+                img.tooltip(name='maf', alt='')
+        li
+            label(for='hwep') HWE.p:
+            .input
+                input#hwep(type='text', name='hwep', value='1e-5', required='')
+                img.tooltip(name='hwep', alt='')
+        li
+            label(for='gene') Gene.R2:
+            .input
+                input#gene(type='number', name='gene', value='0.95', required='')
+                img.tooltip(name='gene', alt='')
+        li
+            label(for='chr') Chr.R2:
+            .input
+                input#chr(type='number', name='chr', value='0.95', required='')
+                img.tooltip(name='chr', alt='')
+        li
+            label(for='gene_subset') rm.gene.subset:
+            .input
+                input#gene_subset(type='checkbox', name='gene_subset')
+                img.tooltip(name='gene_subset', alt='')
+        li
+            label(for='snp_n') inspect.snp.n:
+            .input
+                input#snp_n(type='number', name='snp_n', value='5', required='')
+                img.tooltip(name='snp_n', alt='')
+        li
+            label(for='snp_percent') inspect.snp.percent:
+            .input
+                input#snp_percent(type='number', name='snp_percent', value='0.0', required='')
+                img.tooltip(name='snp_percent', alt='')
+        li
+            label(for='gene_n') inspect.gene.n:
+            .input
+                input#gene_n(type='number', name='gene_n', value='10', required='')
+                img.tooltip(name='gene_n', alt='')
+        li
+            label(for='gene_percent') inspect.gene.percent:
+            .input
+                input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
+                img.tooltip(name='gene_percent', alt='')
+        li
+            label(for='email') E-mail (Results will be sent here):
+            .input
+                input#email(type='email', name='email', required='')
+    button#calculate(type='button') Calculation
+    progress(value='0')
+    #spinner
