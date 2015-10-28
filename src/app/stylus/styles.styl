@@ -51,7 +51,7 @@ header
     padding 1%
     clear both
 
-#errorDisplay
+#errorDisplay,#successBox
     padding 1%
     margin 10px auto
     clear both
@@ -63,6 +63,13 @@ header
             width inherit
             float none
             color inherit
+
+#successBox
+    font-size 1.1em
+    border 2px solid darkgreen
+    background palegreen
+    margin 1% auto
+    color darkgreen
 
 ol li
     margin 2% auto
@@ -121,6 +128,7 @@ input[type="file"],input[type="text"],input[type="number"],input[type="email"],s
     color red
 .spacer
     content "|"
+    display inline-block
 .addControl
     text-align center
     height 30px
@@ -146,7 +154,7 @@ footer
     text-align center
     ul li
         list-style none
-        display inline-block
+        display inline-block !important
         margin 0 5px
         a
             color black

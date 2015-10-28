@@ -140,20 +140,30 @@ header hr {
   padding: 1%;
   clear: both;
 }
-#errorDisplay {
+#errorDisplay,
+#successBox {
   padding: 1%;
   margin: 10px auto;
   clear: both;
   text-align: center;
 }
-#errorDisplay li {
+#errorDisplay li,
+#successBox li {
   list-style: none;
   margin: 0 auto;
 }
-#errorDisplay li.error {
+#errorDisplay li.error,
+#successBox li.error {
   width: inherit;
   float: none;
   color: inherit;
+}
+#successBox {
+  font-size: 1.1em;
+  border: 2px solid #006400;
+  background: #98fb98;
+  margin: 1% auto;
+  color: #006400;
 }
 ol li {
   margin: 2% auto;
@@ -223,6 +233,7 @@ progress {
 }
 .spacer {
   content: "|";
+  display: inline-block;
 }
 .addControl {
   text-align: center;
@@ -251,7 +262,7 @@ footer {
 }
 footer ul li {
   list-style: none;
-  display: inline-block;
+  display: inline-block !important;
   margin: 0 5px;
 }
 footer ul li a {

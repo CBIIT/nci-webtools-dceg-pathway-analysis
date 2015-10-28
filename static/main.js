@@ -1,6 +1,6 @@
 $(function() {
     $("#calculate").on("click", clickCalculate);
-    $("#errorDisplay, progress").hide();
+    $("#errorDisplay, #successBox,progress").hide();
     $("#studyEntry").accordion({
         collapsible: true,
         heightStyle: "content",
@@ -73,9 +73,22 @@ function post_request() {
     $(pathForm).find(":input").removeAttr("disabled");
 }
 
-function submission_result(data) {
-    console.log(data);
-   
+function submission_result(response) {
+    console.log(response.data);
+
+    if(response.success){
+       
+       
+        $( "#successBox #message" ).text("Your submission was successful.");
+        $( "#successBox").show();
+        document.querySelector("#successBox").scrollIntoView(true);
+
+        setTimeout(function(){
+            $( "#successBox" ).fadeOut().hide();
+            $( "#successBox #message" ).html("");
+        }, 3000);
+
+    }
 }
 
 function apply_options(data){
@@ -99,16 +112,26 @@ function get_options_error(request, statusText, error) {
 
 function sendForm() {
     var formData = new FormData(pathForm);
+    var numStudies = 0;
 
     $.each(pathForm, function(ind, el) {
+       
+        if(el.id.indexOf("study") > -1) numStudies++;
+
        
         if(el.type == "checkbox") formData.append(el.id, el.checked);
     });
 
+    formData.append('num_studies', numStudies);
+
     return $.ajax({
-        url: pathForm.action,
-        type: pathForm.method,
         beforeSend: pre_request,
+        type: pathForm.method,
+        url: pathForm.action,
+        data: formData,
+        cache: false,
+        processData: false,
+        contentType: false,
         xhr: function() {
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) {
@@ -120,10 +143,7 @@ function sendForm() {
             }
             return myXhr;
         },
-        data: formData,
-        processData: false,
-        dataType: "json",
-        cache: false
+        dataType: "json"
     });
 }
 

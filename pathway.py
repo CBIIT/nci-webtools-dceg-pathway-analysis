@@ -1,4 +1,3 @@
-
 import json
 import os
 import sys
@@ -21,35 +20,52 @@ class Pathway:
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
+
     def calculate():
-        print 'reached calculate'
-        #        response = None
-        ts = str(time.time())
-        print "request.form: " + request.form
+        try:
+            ts = str(time.time())
 
-        #        parameters = request.form.to_dict()
+            parameters = request.form
+            filelist = request.files
+            studyObj = {};
 
-        filelist = request.files.getlist('study')
+            for ind in range(1,int(request.form['num_studies'])):
 
-        if len(request.files.getlist('study')) > 1:
-            parameters['studies'] = []
-            filecount = 1
-            for file in filelist:
+                studyKey = "study_" + str(ind)
+                studyObj['studies'] = []
+
+                studyObj['studies'].append(parameters['lambda_' + str(ind)])
+
+                for resourceInd in range(1,int(request.form['num_resource_' + str(ind)])):
+                    studyObj['studies'].append(parameters['sample_size_' + str(resourceInd)])
+
+
+                studyFile = filelist[studyKey]
+
+                if studyFile.filename:
+                    print studyFile.filename
+                    filename = ts + '-' + str(ind) + '.study'
+                    studyObj['studies'].append(filename)
+                    studyFile.save(
+                        os.path.join(
+                            app.config['UPLOAD_FOLDER'], filename ))
+
+            if parameters['pathway_type'] == 'file_pathway':
+                file = request.files['file_pathway']
                 if file.filename:
-                    filename = ts + '-' + str(filecount) + '.study'
-                    filecount += 1
-                    parameters['studies'].append(filename)
+                    del parameters['database_pathway']
+                    filename = ts + '.pathway'
+                    parameters['file_pathway'] = filename
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'],
                               filename))
-        if parameters['pathway_type'] == 'file_pathway':
-            file = request.files['file_pathway']
-            if file.filename:
-                del parameters['database_pathway']
-                filename = ts + '.pathway'
-                parameters['file_pathway'] = filename
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'],
-                          filename))
-        return Response(json.dumps(parameters), mimetype='application/json')
+
+            return jsonify(data=parameters,success=True)
+        except Exception as e:
+            print "EXCEPTION------------------------------"
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+            return jsonify(data=e,success=False)
 
     def doNothing(self, *args):
         return
@@ -72,9 +88,9 @@ class Pathway:
             argFunctions.get(lastValue, self.doNothing)(value)
             lastValue = value
         argFunctions.get(lastValue, self.doNothing)(None)
+        app.config['ALLOWED_EXTENSIONS'] = ['study']
         app.config['UPLOAD_FOLDER'] = 'uploads'
         app.run(host='0.0.0.0', port=self.WEB_PORT, debug=self.DEBUG)
-
 
 if __name__ == '__main__':
     Pathway()

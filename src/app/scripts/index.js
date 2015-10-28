@@ -1,6 +1,6 @@
 $(function() {
     $("#calculate").on("click", clickCalculate);
-    $("#errorDisplay, progress").hide();
+    $("#errorDisplay, #successBox,progress").hide();
     $("#studyEntry").accordion({
         collapsible: true,
         heightStyle: "content",
