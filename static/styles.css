@@ -1,47 +1,50 @@
 @media screen and (min-device-width: 320px) and (max-device-width: 1200px) {
   body {
     width: 99% !important;
-  }
-  a {
-    font-size: 1.1em;
+    font-size: 1.1em !important;
   }
   footer li {
     width: 100%;
+    font-size: 1em;
   }
   #content {
     width: 95% !important;
+  }
+  .tooltip {
+    -webkit-background-size: 90% !important;
+    -moz-background-size: 90% !important;
+    background-size: 90% !important;
+    width: 25px !important;
+    height: 30px !important;
+    padding: 5px;
+    float: right;
+  }
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="file"],
+  select,
+  button,
+  progress {
+    width: 90% !important;
+    height: 40px !important;
+    font-size: 1em;
+  }
+  #refinep_div {
+    float: inherit;
   }
 }
 @media screen and (min-device-width: 320px) and (max-device-width: 479px) and (-webkit-min-device-pixel-ratio: 1) {
   .input {
     width: 100%;
   }
-  .input input[type="text"],
-  .input input[type="number"],
-  .input input[type="email"],
-  .input select,
-  .input button,
-  .input progress {
-    width: 90%;
-    height: 40px !important;
-  }
   #refinep_div {
-    float: inherit;
     width: 50%;
   }
 }
 @media screen and (min-device-width: 480px) and (max-device-width: 599px) and (-webkit-min-device-pixel-ratio: 2) and (min-resolution: 192dpi) {
   .input {
     width: 100%;
-  }
-  .input input[type="text"],
-  .input input[type="number"],
-  .input input[type="email"],
-  .input select,
-  .input button,
-  .input progress {
-    width: 90%;
-    height: 40px !important;
   }
   #refinep_div {
     float: inherit;
@@ -52,17 +55,7 @@
   .input {
     width: 100%;
   }
-  .input input[type="text"],
-  .input input[type="number"],
-  .input input[type="email"],
-  .input select,
-  .input button,
-  .input progress {
-    width: 90%;
-    height: 40px !important;
-  }
   #refinep_div {
-    float: inherit;
     width: 50%;
   }
 }
@@ -70,17 +63,7 @@
   .input {
     width: 60%;
   }
-  .input input[type="text"],
-  .input input[type="number"],
-  .input input[type="email"],
-  .input select,
-  .input button,
-  .input progress {
-    width: 90%;
-    height: 40px !important;
-  }
   #refinep_div {
-    float: inherit;
     width: 20%;
   }
 }
@@ -88,17 +71,7 @@
   .input {
     width: 60%;
   }
-  .input input[type="text"],
-  .input input[type="number"],
-  .input input[type="email"],
-  .input select,
-  .input button,
-  .input progress {
-    width: 90%;
-    height: 40px !important;
-  }
   #refinep_div {
-    float: inherit;
     width: 20%;
   }
 }
