@@ -1,14 +1,20 @@
 @media screen and (min-device-width: 320px) and (max-device-width: 1200px) {
   body {
     width: 99% !important;
-    font-size: 1.1em !important;
+    font-size: 1em !important;
   }
-  footer li {
-    width: 100%;
-    font-size: 1em;
+  header .division-logo {
+    min-width: 330px;
   }
   #content {
     width: 95% !important;
+  }
+  footer .spacer {
+    display: none;
+  }
+  footer ul li {
+    display: block !important;
+    margin: 0 !important;
   }
   .tooltip {
     -webkit-background-size: 90% !important;
@@ -82,7 +88,7 @@ html {
 body {
   background: #fff;
   padding-bottom: 1%;
-  font: 9pt/1.1 "Verdana", "Geneva", "sans-serif";
+  font: 12px/1.1 "Verdana", "Geneva", "sans-serif";
   margin: 0 auto;
   width: 75%;
   -webkit-box-shadow: 2px 3px 31px -5px #000;
@@ -115,6 +121,18 @@ form .error::before {
 header {
   padding: 2% 0;
   margin-top: 0;
+}
+header hr {
+  width: 90%;
+  float: right;
+  margin: 0;
+  border: 0;
+  height: 13px;
+  background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
+  background-image: -moz-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
+  background-image: -o-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
+  background-image: -ms-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
+  background-image: linear-gradient(to right, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
 }
 #subHeading {
   border: 1px solid #000;
@@ -203,6 +221,9 @@ progress {
 .error {
   color: #f00;
 }
+.spacer {
+  content: "|";
+}
 .addControl {
   text-align: center;
   height: 30px;
@@ -228,13 +249,11 @@ footer {
   clear: both;
   text-align: center;
 }
-footer li {
+footer ul li {
   list-style: none;
   display: inline-block;
+  margin: 0 5px;
 }
-footer li :not(:first-child):not(:last-child) {
-  content: "  |  ";
-}
-footer li a {
+footer ul li a {
   color: #000;
 }
