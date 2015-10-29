@@ -14,7 +14,8 @@ $(function() {
 });
 
 $(window).load(function() {
-    $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
+    $("select[name='database_pathway'], input[name='file_pathway']")
+        .on("change", changeRadioSelection);
 });
 
 function clickCalculate(e) {
@@ -24,12 +25,14 @@ function clickCalculate(e) {
         if (proceed) {
             $("#calculate").hide();
             $("progress").show();
-            sendForm().then(submission_result, submission_error).always(post_request);
+            sendForm().then(submission_result, submission_error)
+                .always(post_request);
         }
 }
 
 function changeRadioSelection(){
-    $("input[name='pathway_type'][value='" + this.name + "']").prop("checked", true);
+    $("input[name='pathway_type'][value='" + this.name + "']")
+        .prop("checked", true);
 }
 
 function checkedStateToValue(e) {

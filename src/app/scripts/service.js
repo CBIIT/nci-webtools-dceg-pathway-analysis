@@ -2,7 +2,8 @@
 var serviceBase = window.location.hostname + "/Pathway/";
 $(function(){
     // retrive options from server
-    retrieve_pathways().then(apply_options, get_options_error).always(post_request);
+    retrieve_pathways().then(apply_options, get_options_error)
+        .always(post_request);
 });
 
 function pre_request() {
@@ -54,11 +55,13 @@ function apply_options(data){
 }
 
 function submission_error(request, statusText, error) {
-    displayErrors("#errorDisplay", ["The request failed with a status of '" + request.status + "' and a(n) '" + statusText + "' of '" + error + "'"]);
+    displayErrors("#errorDisplay",
+                  ["The request failed with the following message: <br/> "+ request.responseJSON.message + "'"]);
 }
 
 function get_options_error(request, statusText, error) {
-    displayErrors("#errorDisplay", ["There was a problem retrieving the pathway options from the server. Try again later."]);
+    displayErrors("#errorDisplay",
+    ["There was a problem retrieving the pathway options from the server. Try again later."]);
 }
 
 function sendForm() {

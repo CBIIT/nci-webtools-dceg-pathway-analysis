@@ -20,35 +20,47 @@ class Pathway:
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
-
     def calculate():
         try:
             ts = str(time.time())
 
             parameters = request.form
             filelist = request.files
+
             studyObj = {};
+            num_studies = int(parameters['num_studies'])
 
-            for ind in range(1,int(request.form['num_studies'])):
+            i = 0
+            failed = None
+            while (i != num_studies ):
+                i = i + 1
 
-                studyKey = "study_" + str(ind)
+                studyKey = "study_" + str(i)
                 studyObj['studies'] = []
 
-                studyObj['studies'].append(parameters['lambda_' + str(ind)])
+                studyObj['studies'].append(parameters['lambda_' + str(i)])
 
-                for resourceInd in range(1,int(request.form['num_resource_' + str(ind)])):
+                for resourceInd in range(1,int(request.form['num_resource_' + str(i)])):
                     studyObj['studies'].append(parameters['sample_size_' + str(resourceInd)])
-
 
                 studyFile = filelist[studyKey]
 
+                if not testFileExtension(studyFile, "study"):
+                    failed = jsonify(message="The file '" + studyFile.filename + "' is not the correct type. Expecting '.study' file", success=False)
+                    break
+
                 if studyFile.filename:
-                    print studyFile.filename
-                    filename = ts + '-' + str(ind) + '.study'
+                    filename = ts + '-' + str(i) + '.study'
                     studyObj['studies'].append(filename)
                     studyFile.save(
                         os.path.join(
                             app.config['UPLOAD_FOLDER'], filename ))
+
+            if failed is not None:
+                failed.status_code = 400
+                failed.mimetype='application/json'
+                return failed
+
 
             if parameters['pathway_type'] == 'file_pathway':
                 file = request.files['file_pathway']
@@ -58,23 +70,18 @@ class Pathway:
                     parameters['file_pathway'] = filename
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'],
                               filename))
-
-            return jsonify(data=parameters,success=True)
+            print "Returning...."
         except Exception as e:
-            print "EXCEPTION------------------------------"
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
-            return jsonify(data=e,success=False)
+            print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
+            return jsonify(data=e, success=False)
 
     def doNothing(self, *args):
         return
 
     def enableDebug(self, *args):
         self.DEBUG = True
-
-    def returnError(self):
-        return Response('{"error":"xyz"}')
 
     def setPort(self, webPort):
         self.WEB_PORT = webPort
@@ -88,9 +95,22 @@ class Pathway:
             argFunctions.get(lastValue, self.doNothing)(value)
             lastValue = value
         argFunctions.get(lastValue, self.doNothing)(None)
-        app.config['ALLOWED_EXTENSIONS'] = ['study']
         app.config['UPLOAD_FOLDER'] = 'uploads'
+        app.config["ALLLOWED_TYPES"] = ['study', 'pathway']
         app.run(host='0.0.0.0', port=self.WEB_PORT, debug=self.DEBUG)
+
+def testFileExtension(fileItem,ext):
+    print "Test Filename"
+
+    print fileItem
+    print ext
+
+    splitName = fileItem.filename.split('.')
+    print splitName
+    # get last index of array and test
+    if splitName[-1] != ext:
+        return False
+    return True
 
 if __name__ == '__main__':
     Pathway()

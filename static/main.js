@@ -14,7 +14,8 @@ $(function() {
 });
 
 $(window).load(function() {
-    $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
+    $("select[name='database_pathway'], input[name='file_pathway']")
+        .on("change", changeRadioSelection);
 });
 
 function clickCalculate(e) {
@@ -24,12 +25,14 @@ function clickCalculate(e) {
         if (proceed) {
             $("#calculate").hide();
             $("progress").show();
-            sendForm().then(submission_result, submission_error).always(post_request);
+            sendForm().then(submission_result, submission_error)
+                .always(post_request);
         }
 }
 
 function changeRadioSelection(){
-    $("input[name='pathway_type'][value='" + this.name + "']").prop("checked", true);
+    $("input[name='pathway_type'][value='" + this.name + "']")
+        .prop("checked", true);
 }
 
 function checkedStateToValue(e) {
@@ -51,7 +54,8 @@ function displayErrors(el, messagesArray){
 var serviceBase = window.location.hostname + "/Pathway/";
 $(function(){
    
-    retrieve_pathways().then(apply_options, get_options_error).always(post_request);
+    retrieve_pathways().then(apply_options, get_options_error)
+        .always(post_request);
 });
 
 function pre_request() {
@@ -103,11 +107,13 @@ function apply_options(data){
 }
 
 function submission_error(request, statusText, error) {
-    displayErrors("#errorDisplay", ["The request failed with a status of '" + request.status + "' and a(n) '" + statusText + "' of '" + error + "'"]);
+    displayErrors("#errorDisplay",
+                  ["The request failed with the following message: <br/> "+ request.responseJSON.message + "'"]);
 }
 
 function get_options_error(request, statusText, error) {
-    displayErrors("#errorDisplay", ["There was a problem retrieving the pathway options from the server. Try again later."]);
+    displayErrors("#errorDisplay",
+    ["There was a problem retrieving the pathway options from the server. Try again later."]);
 }
 
 function sendForm() {
@@ -157,6 +163,7 @@ function retrieve_pathways(){
         cache: false
     });
 }
+
 
 
 

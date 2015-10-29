@@ -1,4 +1,5 @@
-// place all logic relating to appending, modifying or removing dynamic templates from the DOM here
+// place all logic relating to appending, modifying
+// or removing dynamic templates from the DOM here
 
 $(window).on('load', function(){
     $(".addControl")
