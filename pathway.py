@@ -26,13 +26,13 @@ class Pathway:
 
             parameters = request.form
             filelist = request.files
-
+            print("Filelist:",filelist)
             studyObj = {};
             num_studies = int(parameters['num_studies'])
 
             i = 0
             failed = None
-            while (i != num_studies ):
+            while (i != num_studies):
                 i = i + 1
 
                 studyKey = "study_" + str(i)
@@ -46,7 +46,10 @@ class Pathway:
                 studyFile = filelist[studyKey]
 
                 if not testFileExtension(studyFile, "study"):
-                    failed = jsonify(message="The file '" + studyFile.filename + "' is not the correct type. Expecting '.study' file", success=False)
+                    failed = jsonify(
+
+                        message="The file '" + studyFile.filename+"' is not the correct type. Expecting '.study' file",
+                        success=False)
                     break
 
                 if studyFile.filename:
@@ -55,16 +58,23 @@ class Pathway:
                     studyFile.save(
                         os.path.join(
                             app.config['UPLOAD_FOLDER'], filename ))
-
             if failed is not None:
-                failed.status_code = 400
                 failed.mimetype='application/json'
+                failed.status_code=400
                 return failed
 
-
             if parameters['pathway_type'] == 'file_pathway':
-                file = request.files['file_pathway']
-                if file.filename:
+                pathFile = filelist['file_pathway']
+                print("FILE: ", pathFile.filename)
+                if not testFileExtension(pathFile, "pathway"):
+                    failed = jsonify(
+                        message="The file '"+pathFile.filename+"' is not the correct type. Expecting '.pathway' file",
+                        success=False)
+                    failed.mimetype='application/json'
+                    failed.status_code=400
+                    return failed
+
+                if pathFile.filename:
                     del parameters['database_pathway']
                     filename = ts + '.pathway'
                     parameters['file_pathway'] = filename
