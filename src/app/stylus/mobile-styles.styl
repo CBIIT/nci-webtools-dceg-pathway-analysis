@@ -1,10 +1,15 @@
-@media (min-width 320px) and (max-width 1200px)
+@media (max-width 768px)
     body
-        width 99% !important
+        width 100% !important
         font-size 1em !important
-    header
-        .division-logo
-            min-width 330px
+
+@media (max-width 990px)
+    .tooltip
+        display none
+
+@media (min-width 320px) and (max-width 990px)
+    .ui-accordion .ui-accordion-content
+        padding .5em !important
     #content
         width 95% !important
     footer
@@ -21,8 +26,6 @@
         float right
 
     input[type="text"], input[type="number"], input[type="email"], input[type="file"], select, button, progress
-        width 90% !important
-        height 40px !important
         font-size 1em
 
     #refinep_div
@@ -33,6 +36,8 @@
         width 100%
     #refinep_div
         width 50%
+    .division-logo
+        width 330px
 
 @media (min-width 480px) and (max-width 599px) and (-webkit-min-pixel-ratio 2) and (min-resolution 192dpi)
     .input
@@ -40,21 +45,26 @@
     #refinep_div
         float inherit
         width 50%
+    .division-logo
+        width 330px
 
 @media (min-width 600px) and (max-width 767px) and (-webkit-min-pixel-ratio 1.5)
+    body
+        width 95% !important
+        font-size 1em !important
     .input
         width 100%
     #refinep_div
         width 50%
+            header
+    .division-logo
+        width 330px
 
-@media (min-width 768px) and (max-width 989px) and (-webkit-min-pixel-ratio 1)
+@media (min-width 768px) and (max-width 1280px) and (-webkit-min-pixel-ratio 1)
+    body
+        width 100% !important
+        font-size 1em !important
     .input
-        width 60%
-    #refinep_div
-        width 20%
-
-@media (min-width 990px) and (max-width 1200px) and (-webkit-min-pixel-ratio 2) and (min-resolution 192dpi)
-    .input
-        width 60%
+        width 70%
     #refinep_div
         width 20%
