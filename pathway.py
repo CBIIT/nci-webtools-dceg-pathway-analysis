@@ -30,15 +30,12 @@ class Pathway:
                             'text': "Pathway "+ind,
                             'file': pathways_file})
                     i += 1
-            print json.dumps(options)
             return Response(json.dumps(options), status=200, mimetype='application/json')
-#        return Response('[{"code":"PW1","text":"Pathway 1"},{"code":"PW2","text":"Pathway 2"},{"code":"PW3","text":"Pathway 3"},{"code":"PW4","text":"Pathway 4"}]'
-#                        , status=200, mimetype='application/json')
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
-            return jsonify(data=e, success=False)
+            return jsonify(error=e, success=False)
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
@@ -85,7 +82,6 @@ class Pathway:
 
             if parameters['pathway_type'] == 'file_pathway':
                 pathFile = filelist['file_pathway']
-                print("FILE: ", pathFile.filename)
                 if not testFileExtension(pathFile, app.config["ALLLOWED_TYPES"][1]):
                     failed = jsonify(
                         message="The file '"+pathFile.filename+"' is not the correct type. Expecting '.pathway' file",
@@ -95,17 +91,17 @@ class Pathway:
                     return failed
 
                 if pathFile.filename:
-                    del parameters['database_pathway']
+                    parameters['database_pathway'] = None
                     filename = ts + '.pathway'
                     parameters['file_pathway'] = filename
                     pathFile.save(os.path.join(app.config['UPLOAD_FOLDER'],
                               filename))
-            print "Returning...."
+            return jsonify(data="", message="The request has been received. An email will be sent when the calculation has completed.", success=True),200
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
-            return jsonify(data=e, success=False)
+            print("EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
+            return jsonify(data="",message=e, success=False)
 
     def doNothing(self, *args):
         return
@@ -128,7 +124,7 @@ class Pathway:
         app.config['PATHWAYS_DIR'] = 'paths'
         app.config['COMMON_PATH'] = '../common/'
         app.config['UPLOAD_FOLDER'] = 'uploads'
-        app.config["ALLLOWED_TYPES"] = ['study', 'pathway']
+        app.config["ALLLOWED_TYPES"] = ['study', 'pathway','txt']
         app.run(host='0.0.0.0', port=self.WEB_PORT, debug=self.DEBUG)
 
 def testFileExtension(fileItem, ext):
