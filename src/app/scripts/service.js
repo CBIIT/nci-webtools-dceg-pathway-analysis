@@ -31,14 +31,14 @@ function submission_result(response) {
     if(response.success){
         // display confirmation message
         //$(pathForm).reset();
-        $( "#successBox #message" ).text("Your submission was successful.");
+        $( "#successBox #message" ).text(response.message);
         $( "#successBox").show();
         document.querySelector("#successBox").scrollIntoView(true);
 
         setTimeout(function(){
             $( "#successBox" ).fadeOut().hide();
             $( "#successBox #message" ).html("");
-        }, 3000);
+        }, 10000);
 
     }
 }

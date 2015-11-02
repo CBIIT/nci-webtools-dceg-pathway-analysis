@@ -1,10 +1,17 @@
-@media screen and (min-device-width: 320px) and (max-device-width: 1200px) {
+@media (max-width: 768px) {
   body {
-    width: 99% !important;
+    width: 100% !important;
     font-size: 1em !important;
   }
-  header .division-logo {
-    min-width: 330px;
+}
+@media (max-width: 990px) {
+  .tooltip {
+    display: none;
+  }
+}
+@media (min-width: 320px) and (max-width: 990px) {
+  .ui-accordion .ui-accordion-content {
+    padding: 0.5em !important;
   }
   #content {
     width: 95% !important;
@@ -32,23 +39,24 @@
   select,
   button,
   progress {
-    width: 90% !important;
-    height: 40px !important;
     font-size: 1em;
   }
   #refinep_div {
     float: inherit;
   }
 }
-@media screen and (min-device-width: 320px) and (max-device-width: 479px) and (-webkit-min-device-pixel-ratio: 1) {
+@media (min-width: 320px) and (max-width: 479px) and (-webkit-min-pixel-ratio: 1) {
   .input {
     width: 100%;
   }
   #refinep_div {
     width: 50%;
   }
+  .division-logo {
+    width: 330px;
+  }
 }
-@media screen and (min-device-width: 480px) and (max-device-width: 599px) and (-webkit-min-device-pixel-ratio: 2) and (min-resolution: 192dpi) {
+@media (min-width: 480px) and (max-width: 599px) and (-webkit-min-pixel-ratio: 2) and (min-resolution: 192dpi) {
   .input {
     width: 100%;
   }
@@ -56,26 +64,29 @@
     float: inherit;
     width: 50%;
   }
+  .division-logo {
+    width: 330px;
+  }
 }
-@media only screen and (min-device-width: 600px) and (max-device-width: 767px) and (-webkit-min-device-pixel-ratio: 1.5) {
+@media (min-width: 600px) and (max-width: 767px) and (-webkit-min-pixel-ratio: 1.5) {
+  body {
+    width: 95% !important;
+    font-size: 1em !important;
+  }
   .input {
     width: 100%;
   }
-  #refinep_div {
-    width: 50%;
+  .division-logo {
+    width: 330px;
   }
 }
-@media screen and (min-device-width: 768px) and (max-device-width: 989px) and (-webkit-min-device-pixel-ratio: 1) {
-  .input {
-    width: 60%;
+@media (min-width: 768px) and (max-width: 1280px) and (-webkit-min-pixel-ratio: 1) {
+  body {
+    width: 100% !important;
+    font-size: 1em !important;
   }
-  #refinep_div {
-    width: 20%;
-  }
-}
-@media screen and (min-device-width: 990px) and (max-device-width: 1200px) and (-webkit-min-device-pixel-ratio: 2) and (min-resolution: 192dpi) {
   .input {
-    width: 60%;
+    width: 70%;
   }
   #refinep_div {
     width: 20%;
@@ -85,10 +96,13 @@
 html {
   background: #d3d3d3;
 }
+.division-logo {
+  max-width: 50%;
+}
 body {
   background: #fff;
   padding-bottom: 1%;
-  font: 12px/1.1 "Verdana", "Geneva", "sans-serif";
+  font: 10pt/1.1 "Verdana", "Geneva", "sans-serif";
   margin: 0 auto;
   width: 75%;
   -webkit-box-shadow: 2px 3px 31px -5px #000;
@@ -180,7 +194,6 @@ li {
 label {
   display: block !important;
   float: left !important;
-  font-weight: bold;
 }
 fieldset {
   margin: 2% auto;
@@ -189,6 +202,7 @@ fieldset {
 }
 legend {
   font-size: 1.1em;
+  font-weight: bold;
 }
 input[type="file"],
 input[type="text"],
@@ -198,7 +212,7 @@ select,
 button,
 progress {
   width: 300px;
-  height: 30px;
+  height: 35px;
 }
 #calculate,
 progress {
