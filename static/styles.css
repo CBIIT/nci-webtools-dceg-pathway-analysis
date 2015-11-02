@@ -96,6 +96,9 @@
 html {
   background: #d3d3d3;
 }
+.division-logo {
+  max-width: 50%;
+}
 body {
   background: #fff;
   padding-bottom: 1%;
