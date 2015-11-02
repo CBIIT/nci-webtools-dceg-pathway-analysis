@@ -3,8 +3,7 @@ $(function(){
     var errors_div = $("#errorDisplay");
     var validationElements = {
         study: {
-            required: true,
-            extension: "study",
+            required: true
         },
         database_pathway: {
             required: {
@@ -15,6 +14,12 @@ $(function(){
         },
         file_pathway: {
             required: {
+                depends:function(element) {
+                    return $("#file_pathway_option").is(":checked");
+                }
+            },
+            file_type_check: {
+                param: "pathway",
                 depends:function(element) {
                     return $("#file_pathway_option").is(":checked");
                 }
@@ -132,6 +137,7 @@ $(function(){
     // there should be some default settings that all forms follow
     jQuery.validator.setDefaults({
         ignore: [],
+        focusInvalid: false,
         focusCleanup: true,
         ignoreTitle: true,
         errorElement: "li",
@@ -147,7 +153,10 @@ $(function(){
                 var grammar = errors == 1 ? "is " + errors + " error" : "are " + errors + " errors";
 
                 errors_div.html("<b>There " + grammar + ", see details below: </b><ul></ul>");
-                this.defaultShowErrors();
+                for(var i = 0;i< errors;i++) {
+                    errors_div.find("ul").append("<li>"+ errorList[i].message + "</li>");
+                }
+                //                this.defaultShowErrors();
 
                 errors_div.show();
                 document.querySelector("#errorDisplay").scrollIntoView(true);
@@ -194,8 +203,12 @@ $(function(){
         return valid;
     }, jQuery.validator.format("One or more of the values in {0} is invalid. Value must be an integer or string of integers separated by commas"));
 
-    jQuery.validator.addMethod('num_files_equal_num_values', function(elementValue, el, bValue) {
-        return el.files.length == bValue.length;
-    }, jQuery.validator.format("The number of files for {0} do not match the number of values for {1}. The number of files must be equal to the number of values."));
+    jQuery.validator.addMethod('file_type_check', function(elementValue, el, validExtension) {
+        var splitFilename = el.files[0].name.split(".");
+        var splitFilenameLength = splitFilename.length;
+        var fileExtension = splitFilename[splitFilenameLength - 1];
+
+        return fileExtension == validExtension || fileExtension == "txt" ;
+    }, jQuery.validator.format("You must upload a valid (.{0} or .txt) file."));
 
 });
