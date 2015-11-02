@@ -1,4 +1,9 @@
+*.pyc
+examples/
 src/node_modules/
 src/bower_components/
-tests/
+static/common
 static/test/
+tests/
+uploads/
+!uploads/.placeholder

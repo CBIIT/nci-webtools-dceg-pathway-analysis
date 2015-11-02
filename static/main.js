@@ -155,7 +155,7 @@ function sendForm() {
 
 function retrieve_pathways(){
     return $.ajax({
-        url: "/options/pathway_options",
+        url: "/options/pathway_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
