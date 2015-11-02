@@ -19,8 +19,26 @@ class Pathway:
     @app.route('/options/pathway_options', methods=['GET'])
     @app.route('/options/pathway_options/', methods=['GET'])
     def pathway_options():
-        return Response('[{"code":"PW1","text":"Pathway 1"},{"code":"PW2","text":"Pathway 2"},{"code":"PW3","text":"Pathway 3"},{"code":"PW4","text":"Pathway 4"}]'
-                        , status=200, mimetype='application/json')
+        try:
+            options = []
+            i = 1
+            for pathways_file in os.listdir(app.config['PATHWAYS_DIR']):
+                ind = str(i)
+                if pathways_file.endswith(".txt") or pathways_file.endswith(".pathway"):
+                    options.append({
+                            'code':"PW_"+ind,
+                            'text': "Pathway "+ind,
+                            'file': pathways_file})
+                    i += 1
+            print json.dumps(options)
+            return Response(json.dumps(options), status=200, mimetype='application/json')
+#        return Response('[{"code":"PW1","text":"Pathway 1"},{"code":"PW2","text":"Pathway 2"},{"code":"PW3","text":"Pathway 3"},{"code":"PW4","text":"Pathway 4"}]'
+#                        , status=200, mimetype='application/json')
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
+            return jsonify(data=e, success=False)
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
@@ -30,8 +48,8 @@ class Pathway:
 
             parameters = request.form
             filelist = request.files
-            print("Filelist:",filelist)
             studyObj = {};
+
             num_studies = int(parameters['num_studies'])
 
             i = 0
@@ -40,8 +58,8 @@ class Pathway:
                 i = i + 1
 
                 studyKey = "study_" + str(i)
-                studyObj['studies'] = []
 
+                studyObj['studies'] = []
                 studyObj['studies'].append(parameters['lambda_' + str(i)])
 
                 for resourceInd in range(1,int(request.form['num_resource_' + str(i)])):
@@ -49,11 +67,9 @@ class Pathway:
 
                 studyFile = filelist[studyKey]
 
-                if not testFileExtension(studyFile, "study"):
+                if not testFileExtension(studyFile, app.config["ALLLOWED_TYPES"][0]):
                     failed = jsonify(
-
-                        message="The file '" + studyFile.filename+"' is not the correct type. Expecting '.study' file",
-                        success=False)
+                        message="The file '" + studyFile.filename+"' is not the correct type. Expecting '.study' file", success=False)
                     break
 
                 if studyFile.filename:
@@ -70,7 +86,7 @@ class Pathway:
             if parameters['pathway_type'] == 'file_pathway':
                 pathFile = filelist['file_pathway']
                 print("FILE: ", pathFile.filename)
-                if not testFileExtension(pathFile, "pathway"):
+                if not testFileExtension(pathFile, app.config["ALLLOWED_TYPES"][1]):
                     failed = jsonify(
                         message="The file '"+pathFile.filename+"' is not the correct type. Expecting '.pathway' file",
                         success=False)
@@ -82,7 +98,7 @@ class Pathway:
                     del parameters['database_pathway']
                     filename = ts + '.pathway'
                     parameters['file_pathway'] = filename
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'],
+                    pathFile.save(os.path.join(app.config['UPLOAD_FOLDER'],
                               filename))
             print "Returning...."
         except Exception as e:
@@ -109,19 +125,14 @@ class Pathway:
             argFunctions.get(lastValue, self.doNothing)(value)
             lastValue = value
         argFunctions.get(lastValue, self.doNothing)(None)
+        app.config['PATHWAYS_DIR'] = 'paths'
         app.config['COMMON_PATH'] = '../common/'
         app.config['UPLOAD_FOLDER'] = 'uploads'
         app.config["ALLLOWED_TYPES"] = ['study', 'pathway']
         app.run(host='0.0.0.0', port=self.WEB_PORT, debug=self.DEBUG)
 
-def testFileExtension(fileItem,ext):
-    print "Test Filename"
-
-    print fileItem
-    print ext
-
+def testFileExtension(fileItem, ext):
     splitName = fileItem.filename.split('.')
-    print splitName
     # get last index of array and test
     if splitName[-1] != ext:
         return False
