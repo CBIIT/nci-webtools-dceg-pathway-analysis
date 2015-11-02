@@ -154,7 +154,7 @@ $(function(){
 
                 errors_div.html("<b>There " + grammar + ", see details below: </b><ul></ul>");
                 for(var i = 0;i< errors;i++) {
-                    errors_div.find("ul").append("<li>"+ errorList[i].message + "</li>");
+                    errors_div.find("ul").append("<li>" + errorList[i].message + "</li>");
                 }
                 //                this.defaultShowErrors();
 
