@@ -28,6 +28,7 @@ function clickCalculate(e) {
             sendForm().then(submission_result, submission_error)
                 .always(post_request);
         }
+        return false;
 }
 
 function changeRadioSelection(){
@@ -155,7 +156,7 @@ function sendForm() {
 
 function retrieve_pathways(){
     return $.ajax({
-        url: "/options/pathway_options/",
+        url: "/pathwayRest/options/pathway_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
@@ -534,12 +535,12 @@ $(function(){
         showErrors: function(errorMap, errorList) {
            
             var errors = this.numberOfInvalids();
-            if (errors > 0) {
+            if (errors > 0 && errorList > 0) {
                 var grammar = errors == 1 ? "is " + errors + " error" : "are " + errors + " errors";
 
                 errors_div.html("<b>There " + grammar + ", see details below: </b><ul></ul>");
                 for(var i = 0;i< errors;i++) {
-                    errors_div.find("ul").append("<li>"+ errorList[i].message + "</li>");
+                    errors_div.find("ul").append("<li>" + errorList[i].message + "</li>");
                 }
                
 
