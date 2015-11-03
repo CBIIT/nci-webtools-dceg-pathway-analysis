@@ -149,7 +149,7 @@ $(function(){
         showErrors: function(errorMap, errorList) {
             // 'this' refers to the form
             var errors = this.numberOfInvalids();
-            if (errors > 0) {
+            if (errors > 0 && errorList > 0) {
                 var grammar = errors == 1 ? "is " + errors + " error" : "are " + errors + " errors";
 
                 errors_div.html("<b>There " + grammar + ", see details below: </b><ul></ul>");
