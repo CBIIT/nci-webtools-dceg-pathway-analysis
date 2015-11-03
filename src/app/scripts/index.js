@@ -28,6 +28,7 @@ function clickCalculate(e) {
             sendForm().then(submission_result, submission_error)
                 .always(post_request);
         }
+        return false;
 }
 
 function changeRadioSelection(){
