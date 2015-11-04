@@ -113,7 +113,7 @@ function sendForm() {
 
 function retrieve_pathways(){
     return $.ajax({
-        url: "/options/pathway_options/",
+        url: "/pathwayRest/options/pathway_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
@@ -124,7 +124,7 @@ function retrieve_pathways(){
 
 function retrieve_populations(){
     return $.ajax({
-        url: "/options/population_options/",
+        url: "/pathwayRest/options/population_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
