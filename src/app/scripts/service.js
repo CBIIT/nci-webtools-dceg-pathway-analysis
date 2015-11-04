@@ -1,9 +1,15 @@
 // handle sevice call and actions here
 var serviceBase = window.location.hostname + "/Pathway/";
 $(function(){
+    var count = 2;
+    var hold = function() {
+      count--;
+      if (count <= 0)
+        post_request();
+    };
     // retrive options from server
-    retrieve_pathways().then(apply_options, get_options_error)
-        .always(post_request);
+    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
+    retrieve_populations().then(apply_options($(pathForm.population)), get_options_error("population")).always(hold);
 });
 
 function pre_request() {
@@ -43,15 +49,17 @@ function submission_result(response) {
     }
 }
 
-function apply_options(data){
-    data.forEach(function(item, i) {
-        var option = $("<option></option>");
+function apply_options(element){
+    return function(data) {
+        data.forEach(function(item, i) {
+            var option = $("<option></option>");
 
-        $(option).val(item.code);
-        $(option).text(item.text);
+            $(option).val(item.code);
+            $(option).text(item.text);
 
-        $(pathForm.database_pathway).append(option);
-    });
+            element.append(option);
+        });
+    };
 }
 
 function submission_error(request, statusText, error) {
@@ -59,9 +67,11 @@ function submission_error(request, statusText, error) {
                   ["The request failed with the following message: <br/> "+ request.responseJSON.message + "'"]);
 }
 
-function get_options_error(request, statusText, error) {
-    displayErrors("#errorDisplay",
-    ["There was a problem retrieving the pathway options from the server. Try again later."]);
+function get_options_error(option_type) {
+    return function(request, statusText, error) {
+        displayErrors("#errorDisplay",
+          ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+    };
 }
 
 function sendForm() {
@@ -104,6 +114,17 @@ function sendForm() {
 function retrieve_pathways(){
     return $.ajax({
         url: "/options/pathway_options/",
+        type: "GET",
+        beforeSend: pre_request,
+        contentType: "application/json",
+        dataType: "json",
+        cache: false
+    });
+}
+
+function retrieve_populations(){
+    return $.ajax({
+        url: "/options/population_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",

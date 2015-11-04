@@ -6,14 +6,16 @@ from flask import Flask, Response, request, jsonify, send_from_directory
 from PropertyUtil import PropertyUtil
 from stompest.config import StompConfig
 from stompest.sync import Stomp
-from werkzeug.datastructures import MultiDict
 
 app = Flask(__name__, static_folder='static', static_url_path="")
 
 class Pathway:
     CONFIG = 'pathway.config'
     DEBUG = 'pathway.debug'
+    PATHWAY_FOLDER = 'pathway.folder.pathway'
+    POPULATION_FOLDER = 'pathway.folder.population'
     PORT = 'pathway.port'
+    UPLOAD_FOLDER = 'pathway.folder.upload'
     QUEUE_CONFIG = 'queue.config'
     QUEUE_NAME = 'queue.name'
     QUEUE_URL = 'queue.url'
@@ -50,7 +52,7 @@ class Pathway:
         try:
             options = []
             i = 1
-            for pathways_file in os.listdir(app.config['PATHWAYS_DIR']):
+            for pathways_file in os.listdir(app.config['PATHWAY_FOLDER']):
                 ind = str(i)
                 if pathways_file.endswith(".txt") or pathways_file.endswith(".pathway"):
                     options.append({
@@ -64,6 +66,29 @@ class Pathway:
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
             return jsonify(error=e, success=False)
+
+
+    @app.route('/options/population_options', methods=['GET'])
+    @app.route('/options/population_options/', methods=['GET'])
+    def population_options():
+        try:
+            options = []
+            for population_subfolder in [name for name in os.listdir(app.config['POPULATION_FOLDER']) if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],name))]:
+                population_name_file = os.path.join(app.config['POPULATION_FOLDER'],population_subfolder,"population.name.txt")
+                if os.path.isfile(population_name_file):
+                    with open(population_name_file,'r') as f:
+                        population_name = f.read().strip()
+                    options.append({
+                                    'code': population_subfolder,
+                                    'text': population_name
+                                  })
+            return Response(json.dumps(options), status=200, mimetype='application/json')
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
+            return jsonify(error=e, success=False)
+      
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
@@ -81,40 +106,50 @@ class Pathway:
 
             for i in xrange(1,num_studies+1):
                 studyKey = "study_" + str(i)
-
                 studyObj = {}
 
                 studyObj['lambda'] = parameters['lambda_' + str(i)]
-                studyObj['sample_sizes'] = [];
+                del parameters['lambda_'+str(i)]
 
-                for resourceInd in range(1,int(request.form['num_resource_' + str(i)])):
-                    studyObj['sample_sizes'].append(parameters['sample_size_' + str(resourceInd)])
+                studyObj['sample_sizes'] = []
+                for resourceInd in range(1,int(parameters['num_resource_' + str(i)])+1):
+                    studyObj['sample_sizes'].append(parameters['sample_size_' + str(i) + '_' + str(resourceInd)])
+                    del parameters['sample_size_' + str(i) + '_' + str(resourceInd)]
+                del parameters['num_resource_' + str(i)]
 
                 studyFile = filelist[studyKey]
                 if studyFile.filename:
                     if Pathway.testFileExtension(studyFile, app.config["ALLLOWED_TYPES"][0]):                  
-                        filename = ts + '-' + str(i) + '.study'
+                        filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
                         studyObj['filename'] = filename
-                        studyFile.save( os.path.join( app.config['UPLOAD_FOLDER'], filename ))
+                        studyFile.save(filename)
                     else:
                         return Pathway.buildFailure("The file '" + studyFile.filename + "' is not the correct type. Expecting '.study' file.")
                 else:
                     return Pathway.buildFailure("The file seems to be missing from Study #" + i + ".")
                 studyList.append(studyObj);
-            parameters['studies'] = studyList;
+            del parameters['num_studies']
+            parameters['studies'] = studyList
 
             if parameters['pathway_type'] == 'file_pathway':
                 pathFile = filelist['file_pathway']
                 if pathFile.filename:
                     if Pathway.testFileExtension(pathFile, app.config["ALLLOWED_TYPES"][1]):
-                        parameters['database_pathway'] = None
-                        filename = ts + '.pathway'
+                        del parameters['database_pathway']
+                        filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '.pathway')
                         parameters['file_pathway'] = filename
-                        pathFile.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                        pathFile.save(filename)
                     else:
                         return Pathway.buildFailure("The file '" + pathFile.filename + "' is not the correct type. Expecting '.pathway' file.")
                 else:
                     return Pathway.buildFailure("The pathway file seems to be missing.")
+            else:
+                del parameters['database_pathway']
+
+            if parameters['population'] in [name for name in os.listdir(app.config['POPULATION_FOLDER']) if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],name))]:
+                parameters['population'] = os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],parameters['population'])
+            else:
+                return Pathway.buildFailure("An invalid population was submitted.")
 
             pathwayConfig = app.config[Pathway.CONFIG]
             client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
@@ -132,9 +167,10 @@ class Pathway:
         pathwayConfig = PropertyUtil(r"config.ini")
         pathwayConfig[Pathway.QUEUE_CONFIG] = StompConfig(pathwayConfig.getAsString(Pathway.QUEUE_URL))
         app.config[Pathway.CONFIG] = pathwayConfig
-        app.config['PATHWAYS_DIR'] = 'paths'
         app.config['COMMON_PATH'] = '../common/'
-        app.config['UPLOAD_FOLDER'] = 'uploads'
+        app.config['POPULATION_FOLDER'] = pathwayConfig.getAsString(Pathway.POPULATION_FOLDER)
+        app.config['PATHWAY_FOLDER'] = pathwayConfig.getAsString(Pathway.PATHWAY_FOLDER)
+        app.config['UPLOAD_FOLDER'] = pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER)
         app.config["ALLLOWED_TYPES"] = ['study', 'pathway','txt']
         app.run(host='0.0.0.0', port=pathwayConfig.getAsInt(Pathway.PORT), debug=pathwayConfig.getAsBoolean(Pathway.DEBUG))
 

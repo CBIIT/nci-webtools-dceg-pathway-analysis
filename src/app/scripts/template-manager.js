@@ -48,17 +48,13 @@ $(window).on('load', function(){
             .find("input[id*='num_resource']")
             .on("change", function(e) {
             if(Number(this.value)) {
-                $("#studyEntry .studies:last").each(function(i, el) {
-                    removeStudyResource($(this), i);
-                });
-
-                $(pathForm).find(".studyResources").detach();
+                $("#studyEntry .studies:last .studyResources").remove();
 
                 for(var i = 0; i != this.value; i++) {
                     // what they enter for num_resource should
                     // control the times addStudyResource is run
                     $($(this).parent().parent()[0]).append(
-                        addStudyResource((i+1))
+                        addStudyResource($(this).prop('id').substr(13),(i+1))
                     );
                 }
             }
@@ -105,7 +101,7 @@ $(window).on('load', function(){
         }
     }
 
-    function addStudyResource(ind) {
+    function addStudyResource(study,ind) {
         var resource_element = $("#snippets").find(".studyResources").clone();
         var elementLabel = resource_element.find("label");
         var elementInput = resource_element.find("input");
@@ -113,7 +109,7 @@ $(window).on('load', function(){
         var LabelFor = elementLabel.attr("for") + "_" + ind;
         var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
 
-        var inputId = elementInput.attr("id") + "_" + ind;
+        var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
 
         elementLabel.attr("for", LabelFor);
         elementLabel.text(labelText);
@@ -126,6 +122,7 @@ $(window).on('load', function(){
         // remove the rules
         parentElement.find(".studyResources:nth(" + ind + ") input").each(function(){
             $(this).rules("remove");
+            $(this).remove();
         });
     }
 });
