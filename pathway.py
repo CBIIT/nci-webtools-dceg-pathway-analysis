@@ -46,8 +46,8 @@ class Pathway:
     def custom_static(filename):
         return send_from_directory(app.config['COMMON_PATH'], filename)
 
-    @app.route('/options/pathway_options', methods=['GET'])
-    @app.route('/options/pathway_options/', methods=['GET'])
+    @app.route('/pathwayRest/options/pathway_options', methods=['GET'])
+    @app.route('/pathwayRest/options/pathway_options/', methods=['GET'])
     def pathway_options():
         try:
             options = []
@@ -67,9 +67,8 @@ class Pathway:
             print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
             return jsonify(error=e, success=False)
 
-
-    @app.route('/options/population_options', methods=['GET'])
-    @app.route('/options/population_options/', methods=['GET'])
+    @app.route('/pathwayRest/options/population_options', methods=['GET'])
+    @app.route('/pathwayRest/options/population_options/', methods=['GET'])
     def population_options():
         try:
             options = []
@@ -92,6 +91,9 @@ class Pathway:
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
+
+    @app.route('/pathwayRest/calculate', methods=['POST'])
+    @app.route('/pathwayRest/calculate/', methods=['POST'])
     def calculate():
         try:
             ts = str(time.time())
