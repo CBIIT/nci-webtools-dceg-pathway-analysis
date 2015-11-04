@@ -20,6 +20,7 @@ $(window).load(function() {
 
 function clickCalculate(e) {
         e.preventDefault();
+        $(pathForm).validate();
         var proceed = $(pathForm).valid();
 
         if (proceed) {
@@ -28,7 +29,7 @@ function clickCalculate(e) {
             sendForm().then(submission_result, submission_error)
                 .always(post_request);
         }
-        return false;
+
 }
 
 function changeRadioSelection(){
@@ -117,7 +118,7 @@ function apply_options(element){
 
 function submission_error(request, statusText, error) {
     displayErrors("#errorDisplay",
-                  ["The request failed with the following message: <br/> "+ request.responseJSON.message + "'"]);
+                  ["The request failed with the following message: <br/> "+ request.responseText + "'"]);
 }
 
 function get_options_error(option_type) {
@@ -540,7 +541,7 @@ $(function(){
    
    
     jQuery.validator.setDefaults({
-        ignore: [],
+        ignore: "button",
         focusInvalid: false,
         focusCleanup: true,
         ignoreTitle: true,
@@ -553,14 +554,10 @@ $(function(){
         showErrors: function(errorMap, errorList) {
            
             var errors = this.numberOfInvalids();
-            if (errors > 0 && errorList > 0) {
+            if (errors > 0 && errorList.length > 0) {
                 var grammar = errors == 1 ? "is " + errors + " error" : "are " + errors + " errors";
-
-                errors_div.html("<b>There " + grammar + ", see details below: </b><ul></ul>");
-                for(var i = 0;i< errors;i++) {
-                    errors_div.find("ul").append("<li>" + errorList[i].message + "</li>");
-                }
-               
+                errors_div.html("<b>There " + grammar + ", see details below: </b>");
+                this.defaultShowErrors();
 
                 errors_div.show();
                 document.querySelector("#errorDisplay").scrollIntoView(true);

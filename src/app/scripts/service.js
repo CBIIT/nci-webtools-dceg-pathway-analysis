@@ -64,7 +64,7 @@ function apply_options(element){
 
 function submission_error(request, statusText, error) {
     displayErrors("#errorDisplay",
-                  ["The request failed with the following message: <br/> "+ request.responseJSON.message + "'"]);
+                  ["The request failed with the following message: <br/> "+ request.responseText + "'"]);
 }
 
 function get_options_error(option_type) {

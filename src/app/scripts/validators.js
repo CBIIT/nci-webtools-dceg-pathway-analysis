@@ -136,7 +136,7 @@ $(function(){
     // since there will be multiple validations eventually
     // there should be some default settings that all forms follow
     jQuery.validator.setDefaults({
-        ignore: [],
+        ignore: "button",
         focusInvalid: false,
         focusCleanup: true,
         ignoreTitle: true,
@@ -149,14 +149,10 @@ $(function(){
         showErrors: function(errorMap, errorList) {
             // 'this' refers to the form
             var errors = this.numberOfInvalids();
-            if (errors > 0 && errorList > 0) {
+            if (errors > 0 && errorList.length > 0) {
                 var grammar = errors == 1 ? "is " + errors + " error" : "are " + errors + " errors";
-
-                errors_div.html("<b>There " + grammar + ", see details below: </b><ul></ul>");
-                for(var i = 0;i< errors;i++) {
-                    errors_div.find("ul").append("<li>" + errorList[i].message + "</li>");
-                }
-                //                this.defaultShowErrors();
+                errors_div.html("<b>There " + grammar + ", see details below: </b>");
+                this.defaultShowErrors();
 
                 errors_div.show();
                 document.querySelector("#errorDisplay").scrollIntoView(true);

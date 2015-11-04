@@ -20,6 +20,7 @@ $(window).load(function() {
 
 function clickCalculate(e) {
         e.preventDefault();
+        $(pathForm).validate();
         var proceed = $(pathForm).valid();
 
         if (proceed) {
@@ -28,7 +29,7 @@ function clickCalculate(e) {
             sendForm().then(submission_result, submission_error)
                 .always(post_request);
         }
-        return false;
+//        return false;
 }
 
 function changeRadioSelection(){
