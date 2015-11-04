@@ -24,37 +24,7 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
       legend(for='population') Select the population:
       .input
         select#population(name='population', required='')
-          optgroup(label='AFR')
-            option(value='YRI') Yoruba in Ibadan, Nigeria
-            option(value='LWK') Luhya in Webuye, Kenya
-            option(value='GWD') Gambian in Western Divisions in the Gambia
-            option(value='MSL') Mende in Sierra Leone
-            option(value='ESN') Esan in Nigeria
-            option(value='ASW') Americans of African Ancestry in SW USA
-            option(value='ACB') African Caribbeans in Barbados
-          optgroup(label='AMR')
-            option(value='MXL') Mexican Ancestry from Los Angeles USA
-            option(value='PUR') Puerto Ricans from Puerto Rico
-            option(value='CLM') Colombians from Medellin, Colombia
-            option(value='PEL') Peruvians from Lima, Peru
-          optgroup(label='EAS')
-            option(value='CHB', selected='') Han Chinese in Bejing, China
-            option(value='JPT') Japanese in Tokyo, Japan
-            option(value='CHS') Southern Han Chinese
-            option(value='CDX') Chinese Dai in Xishuangbanna, China
-            option(value='KHV') Kinh in Ho Chi Minh City, Vietnam
-          optgroup(label='EUR')
-            option(value='CEU') Utah Residents (CEPH) with Northern and Western European Ancestry
-            option(value='TSI') Toscani in Italia
-            option(value='FIN') Finnish in Finland
-            option(value='GBR') British in England and Scotland
-            option(value='IBS') Iberian Population in Spain
-          optgroup(label='SAS')
-            option(value='GIH') Gujarati Indian from Houston, Texas
-            option(value='PJL') Punjabi from Lahore, Pakistan
-            option(value='BEB') Bengali from Bangladesh
-            option(value='STU') Sri Lankan Tamil from the UK
-            option(value='ITU') Indian Telugu from the UK
+          option(value='', selected) -- Select a population --
         img.tooltip(name='population', alt='')
 
     fieldset
