@@ -53,9 +53,15 @@ function displayErrors(el, messagesArray){
 
 var serviceBase = window.location.hostname + "/Pathway/";
 $(function(){
+    var count = 2;
+    var hold = function() {
+      count--;
+      if (count <= 0)
+        post_request();
+    };
    
-    retrieve_pathways().then(apply_options, get_options_error)
-        .always(post_request);
+    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
+    retrieve_populations().then(apply_options($(pathForm.population)), get_options_error("population")).always(hold);
 });
 
 function pre_request() {
@@ -95,15 +101,17 @@ function submission_result(response) {
     }
 }
 
-function apply_options(data){
-    data.forEach(function(item, i) {
-        var option = $("<option></option>");
+function apply_options(element){
+    return function(data) {
+        data.forEach(function(item, i) {
+            var option = $("<option></option>");
 
-        $(option).val(item.code);
-        $(option).text(item.text);
+            $(option).val(item.code);
+            $(option).text(item.text);
 
-        $(pathForm.database_pathway).append(option);
-    });
+            element.append(option);
+        });
+    };
 }
 
 function submission_error(request, statusText, error) {
@@ -111,9 +119,11 @@ function submission_error(request, statusText, error) {
                   ["The request failed with the following message: <br/> "+ request.responseJSON.message + "'"]);
 }
 
-function get_options_error(request, statusText, error) {
-    displayErrors("#errorDisplay",
-    ["There was a problem retrieving the pathway options from the server. Try again later."]);
+function get_options_error(option_type) {
+    return function(request, statusText, error) {
+        displayErrors("#errorDisplay",
+          ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+    };
 }
 
 function sendForm() {
@@ -156,6 +166,17 @@ function sendForm() {
 function retrieve_pathways(){
     return $.ajax({
         url: "/options/pathway_options/",
+        type: "GET",
+        beforeSend: pre_request,
+        contentType: "application/json",
+        dataType: "json",
+        cache: false
+    });
+}
+
+function retrieve_populations(){
+    return $.ajax({
+        url: "/options/population_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
@@ -214,17 +235,13 @@ $(window).on('load', function(){
             .find("input[id*='num_resource']")
             .on("change", function(e) {
             if(Number(this.value)) {
-                $("#studyEntry .studies:last").each(function(i, el) {
-                    removeStudyResource($(this), i);
-                });
-
-                $(pathForm).find(".studyResources").detach();
+                $("#studyEntry .studies:last .studyResources").remove();
 
                 for(var i = 0; i != this.value; i++) {
                    
                    
                     $($(this).parent().parent()[0]).append(
-                        addStudyResource((i+1))
+                        addStudyResource($(this).prop('id').substr(13),(i+1))
                     );
                 }
             }
@@ -271,7 +288,7 @@ $(window).on('load', function(){
         }
     }
 
-    function addStudyResource(ind) {
+    function addStudyResource(study,ind) {
         var resource_element = $("#snippets").find(".studyResources").clone();
         var elementLabel = resource_element.find("label");
         var elementInput = resource_element.find("input");
@@ -279,7 +296,7 @@ $(window).on('load', function(){
         var LabelFor = elementLabel.attr("for") + "_" + ind;
         var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
 
-        var inputId = elementInput.attr("id") + "_" + ind;
+        var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
 
         elementLabel.attr("for", LabelFor);
         elementLabel.text(labelText);
@@ -292,6 +309,7 @@ $(window).on('load', function(){
        
         parentElement.find(".studyResources:nth(" + ind + ") input").each(function(){
             $(this).rules("remove");
+            $(this).remove();
         });
     }
 });
@@ -539,7 +557,7 @@ $(function(){
 
                 errors_div.html("<b>There " + grammar + ", see details below: </b><ul></ul>");
                 for(var i = 0;i< errors;i++) {
-                    errors_div.find("ul").append("<li>"+ errorList[i].message + "</li>");
+                    errors_div.find("ul").append("<li>" + errorList[i].message + "</li>");
                 }
                
 
