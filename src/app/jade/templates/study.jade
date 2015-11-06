@@ -7,12 +7,10 @@
                 label(for='study') Browse and select study file:
                 .input
                     input#study(type='file', name='study',  required='')
-                    img.tooltip(name='study', alt='')
             li
-                label(for="lambda") Lambda (&lambda;):
+                label.termToDefine(data-term="lambda", for="lambda") Lambda (&lambda;):
                 .input
                     input#lambda(type="text", name="lambda",value="1.0", required='')
-                    img.tooltip(name='lambda', alt='')
             li
                 label(for="num_resource") Number of data resources in this study:
                 .input
