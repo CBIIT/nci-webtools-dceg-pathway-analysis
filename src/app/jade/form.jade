@@ -1,10 +1,10 @@
 form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='multipart/form-data')
     fieldset
-        legend Study Selection
+        legend.termToDefine(data-term="study") Study Selection
         #studyEntry
         button.addControl Add Study
     fieldset
-      legend Select or upload the pathway file:
+      legend.termToDefine(data-term="file_pathway") Select or upload the pathway file:
       ul
         li
           label(for='database_pathway')
@@ -13,7 +13,6 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
           .input
             select#database_pathway(name='database_pathway')
                 option(value='', selected) -- Select an existing pathway --
-            img.tooltip(name='file_pathway', alt='')
         li
             label(for='file_pathway')
                 input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
@@ -21,74 +20,63 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
             .input
                 input#file_pathway(type='file', name='file_pathway')
     fieldset
-      legend(for='population') Select the population:
+      legend.termToDefine(data-term="population")
+        label(for='population') Select the population:
       .input
         select#population(name='population', required='')
           option(value='', selected) -- Select a population --
-        img.tooltip(name='population', alt='')
-
     fieldset
       legend Set the following options:
       ul
         li
-            label(for='nperm') nperm:
+            label.termToDefine(data-term="nperm", for='nperm') nperm:
             .input
                 input#nperm(type='text', name='nperm', value='1e5')
-                img.tooltip(name='nperm', alt='')
         li
             #refinep_div
                 input#refinep(type='checkbox', name='refinep')
                 label(for='refinep') Refine p-Value
         li
-            label(for='miss_rate') snp.miss.rate:
+            label.termToDefine(data-term="miss_rate", for='miss_rate') snp.miss.rate:
             .input
                 input#miss_rate(type='number', name='miss_rate', value='0.05', required='')
-                img.tooltip(name='miss_rate', alt='')
         li
-            label(for='maf') maf:
+            label.termToDefine(data-term="maf", for='maf') maf:
             .input
                 input#maf(type='number', name='maf', value='0.05', required='')
-                img.tooltip(name='maf', alt='')
         li
-            label(for='hwep') HWE.p:
+            label.termToDefine(data-term="hwep", for='hwep') HWE.p:
             .input
                 input#hwep(type='text', name='hwep', value='1e-5', required='')
-                img.tooltip(name='hwep', alt='')
         li
-            label(for='gene') Gene.R2:
+            label.termToDefine(data-term="gene", for='gene') Gene.R2:
             .input
                 input#gene(type='number', name='gene', value='0.95', required='')
-                img.tooltip(name='gene', alt='')
         li
-            label(for='chr') Chr.R2:
+            label.termToDefine(data-term="chr", for='chr') Chr.R2:
             .input
                 input#chr(type='number', name='chr', value='0.95', required='')
-                img.tooltip(name='chr', alt='')
         li
-            label(for='gene_subset') rm.gene.subset:
+            label.termToDefine(data-term="gene_subset", for='gene_subset') rm.gene.subset:
             .input
                 input#gene_subset(type='checkbox', name='gene_subset')
-                img.tooltip(name='gene_subset', alt='')
         li
-            label(for='snp_n') inspect.snp.n:
+            label.termToDefine(data-term="snp_n", for='snp_n') inspect.snp.n:
             .input
                 input#snp_n(type='number', name='snp_n', value='5', required='')
-                img.tooltip(name='snp_n', alt='')
         li
-            label(for='snp_percent') inspect.snp.percent:
+            label.termToDefine(data-term="snp_percent", for='snp_percent') inspect.snp.percent:
             .input
                 input#snp_percent(type='number', name='snp_percent', value='0', required='')
-                img.tooltip(name='snp_percent', alt='')
         li
-            label(for='gene_n') inspect.gene.n:
+            label.termToDefine(data-term="gene_n", for='gene_n') inspect.gene.n:
             .input
                 input#gene_n(type='number', name='gene_n', value='10', required='')
-                img.tooltip(name='gene_n', alt='')
         li
-            label(for='gene_percent') inspect.gene.percent:
+            label.termToDefine(data-term="gene_percent", for='gene_percent') inspect.gene.percent:
             .input
                 input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
-                img.tooltip(name='gene_percent', alt='')
+
         li
             label(for='email') E-mail (Results will be sent here):
             .input
