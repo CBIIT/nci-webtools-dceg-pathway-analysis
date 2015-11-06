@@ -1,7 +1,10 @@
-@media (max-width: 768px) {
+@media (max-width: 1280px) {
   body {
     width: 100% !important;
     font-size: 1em !important;
+  }
+  .content {
+    width: 100%;
   }
 }
 @media (max-width: 990px) {
@@ -12,9 +15,6 @@
 @media (min-width: 320px) and (max-width: 990px) {
   .ui-accordion .ui-accordion-content {
     padding: 0.5em !important;
-  }
-  #content {
-    width: 95% !important;
   }
   footer .spacer {
     display: none;
@@ -73,10 +73,6 @@
   }
 }
 @media (min-width: 600px) and (max-width: 767px) and (-webkit-min-pixel-ratio: 1.5) {
-  body {
-    width: 95% !important;
-    font-size: 1em !important;
-  }
   .input {
     width: 100%;
   }
@@ -85,10 +81,6 @@
   }
 }
 @media (min-width: 768px) and (max-width: 1280px) and (-webkit-min-pixel-ratio: 1) {
-  body {
-    width: 100% !important;
-    font-size: 1em !important;
-  }
   .input {
     width: 70%;
   }
