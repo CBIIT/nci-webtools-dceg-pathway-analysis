@@ -60,10 +60,10 @@ $(window).on('load', function(){
             }
         });
 
-        $(pathForm).find(".studies:last")
-            .find(".tooltip")
-            .on("click", activateTooltips)
-            .on("hover", activateTooltips);
+//        $(pathForm).find(".studies:last")
+//            .find(".tooltip")
+//            .on("click", activateTooltips)
+//            .on("hover", activateTooltips);
 
         $(pathForm).find(".studies:last")
             .find("input, select")
