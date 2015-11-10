@@ -31,7 +31,7 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
         li
             label.termToDefine(data-term="nperm", for='nperm') nperm:
             .input
-                input#nperm(type='text', name='nperm', value='1e5')
+                input#nperm(type='text', name='nperm', value='1e+5')
         li
             #refinep_div
                 input#refinep(type='checkbox', name='refinep')
@@ -81,6 +81,8 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
             label(for='email') E-mail (Results will be sent here):
             .input
                 input#email(type='email', name='email', required='')
-    button#calculate(type='button') Calculation
-    progress(value='0')
+    .buttonGroup
+        button#reset(type='button') Reset
+        button#calculate(type='button') Calculation
+        progress(value='0')
     #spinner

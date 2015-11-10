@@ -1,5 +1,6 @@
 $(function() {
     $("#calculate").on("click", clickCalculate);
+    $("#reset").on("click", resetForm);
     $("#errorDisplay, #successBox,progress").hide();
     $("#studyEntry").accordion({
         collapsible: true,
@@ -17,6 +18,32 @@ $(window).load(function() {
     $("select[name='database_pathway'], input[name='file_pathway']")
         .on("change", changeRadioSelection);
 });
+
+function resetForm(e) {
+
+    $(pathForm).find(".studies").each(function(i, el) {
+        if(i !== 0) $(this).detach();
+        else {
+            $(lambda_1).val(1.0);
+            $(pathForm).find(".studyResources").detach();
+        }
+    });
+
+    $(database_pathway_option).attr("checked", "checked");
+    $("#population option:first").attr("selected", "selected");
+
+    $(nperm).val((1e5).toExponential());
+    $(miss_rate).val(0.05);
+    $(maf).val(0.05);
+    $(hwep).val((1e-5).toExponential());
+    $(gene).val(0.95);
+    $(chr).val(0.95);
+    $(snp_n).val(5);
+    $(snp_percent).val(0);
+    $(gene_n).val(10);
+    $(gene_percent).val(0.05);
+    $(email).val("");
+}
 
 function clickCalculate(e) {
     e.preventDefault();
@@ -379,29 +406,9 @@ var terms = {
     }
 };
 
-
-
-
-
-
-
-
-
-
-
-
 $(function() {
     $.extend($_Glossary, terms);
-
-
-
-
-
-
-
-    $(document).on("click",
-                   ".termToDefine",
-                   termDisplay);
+    $(document).on("click", ".termToDefine", termDisplay);
 });
 
 $(function(){
