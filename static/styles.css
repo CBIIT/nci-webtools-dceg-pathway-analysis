@@ -16,6 +16,9 @@
   .ui-accordion .ui-accordion-content {
     padding: 0.5em !important;
   }
+  footer {
+    font-size: inherit !important;
+  }
   footer .spacer {
     display: none;
   }
@@ -91,7 +94,11 @@
 }
 
 html {
-  background: #d3d3d3;
+  background: -webkit-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: -moz-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: -o-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: -ms-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
 }
 .division-logo {
   max-width: 50%;
@@ -99,11 +106,12 @@ html {
 body {
   background: #fff;
   padding-bottom: 1%;
-  font: 10pt/1.1 "Verdana", "Geneva", "sans-serif";
+  font: 1em/1 "Verdana", "Geneva", "sans-serif" !important;
   margin: 0 auto;
-  width: 75%;
-  -webkit-box-shadow: 2px 3px 31px -5px #000;
-  box-shadow: 2px 3px 31px -5px #000;
+  width: 95%;
+  float: right;
+  -webkit-box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
+  box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
 }
 .ui-widget {
   font-size: 1em;
@@ -126,11 +134,12 @@ form .error::before {
   display: block;
   margin: 0px auto;
   padding: 0 2%;
-  width: 60%;
+  min-width: 60%;
 }
 #mainTitle {
   text-align: center;
   clear: both;
+  font-size: x-large;
 }
 header {
   padding: 2% 0;
@@ -149,10 +158,13 @@ header hr {
   background-image: linear-gradient(to right, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
 }
 #subHeading {
-  border: 1px solid #000;
+  font-size: medium;
+  border: 3px ridge rgba(0,66,118,0.47);
   text-align: center;
   padding: 1%;
   clear: both;
+  background-color: #789;
+  color: #fff;
 }
 #errorDisplay,
 #successBox {
@@ -201,11 +213,11 @@ label {
 }
 fieldset {
   margin: 2% auto;
-  padding: 1%;
+  padding: 1em;
   border: 0.2em groove;
 }
 legend {
-  font-size: 1.1em;
+  font-size: medium;
   font-weight: bold;
 }
 input[type="file"],
@@ -215,8 +227,9 @@ input[type="email"],
 select,
 button,
 progress {
-  width: 300px;
-  height: 35px;
+  width: 300px !important;
+  height: 35px !important;
+  font-size: inherit;
 }
 progress {
   display: block;
@@ -280,6 +293,7 @@ footer {
   padding: 2% 0;
   clear: both;
   text-align: center;
+  font-size: small;
 }
 footer ul li {
   list-style: none;
