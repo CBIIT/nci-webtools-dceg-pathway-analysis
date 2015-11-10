@@ -8,10 +8,13 @@ $(function() {
         header: ".studyTitle"
     });
 
+    $(pathForm.population).multipleSelect({placeholder:" -- Select an existing pathway -- "});
+
     // initialize button using jquery ui
     $("button").button();
 
     $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
+
 });
 
 $(window).load(function() {

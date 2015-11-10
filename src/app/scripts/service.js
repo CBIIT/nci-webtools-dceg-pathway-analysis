@@ -3,13 +3,13 @@ var serviceBase = window.location.hostname + "/Pathway/";
 $(function(){
     var count = 2;
     var hold = function() {
-      count--;
-      if (count <= 0)
-        post_request();
+        count--;
+        if (count <= 0)
+            post_request();
     };
     // retrive options from server
     retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
-    retrieve_populations().then(apply_options($(pathForm.population)), get_options_error("population")).always(hold);
+    retrieve_populations().then(apply_multiselect_options($(pathForm.population)), get_options_error("population")).always(hold);
 });
 
 function pre_request() {
@@ -45,12 +45,30 @@ function submission_result(response) {
             $( "#successBox" ).fadeOut().hide();
             $( "#successBox #message" ).html("");
         }, 10000);
-
     }
 }
 
-function apply_options(element){
+function apply_multiselect_options(element){
     return function(data) {
+        data.forEach(function(item, i) {
+            var option = $("<option />", { value: item.code, text: item.text });
+            var optGroup = $("<optgroup label='" + item.code + "'/>");
+
+            if($(element).find(optGroup).length)
+                $(element).find(optGroup).append(option);
+            else{
+                optGroup.append(option);
+                $(element).append(optGroup);
+            }
+            $(element).multipleSelect('refresh');
+        });
+    };
+}
+
+function apply_options(element){
+
+    return function(data) {
+
         data.forEach(function(item, i) {
             var option = $("<option></option>");
 
@@ -70,7 +88,7 @@ function submission_error(request, statusText, error) {
 function get_options_error(option_type) {
     return function(request, statusText, error) {
         displayErrors("#errorDisplay",
-          ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+                      ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
     };
 }
 
