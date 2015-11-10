@@ -9,10 +9,9 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
         li
           label(for='database_pathway')
             input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-            | Select fropm the server:
+            | Select from the server:
           .input
             select#database_pathway(name='database_pathway')
-                option(value='', selected) -- Select an existing pathway --
         li
             label(for='file_pathway')
                 input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
@@ -24,7 +23,6 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
         label(for='population') Select the population:
       .input
         select#population(name='population', required='')
-          option(value='', selected) -- Select a population --
     fieldset
       legend Set the following options:
       ul
