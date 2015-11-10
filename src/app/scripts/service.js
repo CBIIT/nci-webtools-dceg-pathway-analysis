@@ -74,20 +74,7 @@ function get_options_error(option_type) {
     };
 }
 
-function sendForm() {
-    var formData = new FormData(pathForm);
-    var numStudies = 0;
-
-    $.each(pathForm, function(ind, el) {
-        // get a count of studies and append to formData
-        if(el.id.indexOf("study") > -1) numStudies++;
-
-        // have to manually add checkbox value to FormData object
-        if(el.type == "checkbox") formData.append(el.id, el.checked);
-    });
-
-    formData.append('num_studies', numStudies);
-
+function sendForm(formData) {
     return $.ajax({
         beforeSend: pre_request,
         type: pathForm.method,
