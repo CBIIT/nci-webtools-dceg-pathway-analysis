@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="Pragma" content="no-cache"/>
-    <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
@@ -71,7 +71,7 @@
             <li>
               <label data-term="nperm" for="nperm" class="termToDefine">nperm:</label>
               <div class="input">
-                <input id="nperm" type="text" name="nperm" value="1e5"/>
+                <input id="nperm" type="text" name="nperm" value="1e+5"/>
               </div>
             </li>
             <li>
@@ -148,8 +148,11 @@
             </li>
           </ul>
         </fieldset>
-        <button id="calculate" type="button">Calculation</button>
-        <progress value="0"></progress>
+        <div class="buttonGroup">
+          <button id="reset" type="button">Reset</button>
+          <button id="calculate" type="button">Calculation</button>
+          <progress value="0"></progress>
+        </div>
         <div id="spinner"></div>
       </form>
     </div>

@@ -9,7 +9,8 @@ body
     margin 0 auto
     width 75%
     box-shadow: 2px 3px 31px -5px rgba(0,0,0,1);
-
+.ui-widget
+    font-size 1em
 p
     padding 20px 24px
 
@@ -19,8 +20,6 @@ form
     ul
         li
             list-style none
-            //        label
-            //            width 208px !important
     .error
         &::before
             content "*"
@@ -93,7 +92,8 @@ label
 fieldset
     margin 2% auto
     padding 1%
-    border 2px outset
+    border 0.2em groove
+
 legend
     font-size 1.1em
     font-weight bold
@@ -102,7 +102,7 @@ input[type="file"],input[type="text"],input[type="number"],input[type="email"],s
     width 300px
     height 35px
 
-#calculate, progress
+progress
     display block
     margin 0 auto
 
@@ -126,7 +126,6 @@ input[type="file"],input[type="text"],input[type="number"],input[type="email"],s
         width auto
         float none
 
-
 .error
     color red
 .spacer
@@ -136,6 +135,10 @@ input[type="file"],input[type="text"],input[type="number"],input[type="email"],s
     text-align center
     height 30px
     margin 2% 0
+
+.buttonGroup
+    margin 0 auto
+    max-width 300px
 
 .input
     float right
