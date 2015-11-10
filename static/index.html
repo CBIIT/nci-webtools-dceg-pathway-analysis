@@ -5,13 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="Pragma" content="no-cache"/>
-    <link href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
+    <script src="/common/js/popover-functions.js" type="application/javascript"></script>
     <script src="main.js" type="application/javascript"></script>
   </head>
   <body>
@@ -27,12 +28,12 @@
       </div>
       <form name="pathForm" action="pathwayRest/calculate/" method="POST" enctype="multipart/form-data">
         <fieldset>
-          <legend>Study Selection</legend>
+          <legend data-term="study" class="termToDefine">Study Selection</legend>
           <div id="studyEntry"></div>
           <button class="addControl">Add Study</button>
         </fieldset>
         <fieldset>
-          <legend>Select or upload the pathway file:</legend>
+          <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
           <ul>
             <li>
               <label for="database_pathway">
@@ -41,7 +42,7 @@
               <div class="input">
                 <select id="database_pathway" name="database_pathway">
                   <option value="" selected="selected">-- Select an existing pathway --</option>
-                </select><img name="file_pathway" alt="" class="tooltip"/>
+                </select>
               </div>
             </li>
             <li>
@@ -55,20 +56,22 @@
           </ul>
         </fieldset>
         <fieldset>
-          <legend for="population">Select the population:</legend>
+          <legend data-term="population" class="termToDefine">
+            <label for="population">Select the population:</label>
+          </legend>
           <div class="input">
             <select id="population" name="population" required="">
               <option value="" selected="selected">-- Select a population --</option>
-            </select><img name="population" alt="" class="tooltip"/>
+            </select>
           </div>
         </fieldset>
         <fieldset>
           <legend>Set the following options:</legend>
           <ul>
             <li>
-              <label for="nperm">nperm:</label>
+              <label data-term="nperm" for="nperm" class="termToDefine">nperm:</label>
               <div class="input">
-                <input id="nperm" type="text" name="nperm" value="1e5"/><img name="nperm" alt="" class="tooltip"/>
+                <input id="nperm" type="text" name="nperm" value="1e+5"/>
               </div>
             </li>
             <li>
@@ -78,63 +81,63 @@
               </div>
             </li>
             <li>
-              <label for="miss_rate">snp.miss.rate:</label>
+              <label data-term="miss_rate" for="miss_rate" class="termToDefine">snp.miss.rate:</label>
               <div class="input">
-                <input id="miss_rate" type="number" name="miss_rate" value="0.05" required=""/><img name="miss_rate" alt="" class="tooltip"/>
+                <input id="miss_rate" type="number" name="miss_rate" value="0.05" required=""/>
               </div>
             </li>
             <li>
-              <label for="maf">maf:</label>
+              <label data-term="maf" for="maf" class="termToDefine">maf:</label>
               <div class="input">
-                <input id="maf" type="number" name="maf" value="0.05" required=""/><img name="maf" alt="" class="tooltip"/>
+                <input id="maf" type="number" name="maf" value="0.05" required=""/>
               </div>
             </li>
             <li>
-              <label for="hwep">HWE.p:</label>
+              <label data-term="hwep" for="hwep" class="termToDefine">HWE.p:</label>
               <div class="input">
-                <input id="hwep" type="text" name="hwep" value="1e-5" required=""/><img name="hwep" alt="" class="tooltip"/>
+                <input id="hwep" type="text" name="hwep" value="1e-5" required=""/>
               </div>
             </li>
             <li>
-              <label for="gene">Gene.R2:</label>
+              <label data-term="gene" for="gene" class="termToDefine">Gene.R2:</label>
               <div class="input">
-                <input id="gene" type="number" name="gene" value="0.95" required=""/><img name="gene" alt="" class="tooltip"/>
+                <input id="gene" type="number" name="gene" value="0.95" required=""/>
               </div>
             </li>
             <li>
-              <label for="chr">Chr.R2:</label>
+              <label data-term="chr" for="chr" class="termToDefine">Chr.R2:</label>
               <div class="input">
-                <input id="chr" type="number" name="chr" value="0.95" required=""/><img name="chr" alt="" class="tooltip"/>
+                <input id="chr" type="number" name="chr" value="0.95" required=""/>
               </div>
             </li>
             <li>
-              <label for="gene_subset">rm.gene.subset:</label>
+              <label data-term="gene_subset" for="gene_subset" class="termToDefine">rm.gene.subset:</label>
               <div class="input">
-                <input id="gene_subset" type="checkbox" name="gene_subset"/><img name="gene_subset" alt="" class="tooltip"/>
+                <input id="gene_subset" type="checkbox" name="gene_subset"/>
               </div>
             </li>
             <li>
-              <label for="snp_n">inspect.snp.n:</label>
+              <label data-term="snp_n" for="snp_n" class="termToDefine">inspect.snp.n:</label>
               <div class="input">
-                <input id="snp_n" type="number" name="snp_n" value="5" required=""/><img name="snp_n" alt="" class="tooltip"/>
+                <input id="snp_n" type="number" name="snp_n" value="5" required=""/>
               </div>
             </li>
             <li>
-              <label for="snp_percent">inspect.snp.percent:</label>
+              <label data-term="snp_percent" for="snp_percent" class="termToDefine">inspect.snp.percent:</label>
               <div class="input">
-                <input id="snp_percent" type="number" name="snp_percent" value="0" required=""/><img name="snp_percent" alt="" class="tooltip"/>
+                <input id="snp_percent" type="number" name="snp_percent" value="0" required=""/>
               </div>
             </li>
             <li>
-              <label for="gene_n">inspect.gene.n:</label>
+              <label data-term="gene_n" for="gene_n" class="termToDefine">inspect.gene.n:</label>
               <div class="input">
-                <input id="gene_n" type="number" name="gene_n" value="10" required=""/><img name="gene_n" alt="" class="tooltip"/>
+                <input id="gene_n" type="number" name="gene_n" value="10" required=""/>
               </div>
             </li>
             <li>
-              <label for="gene_percent">inspect.gene.percent:</label>
+              <label data-term="gene_percent" for="gene_percent" class="termToDefine">inspect.gene.percent:</label>
               <div class="input">
-                <input id="gene_percent" type="number" name="gene_percent" step=".01" value="0.05" required=""/><img name="gene_percent" alt="" class="tooltip"/>
+                <input id="gene_percent" type="number" name="gene_percent" step=".01" value="0.05" required=""/>
               </div>
             </li>
             <li>
@@ -145,8 +148,11 @@
             </li>
           </ul>
         </fieldset>
-        <button id="calculate" type="button">Calculation</button>
-        <progress value="0"></progress>
+        <div class="buttonGroup">
+          <button id="reset" type="button">Reset</button>
+          <button id="calculate" type="button">Calculation</button>
+          <progress value="0"></progress>
+        </div>
         <div id="spinner"></div>
       </form>
     </div>
@@ -179,13 +185,13 @@
           <li>
             <label for="study">Browse and select study file:</label>
             <div class="input">
-              <input id="study" type="file" name="study" required=""/><img name="study" alt="" class="tooltip"/>
+              <input id="study" type="file" name="study" required=""/>
             </div>
           </li>
           <li>
-            <label for="lambda">Lambda (&lambda;):</label>
+            <label data-term="lambda" for="lambda" class="termToDefine">Lambda (&lambda;):</label>
             <div class="input">
-              <input id="lambda" type="text" name="lambda" value="1.0" required=""/><img name="lambda" alt="" class="tooltip"/>
+              <input id="lambda" type="text" name="lambda" value="1.0" required=""/>
             </div>
           </li>
           <li>
