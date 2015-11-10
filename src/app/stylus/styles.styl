@@ -1,14 +1,15 @@
 html
-    background lightgrey
+    background linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,.4) 19%, rgba(255,255,255,0.2) 100%)
 .division-logo
     max-width 50%
 body
     background white
     padding-bottom 1%
-    font 10pt/1.1 "Verdana", "Geneva", "sans-serif"
+    font 1em/1 "Verdana", "Geneva", "sans-serif" !important
     margin 0 auto
-    width 75%
-    box-shadow: 2px 3px 31px -5px rgba(0,0,0,1);
+    width 95%
+    float right
+    box-shadow -9px 17px 31px -4px rgba(0,0,0,0.75)
 .ui-widget
     font-size 1em
 p
@@ -28,11 +29,13 @@ form
     display block
     margin 0px auto
     padding 0 2%
-    width 60%
+    min-width 60%
+    width 80%
 
 #mainTitle
     text-align center
     clear both
+    font-size x-large
 header
     padding 2% 0
     margin-top 0
@@ -45,11 +48,13 @@ header
         background-image linear-gradient(to right, rgba(0, 0, 0, 0), #BB0E3D, rgba(0, 0, 0, 0));
 
 #subHeading
-    border 1px solid black
-    //    margin 1% auto
+    font-size medium
+    border 3px ridge rgba(0, 66, 118, 0.47)
     text-align center
     padding 1%
     clear both
+    background-color lightslategray
+    color white
 
 #errorDisplay,#successBox
     padding 1%
@@ -91,16 +96,17 @@ label
 
 fieldset
     margin 2% auto
-    padding 1%
+    padding 1em
     border 0.2em groove
 
 legend
-    font-size 1.1em
+    font-size medium
     font-weight bold
 
 input[type="file"],input[type="text"],input[type="number"],input[type="email"],select,button,progress
-    width 300px
-    height 35px
+    width 300px !important
+    height 35px !important
+    font-size inherit
 
 progress
     display block
@@ -158,6 +164,7 @@ footer
     padding 2% 0
     clear both
     text-align center
+    font-size small
     ul li
         list-style none
         display inline-block !important
