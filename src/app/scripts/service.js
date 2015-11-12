@@ -50,18 +50,82 @@ function submission_result(response) {
 
 function apply_multiselect_options(element){
     return function(data) {
-        data.forEach(function(item, i) {
-            var option = $("<option />", { value: item.text, text: item.text });
-            var optGroup = $("<optgroup label='" + item.code + "'/>");
-
-            if($(element).find(optGroup).length)
-                $(element).find(optGroup).append(option);
-            else{
-                optGroup.append(option);
-                $(element).append(optGroup);
+        var populations = {
+            AFR: {
+                fullName: "African",
+                subPopulations: {
+                    YRI: "Yoruba in Ibadan, Nigera",
+                    LWK: " Luhya in Webuye, Kenya",
+                    GWD: " Gambian in Western Gambia",
+                    MSL: "  Mende in Sierra Leone",
+                    ESN: "  Esan in Nigera",
+                    ASW: " Americans of African Ancestry in SW USA",
+                    ACB: "  African Carribbeans in Barbados"
+                }
+            },
+            AMR: {
+                fullName: "Ad Mixed American",
+                subPopulations: {
+                    MXL: "  Mexican Ancestry from Los Angeles, USA",
+                    PUR: " Puerto Ricans from Puerto Rico",
+                    CLM: " Colombians from Medellin, Colombia",
+                    PEL: " Peruvians from Lima, Peru"
+                }
+            },
+            EAS: {
+                fullName: "East Asian",
+                subPopulations: {
+                    CHB: " Han Chinese in Bejing, China",
+                    JPT: " Japanese in Tokyo, Japan",
+                    CHS: " Southern Han Chinese",
+                    CDX: " Chinese Dai in Xishuangbanna, China",
+                    KHV: "  Kinh in Ho Chi Minh City, Vietnam"
+                }
+            },
+            EUR: {
+                fullName: "European",
+                subPopulations: {
+                    CEU: " Utah Residents from North and West Europe",
+                    TSI: "  Toscani in Italia",
+                    FIN: "  Finnish in Finland",
+                    GBR: " British in England and Scotland",
+                    IBS: "  Iberian population in Spain"
+                }
+            },
+            SAS: {
+                fullName: "South Asian",
+                subPopulations: {
+                    GIH: "  Gujarati Indian from Houston, Texas",
+                    PJL: "  Punjabi from Lahore, Pakistan",
+                    BEB: "  Bengali from Bangladesh",
+                    STU: "  Sri Lankan Tamil from the UK",
+                    ITU: " Indian Telugu from the UK"
+                }
             }
-            $(element).multipleSelect('refresh');
+        };
+
+        $.each(populations, function (key, group) {
+            var optGroup = $("<optgroup label='" + key + "'/>");
+
+            $.each(group.subPopulations, function(populationKey, text) {
+                var option = $("<option />", { value: populationKey, text: text });
+                optGroup.append(option);
+            });
+
+            $(element).append(optGroup).multipleSelect('refresh');
+            $(element).multipleSelect("uncheckAll");
         });
+        //        data.forEach(function(item, i) {
+        //            var option = $("<option />", { value: item.code, text: item.text });
+        //            var optGroup = $("<optgroup label='" + item.group + "'/>");
+        //
+        //            if($(element).find(optGroup).length)
+        //                $(element).find(optGroup).append(option).multipleSelect('refresh');
+        //            else{
+        //                optGroup.append(option);
+        //                $(element).append(optGroup).multipleSelect('refresh');
+        //            }
+        //        });
     };
 }
 
@@ -82,7 +146,7 @@ function apply_options(element){
 
 function submission_error(request, statusText, error) {
     var errorObj = JSON.parse(request.responseText);
-    
+
     displayErrors("#errorDisplay",
                   ["The request failed with the following message: <br/> "+ errorObj.message + "'"]);
 }
