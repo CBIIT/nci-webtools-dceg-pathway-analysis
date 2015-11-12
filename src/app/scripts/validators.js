@@ -155,7 +155,6 @@ $(function(){
                 this.defaultShowErrors();
 
                 errors_div.show();
-                document.querySelector("#errorDisplay").scrollIntoView(true);
             } else {
                 $(pathForm).find('input,select').removeClass('ui-state-error');
                 errors_div.hide().empty();

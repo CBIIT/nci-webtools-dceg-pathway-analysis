@@ -66,12 +66,18 @@ function clickCalculate(e) {
 
             // have to manually add checkbox value to FormData object
             if(el.type == "checkbox") formData.append(el.id, el.checked);
+            
+            if(el.id.indexOf("population") > -1)
+                formData.append(el.id, $(el).multipleSelect("getSelects") );
         });
 
         formData.append('num_studies', numStudies);
 
         sendForm(formData).then(submission_result, submission_error)
             .always(post_request);
+    }
+    else {
+        document.querySelector("#errorDisplay").scrollIntoView(true);
     }
 }
 
