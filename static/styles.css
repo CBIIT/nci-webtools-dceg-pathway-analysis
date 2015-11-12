@@ -101,7 +101,7 @@ html {
   background: linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
 }
 .division-logo {
-  max-width: 50%;
+  max-width: 40%;
 }
 body {
   background: #fff;
@@ -126,9 +126,14 @@ form {
 form ul li {
   list-style: none;
 }
-form .error::before {
+form input.error,
+form select.error {
+  border: 1px solid #f00;
+  background: rgba(225,0,0,0.24);
+}
+form input.error:before,
+form select.error:before {
   content: "*";
-  margin: 0px 8px;
 }
 #content {
   display: block;
@@ -173,6 +178,7 @@ header hr {
   margin: 10px auto;
   clear: both;
   text-align: center;
+  font-size: 0.9em;
 }
 #errorDisplay li,
 #successBox li {
@@ -259,8 +265,9 @@ progress {
   width: auto;
   float: none;
 }
-.error {
-  color: #f00;
+.box-error {
+  border: 2px solid #800000;
+  background: rgba(255,115,115,0.5);
 }
 .spacer {
   content: "|";
