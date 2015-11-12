@@ -51,7 +51,7 @@ function submission_result(response) {
 function apply_multiselect_options(element){
     return function(data) {
         data.forEach(function(item, i) {
-            var option = $("<option />", { value: item.code, text: item.text });
+            var option = $("<option />", { value: item.text, text: item.text });
             var optGroup = $("<optgroup label='" + item.code + "'/>");
 
             if($(element).find(optGroup).length)
@@ -81,8 +81,10 @@ function apply_options(element){
 }
 
 function submission_error(request, statusText, error) {
+    var errorObj = JSON.parse(request.responseText);
+    
     displayErrors("#errorDisplay",
-                  ["The request failed with the following message: <br/> "+ request.responseText + "'"]);
+                  ["The request failed with the following message: <br/> "+ errorObj.message + "'"]);
 }
 
 function get_options_error(option_type) {
