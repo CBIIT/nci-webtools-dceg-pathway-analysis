@@ -48,22 +48,26 @@ $(window).on('load', function(){
             .find("input[id*='num_resource']")
             .on("change", function(e) {
             if(Number(this.value)) {
-                $("#studyEntry .studies:last .studyResources").remove();
+                var choice;
+                if(this.value > 20)
 
-                for(var i = 0; i != this.value; i++) {
-                    // what they enter for num_resource should
-                    // control the times addStudyResource is run
-                    $($(this).parent().parent()[0]).append(
-                        addStudyResource($(this).prop('id').substr(13),(i+1))
-                    );
+                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study");
+                else
+                    choice = true;
+
+                if(choice) {
+                    $("#studyEntry .studies:last .studyResources").remove();
+
+                    for(var i = 0; i != this.value; i++) {
+                        // what they enter for num_resource should
+                        // control the times addStudyResource is run
+                        $($(this).parent().parent()[0]).append(
+                            addStudyResource($(this).prop('id').substr(13),(i+1))
+                        );
+                    }
                 }
             }
         });
-
-//        $(pathForm).find(".studies:last")
-//            .find(".tooltip")
-//            .on("click", activateTooltips)
-//            .on("hover", activateTooltips);
 
         $(pathForm).find(".studies:last")
             .find("input, select")
@@ -125,4 +129,29 @@ $(window).on('load', function(){
             $(this).remove();
         });
     }
+
+    function createConfirmationBox(messageText) {
+        $("<div />").html(messageText).dialog({
+            width: 450,
+            buttons: [
+                {
+                    text: "Yes",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return true;
+                    }
+                },
+                {
+                    text: "No",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return false;
+                    }
+                }
+            ],
+            resizable: false,
+            modal: true
+        });
+    }
+
 });
