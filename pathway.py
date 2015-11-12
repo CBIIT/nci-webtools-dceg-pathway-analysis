@@ -26,7 +26,7 @@ class Pathway:
       response.mimetype = 'application/json'
       response.status_code = 400
       return response
-    
+
     @staticmethod
     def buildSuccess(message):
       response = jsonify(message=message, success=True)
@@ -56,8 +56,8 @@ class Pathway:
                 ind = str(i)
                 if pathways_file.endswith(".txt") or pathways_file.endswith(".pathway"):
                     options.append({
-                            'code':"PW_"+ind,
-                            'text': "Pathway "+ind,
+                            'code': "PW_"+ind,
+                            'text': "Pathway " + ind,
                             'file': pathways_file})
                     i += 1
             return Response(json.dumps(options), status=200, mimetype='application/json')
@@ -77,9 +77,12 @@ class Pathway:
                 if os.path.isfile(population_name_file):
                     with open(population_name_file,'r') as f:
                         population_name = f.read().strip()
+                        population_code = population_name[0:3].strip().upper()
+                        population_text = "(" + population_code + ") " + population_name
                     options.append({
-                                    'code': population_subfolder,
-                                    'text': population_name
+                                    'group': population_subfolder,
+                                    'code': population_code,
+                                    'text': population_text
                                   })
             return Response(json.dumps(options), status=200, mimetype='application/json')
         except Exception as e:
@@ -87,7 +90,7 @@ class Pathway:
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
             return jsonify(error=e, success=False)
-      
+
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
@@ -103,7 +106,7 @@ class Pathway:
                 parameters[field] = parameters[field][0]
             filelist = request.files
             studyList = [];
-            
+
             num_studies = int(parameters['num_studies'])
 
             for i in xrange(1,num_studies+1):
@@ -121,7 +124,7 @@ class Pathway:
 
                 studyFile = filelist[studyKey]
                 if studyFile.filename:
-                    if Pathway.testFileExtension(studyFile, app.config["ALLLOWED_TYPES"][0]):                  
+                    if Pathway.testFileExtension(studyFile, app.config["ALLLOWED_TYPES"][0]):
                         filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
                         studyObj['filename'] = filename
                         studyFile.save(filename)

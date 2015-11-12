@@ -25,6 +25,13 @@ $(function(){
                 }
             }
         },
+        population: {
+            required: {
+                depends: function(element) {
+                    return $(element).multipleSelect('getSelects').length <= 0;
+                }
+            }
+        },
         nperm:{
             required: true,
             scientific_notation_check: true,
@@ -94,6 +101,9 @@ $(function(){
         database_pathway:{
             required: "You must select a pathway from the server",
         },
+        population:{
+            required: "You must select at least one population",
+        },
         nperm:{
             required: "nperm is required",
         },
@@ -161,10 +171,17 @@ $(function(){
             }
         },
         highlight: function (el, errorClass,validClass) {
-            $(el).addClass("error");
+            if(el.id != "population")
+                $(el).addClass("error");
+            else
+                $(el).next().addClass("error");
         },
         unhighlight: function (el, errorClass,validClass) {
-            $(el).removeClass("error");
+
+            if(el.id != "population")
+                $(el).removeClass("error");
+            else
+                $(el).next().removeClass("error");
         }
     });
 

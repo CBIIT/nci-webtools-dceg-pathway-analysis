@@ -8,7 +8,15 @@ $(function() {
         header: ".studyTitle"
     });
 
-    $(pathForm.population).multipleSelect({placeholder:" -- Select an existing pathway -- "});
+    // setting options for the multiselect control
+    $(pathForm.population).multipleSelect(
+        {
+            width: "100%",
+            placeholder:" -- Select an existing pathway -- ",
+            selectAll: false,
+            multiple: true,
+            multipleWidth: 300
+        });
 
     // initialize button using jquery ui
     $("button").button();
@@ -32,7 +40,7 @@ function resetForm(e) {
     });
 
     $(database_pathway_option).attr("checked", "checked");
-    $("#population option:first").attr("selected", "selected");
+    $(population).multipleSelect("uncheckAll");
 
     $(nperm).val((1e5).toExponential());
     $(miss_rate).val(0.05);
