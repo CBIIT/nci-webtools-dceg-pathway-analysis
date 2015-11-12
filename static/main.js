@@ -8,7 +8,15 @@ $(function() {
         header: ".studyTitle"
     });
 
-    $(pathForm.population).multipleSelect({placeholder:" -- Select an existing pathway -- "});
+   
+    $(pathForm.population).multipleSelect(
+        {
+            width: "100%",
+            placeholder:" -- Select an existing pathway -- ",
+            selectAll: false,
+            multiple: true,
+            multipleWidth: 300
+        });
 
    
     $("button").button();
@@ -32,7 +40,7 @@ function resetForm(e) {
     });
 
     $(database_pathway_option).attr("checked", "checked");
-    $("#population option:first").attr("selected", "selected");
+    $(population).multipleSelect("uncheckAll");
 
     $(nperm).val((1e5).toExponential());
     $(miss_rate).val(0.05);
@@ -154,18 +162,81 @@ function submission_result(response) {
 
 function apply_multiselect_options(element){
     return function(data) {
-        data.forEach(function(item, i) {
-            var option = $("<option />", { value: item.text, text: item.text });
-            var optGroup = $("<optgroup label='" + item.code + "'/>");
-
-            if($(element).find(optGroup).length)
-                $(element).find(optGroup).append(option);
-            else{
-                optGroup.append(option);
-                $(element).append(optGroup);
+        var populations = {
+            AFR: {
+                fullName: "African",
+                subPopulations: {
+                    YRI: "Yoruba in Ibadan, Nigera",
+                    LWK: " Luhya in Webuye, Kenya",
+                    GWD: " Gambian in Western Gambia",
+                    MSL: "  Mende in Sierra Leone",
+                    ESN: "  Esan in Nigera",
+                    ASW: " Americans of African Ancestry in SW USA",
+                    ACB: "  African Carribbeans in Barbados"
+                }
+            },
+            AMR: {
+                fullName: "Ad Mixed American",
+                subPopulations: {
+                    MXL: "  Mexican Ancestry from Los Angeles, USA",
+                    PUR: " Puerto Ricans from Puerto Rico",
+                    CLM: " Colombians from Medellin, Colombia",
+                    PEL: " Peruvians from Lima, Peru"
+                }
+            },
+            EAS: {
+                fullName: "East Asian",
+                subPopulations: {
+                    CHB: " Han Chinese in Bejing, China",
+                    JPT: " Japanese in Tokyo, Japan",
+                    CHS: " Southern Han Chinese",
+                    CDX: " Chinese Dai in Xishuangbanna, China",
+                    KHV: "  Kinh in Ho Chi Minh City, Vietnam"
+                }
+            },
+            EUR: {
+                fullName: "European",
+                subPopulations: {
+                    CEU: " Utah Residents from North and West Europe",
+                    TSI: "  Toscani in Italia",
+                    FIN: "  Finnish in Finland",
+                    GBR: " British in England and Scotland",
+                    IBS: "  Iberian population in Spain"
+                }
+            },
+            SAS: {
+                fullName: "South Asian",
+                subPopulations: {
+                    GIH: "  Gujarati Indian from Houston, Texas",
+                    PJL: "  Punjabi from Lahore, Pakistan",
+                    BEB: "  Bengali from Bangladesh",
+                    STU: "  Sri Lankan Tamil from the UK",
+                    ITU: " Indian Telugu from the UK"
+                }
             }
-            $(element).multipleSelect('refresh');
+        };
+
+        $.each(populations, function (key, group) {
+            var optGroup = $("<optgroup label='" + key + "'/>");
+
+            $.each(group.subPopulations, function(populationKey, text) {
+                var option = $("<option />", { value: populationKey, text: text });
+                optGroup.append(option);
+            });
+
+            $(element).append(optGroup).multipleSelect('refresh');
+            $(element).multipleSelect("uncheckAll");
         });
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
     };
 }
 
@@ -186,7 +257,7 @@ function apply_options(element){
 
 function submission_error(request, statusText, error) {
     var errorObj = JSON.parse(request.responseText);
-    
+
     displayErrors("#errorDisplay",
                   ["The request failed with the following message: <br/> "+ errorObj.message + "'"]);
 }
@@ -294,22 +365,26 @@ $(window).on('load', function(){
             .find("input[id*='num_resource']")
             .on("change", function(e) {
             if(Number(this.value)) {
-                $("#studyEntry .studies:last .studyResources").remove();
+                var choice;
+                if(this.value > 20)
 
-                for(var i = 0; i != this.value; i++) {
-                   
-                   
-                    $($(this).parent().parent()[0]).append(
-                        addStudyResource($(this).prop('id').substr(13),(i+1))
-                    );
+                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study");
+                else
+                    choice = true;
+
+                if(choice) {
+                    $("#studyEntry .studies:last .studyResources").remove();
+
+                    for(var i = 0; i != this.value; i++) {
+                       
+                       
+                        $($(this).parent().parent()[0]).append(
+                            addStudyResource($(this).prop('id').substr(13),(i+1))
+                        );
+                    }
                 }
             }
         });
-
-
-
-
-
 
         $(pathForm).find(".studies:last")
             .find("input, select")
@@ -371,6 +446,31 @@ $(window).on('load', function(){
             $(this).remove();
         });
     }
+
+    function createConfirmationBox(messageText) {
+        $("<div />").html(messageText).dialog({
+            width: 450,
+            buttons: [
+                {
+                    text: "Yes",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return true;
+                    }
+                },
+                {
+                    text: "No",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return false;
+                    }
+                }
+            ],
+            resizable: false,
+            modal: true
+        });
+    }
+
 });
 
 var terms = {
@@ -468,6 +568,13 @@ $(function(){
                 }
             }
         },
+        population: {
+            required: {
+                depends: function(element) {
+                    return $(element).multipleSelect('getSelects').length <= 0;
+                }
+            }
+        },
         nperm:{
             required: true,
             scientific_notation_check: true,
@@ -537,6 +644,9 @@ $(function(){
         database_pathway:{
             required: "You must select a pathway from the server",
         },
+        population:{
+            required: "You must select at least one population",
+        },
         nperm:{
             required: "nperm is required",
         },
@@ -604,10 +714,17 @@ $(function(){
             }
         },
         highlight: function (el, errorClass,validClass) {
-            $(el).addClass("error");
+            if(el.id != "population")
+                $(el).addClass("error");
+            else
+                $(el).next().addClass("error");
         },
         unhighlight: function (el, errorClass,validClass) {
-            $(el).removeClass("error");
+
+            if(el.id != "population")
+                $(el).removeClass("error");
+            else
+                $(el).next().removeClass("error");
         }
     });
 

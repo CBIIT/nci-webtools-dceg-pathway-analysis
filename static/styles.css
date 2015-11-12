@@ -101,14 +101,15 @@ html {
   background: linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
 }
 .division-logo {
-  max-width: 40%;
+  max-width: 600px;
+  margin-left: 3%;
 }
 body {
   background: #fff;
   padding-bottom: 1%;
-  font: 1em/1 "Verdana", "Geneva", "sans-serif" !important;
+  font: 0.9em "Verdana", "Geneva", "sans-serif" !important;
   margin: 0 auto;
-  width: 95%;
+  width: 93%;
   float: right;
   -webkit-box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
   box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
@@ -135,12 +136,13 @@ form input.error:before,
 form select.error:before {
   content: "*";
 }
+form .ms-parent.error button {
+  border: 1px solid #f00;
+  background: rgba(225,0,0,0.24);
+}
 #content {
   display: block;
-  margin: 0px auto;
-  padding: 0 10%;
-  min-width: 60%;
-  width: 80%;
+  padding: 0 25%;
 }
 #mainTitle {
   text-align: center;
@@ -224,16 +226,16 @@ fieldset {
   border: 0.2em groove;
 }
 legend {
-  font-size: medium;
+  font-size: 1em;
   font-weight: bold;
 }
-input[type="file"],
-input[type="text"],
-input[type="number"],
-input[type="email"],
-select,
-button,
-progress {
+form input[type="file"],
+form input[type="text"],
+form input[type="number"],
+form input[type="email"],
+form select,
+form button,
+form progress {
   width: 300px !important;
   height: 35px !important;
   font-size: inherit;
@@ -285,6 +287,12 @@ progress {
 .input {
   float: right;
   clear: right;
+}
+.ms-drop {
+  font-size: 85%;
+}
+.ms-drop li:not(.group) {
+  text-indent: 20px;
 }
 #spinner {
   background: url("/common/images/loading.gif") no-repeat center/50%;
