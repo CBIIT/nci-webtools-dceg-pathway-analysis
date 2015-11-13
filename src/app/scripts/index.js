@@ -11,18 +11,20 @@ $(function() {
     // setting options for the multiselect control
     $(pathForm.population).multipleSelect(
         {
+            name: pathForm.population.id,
             width: "100%",
-            placeholder:" -- Select an existing pathway -- ",
-            selectAll: false,
+            placeholder:"Select Population(s)",
+            selectAll: true,
+            allSelected: "All Populations",
             multiple: true,
-            multipleWidth: 300
+            multipleWidth: 300,
+            minimumCountSelected: 2,
+            countSelected:"# of % populations selected"
         });
 
     // initialize button using jquery ui
     $("button").button();
-
     $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
-
 });
 
 $(window).load(function() {
@@ -70,14 +72,21 @@ function clickCalculate(e) {
         var numStudies = 0;
 
         $.each(pathForm, function(ind, el) {
+            if( $(el).is("hidden") || el.id == "selectGrouppopulation") return;
+
             // get a count of studies and append to formData
             if(el.id.indexOf("study") > -1) numStudies++;
 
             // have to manually add checkbox value to FormData object
-            if(el.type == "checkbox") formData.append(el.id, el.checked);
-
-            if(el.id.indexOf("population") > -1)
-                formData.append(el.id, $(el).multipleSelect("getSelects") );
+            if(el.type == "checkbox"){
+                if(el.id.indexOf("selectItempopulation") > -1) {
+                    populations = retrieveMultiselects($(el).multipleSelect("getSelects"));
+                    formData.append("populations", populations );
+                    return;
+                }
+                if(el.id && el.id != "population")
+                    formData.append(el.id, el.checked);
+            }
         });
 
         formData.append('num_studies', numStudies);
@@ -88,6 +97,24 @@ function clickCalculate(e) {
     else {
         document.querySelector("#errorDisplay").scrollIntoView(true);
     }
+}
+
+function retrieveMultiselects(selectedItems) {
+    var valuesContainer = {};
+
+    $.each(selectedItems, function(i, item) {
+        var groupCode = $(pathForm.population).find("option[value='" + item + "']")
+            .parent().attr("label");
+
+        // Add values in the population group
+        // if population group doesn't exist, create it.
+        if(!valuesContainer[groupCode])
+            valuesContainer[groupCode] = [item];
+        else
+            valuesContainer[groupCode].push(item);
+    });
+
+    return valuesContainer;
 }
 
 function changeRadioSelection(){
