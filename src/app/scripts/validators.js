@@ -169,26 +169,27 @@ $(function(){
                 $(pathForm).find('input,select').removeClass('error');
                 errors_div.hide().empty();
             }
-        },
-        highlight: function (el, errorClass,validClass) {
-            if(el.id != "population")
-                $(el).addClass("error");
-            else
-                $(el).next().addClass("error");
-        },
-        unhighlight: function (el, errorClass,validClass) {
-
-            if(el.id != "population")
-                $(el).removeClass("error");
-            else
-                $(el).next().removeClass("error");
         }
     });
 
     // specific validations only for pathForm
     $(pathForm).validate({
+        ignore: ":hidden:not('#population')",
         rules: validationElements,
         messages: validationMessages,
+        highlight: function (el, errorClass,validClass) {
+            if(el.id != "population")
+                $(el).addClass(errorClass);
+            else
+                $(el).next().addClass(errorClass);
+        },
+        unhighlight: function (el, errorClass,validClass) {
+
+            if(el.id != "population")
+                $(el).removeClass(errorClass);
+            else
+                $(el).next().removeClass(errorClass);
+        }
     });
 
     // custom validator for scientific notation
