@@ -1,5 +1,7 @@
 // handle sevice call and actions here
 var serviceBase = window.location.hostname + "/Pathway/";
+var buttons = $("button").button();
+
 $(function(){
     var count = 2;
     var hold = function() {
@@ -18,7 +20,7 @@ function pre_request() {
 
     // disable controls
     $(pathForm).find(":input").prop("disabled",true);
-    $("button").button("disable");
+    buttons.button("disable");
 }
 
 function post_request() {
@@ -27,7 +29,7 @@ function post_request() {
     $("progress, #spinner").hide();
 
     // enable controls
-    $("button").button("enable");
+    buttons.button("enable");
     $(pathForm).find(":input").removeAttr("disabled");
 }
 

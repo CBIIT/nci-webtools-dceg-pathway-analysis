@@ -154,16 +154,16 @@ header {
   margin-top: 0;
 }
 header hr {
-  width: 90%;
+  width: 100%;
   float: right;
   margin: 0;
   border: 0;
   height: 13px;
-  background-image: -webkit-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
-  background-image: -moz-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
-  background-image: -o-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
-  background-image: -ms-linear-gradient(left, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
-  background-image: linear-gradient(to right, rgba(0,0,0,0), #bb0e3d, rgba(0,0,0,0));
+  background-image: -webkit-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
+  background-image: -moz-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
+  background-image: -o-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
+  background-image: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
+  background-image: linear-gradient(to right, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
 }
 #subHeading {
   font-size: medium;
@@ -240,6 +240,9 @@ form progress {
   height: 35px !important;
   font-size: inherit;
 }
+form button.ui-button-icon-only {
+  width: 2.4em !important;
+}
 progress {
   display: block;
   margin: 0 auto;
@@ -287,6 +290,9 @@ progress {
 .input {
   float: right;
   clear: right;
+}
+.input input.input-fit {
+  width: 260px !important;
 }
 .ms-drop {
   font-size: 85%;
