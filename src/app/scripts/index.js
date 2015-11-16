@@ -19,7 +19,7 @@ $(function() {
             multiple: true,
             multipleWidth: 300,
             minimumCountSelected: 2,
-            countSelected:"# of % populations selected"
+            countSelected: false
         });
 
     // initialize button using jquery ui
