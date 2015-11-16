@@ -14,8 +14,7 @@ $(function() {
             name: pathForm.population.id,
             width: "100%",
             placeholder:"Select Population(s)",
-            selectAll: true,
-            allSelected: "All Populations",
+            selectAll: false,
             multiple: true,
             multipleWidth: 300,
             minimumCountSelected: 2,
@@ -104,7 +103,7 @@ function retrieveMultiselects(selectedItems) {
 
     $.each(selectedItems, function(i, item) {
         var groupCode = $(pathForm.population).find("option[value='" + item + "']")
-            .parent().attr("label");
+        .parent().attr("label");
 
         // Add values in the population group
         // if population group doesn't exist, create it.

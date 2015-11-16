@@ -32,7 +32,7 @@
         <fieldset>
           <legend data-term="study" class="termToDefine">Study Selection</legend>
           <div id="studyEntry"></div>
-          <button class="addControl">Add Study</button>
+          <button title="study" class="addControl">Add Study</button>
         </fieldset>
         <fieldset>
           <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
@@ -195,7 +195,8 @@
           <li>
             <label for="num_resource">Number of data resources in this study:</label>
             <div class="input">
-              <input id="num_resource" type="text" name="num_resource" required=""/>
+              <input id="num_resource" type="text" name="num_resource" required="" class="input-fit"/>
+              <button title="resource" class="addControl"></button>
             </div>
           </li>
         </ul>

@@ -2,20 +2,45 @@
 // or removing dynamic templates from the DOM here
 
 $(window).on('load', function(){
-    $(".addControl")
+    $(".addControl[title='study']")
         .button({text: true, icons: {primary: "ui-icon-circle-plus"}})
         .on("click", function(e){
         e.preventDefault();
 
         var previousValid = false;
-        var validator = $(pathForm).validate();
         $(pathForm).find(".studies input").each(function(i, el) {
+            var validator = $(this).validate();
             previousValid = validator.element("#" + el.id);
             return previousValid;
         });
 
         if(previousValid)
             addStudy();
+    });
+
+    $(".addControl[title='resource']")
+        .button({ text: false, icons: {primary: "ui-icon-circle-plus" }})
+        .on("click", function(e) {
+        e.preventDefault();
+
+        var el = $(this);
+        var previousValid = false;
+        var validator = $(pathForm).validate();
+
+        var resource_tb = $(this).prev();
+        var resourceValue = resource_tb.val();
+
+        previousValid = resource_tb.validator.element("#" + resource_tb.id);
+
+        if(previousValid){
+            for(var i = 0; i != resourceValue; i++) {
+                // what they enter for num_resource should
+                // control the times addStudyResource is run
+                $(el.parent().parent()[0]).append(
+                    addStudyResource(el.prop('id').substr(13),(i+1))
+                );
+            }
+        }
     });
 
     addStudy();// add first element by default
@@ -25,7 +50,7 @@ $(window).on('load', function(){
         var studyTemplate = $("#snippets").find(".studies").clone();
 
         // get count of existing study elements
-        var studyCount = $("form .studies").length;
+        var studyCount = $(pathForm).find(".studies").length;
         var studyIndex = studyCount + 1;
 
         studyTemplate.find(".studyTitle").append(studyIndex);
@@ -50,13 +75,15 @@ $(window).on('load', function(){
             if(Number(this.value)) {
                 var choice;
                 if(this.value > 20)
-
-                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study");
+                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
                 else
                     choice = true;
 
                 if(choice) {
                     $("#studyEntry .studies:last .studyResources").remove();
+                    if($(pathForm).find(".studyResources").length > 0)
+                        $(pathForm).find(".studyResources").detach();
+
 
                     for(var i = 0; i != this.value; i++) {
                         // what they enter for num_resource should
@@ -124,7 +151,7 @@ $(window).on('load', function(){
 
     function removeStudyResource(parentElement, ind) {
         // remove the rules
-        parentElement.find(".studyResources:nth(" + ind + ") input").each(function(){
+        parentElement.find(".studyResources:nth(" + ind + ") input").each(function() {
             $(this).rules("remove");
             $(this).remove();
         });

@@ -14,8 +14,7 @@ $(function() {
             name: pathForm.population.id,
             width: "100%",
             placeholder:"Select Population(s)",
-            selectAll: true,
-            allSelected: "All Populations",
+            selectAll: false,
             multiple: true,
             multipleWidth: 300,
             minimumCountSelected: 2,
@@ -104,7 +103,7 @@ function retrieveMultiselects(selectedItems) {
 
     $.each(selectedItems, function(i, item) {
         var groupCode = $(pathForm.population).find("option[value='" + item + "']")
-            .parent().attr("label");
+        .parent().attr("label");
 
        
        
@@ -139,6 +138,8 @@ function displayErrors(el, messagesArray){
 
 
 var serviceBase = window.location.hostname + "/Pathway/";
+var buttons = $("button").button();
+
 $(function(){
     var count = 2;
     var hold = function() {
@@ -157,7 +158,7 @@ function pre_request() {
 
    
     $(pathForm).find(":input").prop("disabled",true);
-    $("button").button("disable");
+    buttons.button("disable");
 }
 
 function post_request() {
@@ -166,7 +167,7 @@ function post_request() {
     $("progress, #spinner").hide();
 
    
-    $("button").button("enable");
+    buttons.button("enable");
     $(pathForm).find(":input").removeAttr("disabled");
 }
 
@@ -292,20 +293,45 @@ function retrieve_populations(){
 
 
 $(window).on('load', function(){
-    $(".addControl")
+    $(".addControl[title='study']")
         .button({text: true, icons: {primary: "ui-icon-circle-plus"}})
         .on("click", function(e){
         e.preventDefault();
 
         var previousValid = false;
-        var validator = $(pathForm).validate();
         $(pathForm).find(".studies input").each(function(i, el) {
+            var validator = $(this).validate();
             previousValid = validator.element("#" + el.id);
             return previousValid;
         });
 
         if(previousValid)
             addStudy();
+    });
+
+    $(".addControl[title='resource']")
+        .button({ text: false, icons: {primary: "ui-icon-circle-plus" }})
+        .on("click", function(e) {
+        e.preventDefault();
+
+        var el = $(this);
+        var previousValid = false;
+        var validator = $(pathForm).validate();
+
+        var resource_tb = $(this).prev();
+        var resourceValue = resource_tb.val();
+
+        previousValid = resource_tb.validator.element("#" + resource_tb.id);
+
+        if(previousValid){
+            for(var i = 0; i != resourceValue; i++) {
+               
+               
+                $(el.parent().parent()[0]).append(
+                    addStudyResource(el.prop('id').substr(13),(i+1))
+                );
+            }
+        }
     });
 
     addStudy();// add first element by default
@@ -315,7 +341,7 @@ $(window).on('load', function(){
         var studyTemplate = $("#snippets").find(".studies").clone();
 
        
-        var studyCount = $("form .studies").length;
+        var studyCount = $(pathForm).find(".studies").length;
         var studyIndex = studyCount + 1;
 
         studyTemplate.find(".studyTitle").append(studyIndex);
@@ -340,13 +366,15 @@ $(window).on('load', function(){
             if(Number(this.value)) {
                 var choice;
                 if(this.value > 20)
-
-                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study");
+                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
                 else
                     choice = true;
 
                 if(choice) {
                     $("#studyEntry .studies:last .studyResources").remove();
+                    if($(pathForm).find(".studyResources").length > 0)
+                        $(pathForm).find(".studyResources").detach();
+
 
                     for(var i = 0; i != this.value; i++) {
                        
@@ -414,7 +442,7 @@ $(window).on('load', function(){
 
     function removeStudyResource(parentElement, ind) {
        
-        parentElement.find(".studyResources:nth(" + ind + ") input").each(function(){
+        parentElement.find(".studyResources:nth(" + ind + ") input").each(function() {
             $(this).rules("remove");
             $(this).remove();
         });
