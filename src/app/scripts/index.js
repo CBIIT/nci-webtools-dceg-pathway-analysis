@@ -74,7 +74,9 @@ function clickCalculate(e) {
         var numStudies = 0;
 
         $.each(pathForm, function(ind, el) {
-            if( $(el).is("hidden") || el.id == "selectGrouppopulation") return;
+            if( $(el).is("hidden") ||
+               el.id == "selectGrouppopulation" ||
+               el.name == "selectGrouppopulation" ) return;
 
             // get a count of studies and append to formData
             if(el.id.indexOf("study") > -1) numStudies++;
