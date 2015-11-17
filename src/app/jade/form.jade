@@ -22,7 +22,7 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
       legend.termToDefine(data-term="population")
         label(for='population') Select the population:
       .input
-        select#population(name='population', required='')
+        select#population(name='population' ,required='', multiple)
     fieldset
       legend Set the following options:
       ul
