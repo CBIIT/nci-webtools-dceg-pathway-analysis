@@ -21,26 +21,26 @@ $(window).on('load', function(){
     $(".addControl[title='resource']")
         .button({ text: false, icons: {primary: "ui-icon-circle-plus" }})
         .on("click", function(e) {
-        e.preventDefault();
+            e.preventDefault();
 
-        var el = $(this);
-        var previousValid = false;
-        var validator = $(pathForm).validate();
+            var el = $(this);
+            var previousValid = false;
+            var validator = $(pathForm).validate();
 
-        var resource_tb = $(this).prev();
-        var resourceValue = resource_tb.val();
+            var resource_tb = $(this).prev();
+            var resourceValue = resource_tb.val();
 
-        previousValid = resource_tb.validator.element("#" + resource_tb.id);
+            previousValid = resource_tb.validator.element("#" + resource_tb.id);
 
-        if(previousValid){
-            for(var i = 0; i != resourceValue; i++) {
-                // what they enter for num_resource should
-                // control the times addStudyResource is run
-                $(el.parent().parent()[0]).append(
-                    addStudyResource(el.prop('id').substr(13),(i+1))
-                );
+            if(previousValid){
+                for(var i = 0; i != resourceValue; i++) {
+                    // what they enter for num_resource should
+                    // control the times addStudyResource is run
+                    $(el.parent().parent()[0]).append(
+                        addStudyResource(el.prop('id').substr(13),(i+1))
+                    );
+                }
             }
-        }
     });
 
     addStudy();// add first element by default
@@ -69,8 +69,10 @@ $(window).on('load', function(){
         // place new control before add button
         $("#studyEntry").append(studyTemplate);
 
-        $("#studyEntry .studies:last")
-            .find("input[id*='num_resource']")
+        var activeIndex = $("#studyEntry").accordion("option", "active");
+
+        $(pathForm)
+            .find(".studies:nth("+ activeIndex+ ") input[id*='num_resource']")
             .on("change", function(e) {
             if(Number(this.value)) {
                 var choice;
@@ -80,17 +82,15 @@ $(window).on('load', function(){
                     choice = true;
 
                 if(choice) {
-                    $("#studyEntry .studies:last .studyResources").remove();
                     if($(pathForm).find(".studyResources").length > 0)
                         $(pathForm).find(".studyResources").detach();
-
 
                     for(var i = 0; i != this.value; i++) {
                         // what they enter for num_resource should
                         // control the times addStudyResource is run
-                        $($(this).parent().parent()[0]).append(
-                            addStudyResource($(this).prop('id').substr(13),(i+1))
-                        );
+                        $(addStudyResource(
+                            $(this).prop('id').substr(13), (i+1) ).appendTo("#studyEntry .studies:nth("+ activeIndex+ ") ul")
+                         );
                     }
                 }
             }
@@ -125,11 +125,10 @@ $(window).on('load', function(){
         // refresh accordion
         $("#studyEntry").accordion( "refresh" );
 
-        if(studyCount >= 1){
-            $("#studyEntry").accordion({
-                active: studyCount
-            });
-        }
+        $("#studyEntry").accordion({
+            active: studyCount
+        });
+
     }
 
     function addStudyResource(study,ind) {

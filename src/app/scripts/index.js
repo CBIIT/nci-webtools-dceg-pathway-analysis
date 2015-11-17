@@ -18,7 +18,10 @@ $(function() {
             multiple: true,
             multipleWidth: 300,
             minimumCountSelected: 2,
-            countSelected: false
+            countSelected: false,
+            onClick:function(view) {
+                console.log(view);
+            }
         });
 
     // initialize button using jquery ui

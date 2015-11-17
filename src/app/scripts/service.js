@@ -1,5 +1,5 @@
 // handle sevice call and actions here
-var serviceBase = window.location.hostname + "/Pathway/";
+var serviceBase = "/pathwayRest/";
 var buttons = $("button").button();
 
 $(function(){
@@ -63,17 +63,23 @@ function apply_multiselect_options(element){
             $(element).append(optGroup).multipleSelect('refresh');
             $(element).multipleSelect("uncheckAll");
         });
-        //        data.forEach(function(item, i) {
-        //            var option = $("<option />", { value: item.code, text: item.text });
-        //            var optGroup = $("<optgroup label='" + item.group + "'/>");
-        //
-        //            if($(element).find(optGroup).length)
-        //                $(element).find(optGroup).append(option).multipleSelect('refresh');
-        //            else{
-        //                optGroup.append(option);
-        //                $(element).append(optGroup).multipleSelect('refresh');
-        //            }
-        //        });
+
+        $(".group input[type='checkbox']").on("click", function(e) {
+            var targetedElement = e.target;
+            // prevent multiple option groups from being selected at once
+            var otherGroups = $("label.optgroup").not(this.parentElement);
+
+            otherGroups.find("input[type='checkbox']").not(targetedElement).each(function(i, el){
+                if(el != targetedElement && el.checked) {
+                    $(el).trigger("click");
+                }
+            });
+
+            if(!targetedElement.checked){
+                $(targetedElement).trigger("click");
+            }
+            //            $(element).multipleSelect('refresh');
+        });
     };
 }
 
@@ -132,7 +138,7 @@ function sendForm(formData) {
 
 function retrieve_pathways(){
     return $.ajax({
-        url: "/pathwayRest/options/pathway_options/",
+        url: serviceBase + "options/pathway_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
@@ -143,7 +149,7 @@ function retrieve_pathways(){
 
 function retrieve_populations(){
     return $.ajax({
-        url: "/pathwayRest/options/population_options/",
+        url: serviceBase + "options/population_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
