@@ -75,24 +75,20 @@ function clickCalculate(e) {
 
         $.each(pathForm, function(ind, el) {
             if( $(el).is("hidden") ||
-               el.id == "selectGrouppopulation" ||
-               el.name == "selectGrouppopulation" ) return;
+               el.id.indexOf("population") > -1 ||
+               el.name.indexOf("population") > -1) { return true;}
 
             // get a count of studies and append to formData
             if(el.id.indexOf("study") > -1) numStudies++;
 
             // have to manually add checkbox value to FormData object
             if(el.type == "checkbox"){
-                if(el.id.indexOf("selectItempopulation") > -1) {
-                    populations = retrieveMultiselects($(el).multipleSelect("getSelects"));
-                    formData.append("populations", populations );
-                    return;
-                }
-                if(el.id && el.id != "population")
+                if(el.checked && el.id)
                     formData.append(el.id, el.checked);
             }
         });
 
+        formData.append('populations', $(pathForm.population).multipleSelect("getSelects"));
         formData.append('num_studies', numStudies);
 
         sendForm(formData).then(submission_result, submission_error)
