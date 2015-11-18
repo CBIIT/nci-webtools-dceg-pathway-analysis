@@ -198,7 +198,7 @@ function apply_multiselect_options(element){
 
             var superLabel = population_labels[population.group].fullName;
             var subLabel = population_labels[population.group].subPopulations[population.subPopulation];
-            var option = $("<option />", { value: population.subPopulation, text: subLabel });
+            var option = $("<option />", { value: population.group+"|"+population.subPopulation, text: subLabel });
 
             optGroup.append(option);
 
