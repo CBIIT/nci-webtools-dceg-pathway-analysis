@@ -75,24 +75,20 @@ function clickCalculate(e) {
 
         $.each(pathForm, function(ind, el) {
             if( $(el).is("hidden") ||
-               el.id == "selectGrouppopulation" ||
-               el.name == "selectGrouppopulation" ) return;
+               el.id.indexOf("population") > -1 ||
+               el.name.indexOf("population") > -1) { return true;}
 
            
             if(el.id.indexOf("study") > -1) numStudies++;
 
            
             if(el.type == "checkbox"){
-                if(el.id.indexOf("selectItempopulation") > -1) {
-                    populations = retrieveMultiselects($(el).multipleSelect("getSelects"));
-                    formData.append("populations", populations );
-                    return;
-                }
-                if(el.id && el.id != "population")
+                if(el.checked && el.id)
                     formData.append(el.id, el.checked);
             }
         });
 
+        formData.append('populations', $(pathForm.population).multipleSelect("getSelects"));
         formData.append('num_studies', numStudies);
 
         sendForm(formData).then(submission_result, submission_error)
@@ -194,18 +190,22 @@ function submission_result(response) {
 }
 
 function apply_multiselect_options(element){
-    return function(data) {
-        $.each(data, function (key, group) {
-            var optGroup = $("<optgroup label='" + key + "'/>");
+    population_labels ={'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
 
-            $.each(group.subPopulations, function(populationKey, text) {
-                var option = $("<option />", { value: populationKey, text: text });
-                optGroup.append(option);
-            });
+    return function(data) {
+        $.each(data, function (key, population) {
+            var optGroup = $(element).has("optgroup[label='" + population.group + "']").length > 0 ? $(element).find("optgroup[label='" + population.group + "']") : $("<optgroup label='" + population.group + "'/>");
+
+            var superLabel = population_labels[population.group].fullName;
+            var subLabel = population_labels[population.group].subPopulations[population.subPopulation];
+            var option = $("<option />", { value: population.subPopulation, text: subLabel });
+
+            optGroup.append(option);
 
             $(element).append(optGroup).multipleSelect('refresh');
-            $(element).multipleSelect("uncheckAll");
         });
+
+        $(element).multipleSelect("uncheckAll");
 
         $(".group input[type='checkbox']").on("click", function(e) {
             var targetedElement = e.target;
