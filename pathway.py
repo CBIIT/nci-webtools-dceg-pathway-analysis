@@ -82,7 +82,6 @@ class Pathway:
                                 'subPopulation': population_code,
                                 'text': population_code
                             })
-            print(json.dumps(options))
             return Response(json.dumps(options), status=200, mimetype='application/json')
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -149,11 +148,17 @@ class Pathway:
                     return Pathway.buildFailure("The pathway file seems to be missing.")
             else:
                 del parameters['database_pathway']
-            print(parameters['populations'])
+
+            parameters['selected_subs'] = ""
             for population in parameters['populations'].split(","):
-                print(population)
-                if population in [name for name in os.listdir(app.config['POPULATION_FOLDER']) if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],name))]:
-                    population = os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],population)
+                sub_pop_code = population.split("|")[1]
+                super_pop_code= population.split("|")[0]
+                filename=sub_pop_code+".txt"
+                print(os.path.join(app.config['POPULATION_FOLDER'], super_pop_code, filename ))
+                if os.path.isfile(os.path.join(app.config['POPULATION_FOLDER'], super_pop_code, filename)):
+                    file_path = os.path.join(app.config['POPULATION_FOLDER'], super_pop_code, filename)
+                    parameters['selected_subs'] += open(file_path, 'r').read()
+
                 else:
                     return Pathway.buildFailure("An invalid population was submitted.")
 
