@@ -53,13 +53,11 @@ class Pathway:
             options = []
             i = 1
             for pathways_file in os.listdir(app.config['PATHWAY_FOLDER']):
-                ind = str(i)
-                if pathways_file.endswith(".txt") or pathways_file.endswith(".pathway"):
+                if pathways_file.endswith(".txt") or pathways_file.endswith(".pathway") or pathways_file.endswith(".txt.xls.gz"):
+                    pathways_filename = pathways_file.split(".")[0]
                     options.append({
-                            'code': "PW_"+ind,
-                            'text': "Pathway " + ind,
-                            'file': pathways_file})
-                    i += 1
+                        'code': pathways_filename,
+                        'text': pathways_filename })
             return Response(json.dumps(options), status=200, mimetype='application/json')
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -71,25 +69,20 @@ class Pathway:
     @app.route('/pathwayRest/options/population_options/', methods=['GET'])
     def population_options():
         try:
-            #static json of the population groups
-            return Response(json.dumps({'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}}), status=200, mimetype='application/json');
-
             options = []
-            for population_subfolder in [name for name in os.listdir(app.config['POPULATION_FOLDER'])
+            for super_population in [name for name in os.listdir(app.config['POPULATION_FOLDER'])
                 if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'], name))]:
-                    population_name_file = os.path.join(app.config['POPULATION_FOLDER'], population_subfolder, "population.name.txt")
-                    subpopulation_path = os.path.join(app.config['POPULATION_FOLDER'], population_subfolder)
-                    for population_groups_folder in [name for name in os.listdir(subpopulation_path)]:
-                        if os.path.isfile(population_name_file):
-                            with open(population_name_file,'r') as f:
-                                population_name = f.read().strip()
-                                population_code = population_name[0:3].strip().upper()
-                                population_text = "(" + population_code + ") " + population_name
+                    subpopulation_path = os.path.join(app.config['POPULATION_FOLDER'], super_population)
+
+                    for subpopulation in [sub_name for sub_name in os.listdir(subpopulation_path)
+                        if os.path.isdir(subpopulation_path)]:
+                            population_code = subpopulation.split(".")[0]
                             options.append({
-                                            'group': population_subfolder,
-                                            'code': population_code,
-                                            'text': population_text
-                                      })
+                                'group': super_population,
+                                'subPopulation': population_code,
+                                'text': population_code
+                            })
+            print(json.dumps(options))
             return Response(json.dumps(options), status=200, mimetype='application/json')
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -156,14 +149,13 @@ class Pathway:
                     return Pathway.buildFailure("The pathway file seems to be missing.")
             else:
                 del parameters['database_pathway']
-
-
-            print(parameters['selectItempopulation'])
-            print("----------------------------------------------------------------------")
-            if parameters['selectItempopulation'] in [name for name in os.listdir(app.config['POPULATION_FOLDER']) if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],name))]:
-                parameters['populations'] = os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],parameters['populations'])
-            else:
-                return Pathway.buildFailure("An invalid population was submitted.")
+            print(parameters['populations'])
+            for population in parameters['populations'].split(","):
+                print(population)
+                if population in [name for name in os.listdir(app.config['POPULATION_FOLDER']) if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],name))]:
+                    population = os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],population)
+                else:
+                    return Pathway.buildFailure("An invalid population was submitted.")
 
             pathwayConfig = app.config[Pathway.CONFIG]
             client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
