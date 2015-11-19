@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="Pragma" content="no-cache"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css" rel="stylesheet" type="text/css"/>
     <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
@@ -12,6 +13,7 @@
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js" type="application/javascript"></script>
     <script src="/common/js/popover-functions.js" type="application/javascript"></script>
     <script src="main.js" type="application/javascript"></script>
   </head>
@@ -22,7 +24,7 @@
     <h1 id="mainTitle">Pathway Analysis Tool</h1>
     <div id="content">
       <div id="subHeading">Calculate gene and pathway using the ARTP test and summary data.</div>
-      <div id="errorDisplay" class="ui-state-error"></div>
+      <div id="errorDisplay" class="box-error"></div>
       <div id="successBox"><span class="ui-icon ui-icon-circle-check"></span>
         <div id="message"></div>
       </div>
@@ -30,18 +32,18 @@
         <fieldset>
           <legend data-term="study" class="termToDefine">Study Selection</legend>
           <div id="studyEntry"></div>
-          <button class="addControl">Add Study</button>
+          <button title="study" class="addControl">Add Study</button>
         </fieldset>
         <fieldset>
           <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
           <ul>
             <li>
               <label for="database_pathway">
-                <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>Select fropm the server:
+                <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>Select from the server:
               </label>
               <div class="input">
                 <select id="database_pathway" name="database_pathway">
-                  <option value="" selected="selected">-- Select an existing pathway --</option>
+                  <option value="">-- Select from existing pathways --</option>
                 </select>
               </div>
             </li>
@@ -60,9 +62,7 @@
             <label for="population">Select the population:</label>
           </legend>
           <div class="input">
-            <select id="population" name="population" required="">
-              <option value="" selected="selected">-- Select a population --</option>
-            </select>
+            <select id="population" name="population" required="" multiple="multiple"></select>
           </div>
         </fieldset>
         <fieldset>
@@ -197,7 +197,8 @@
           <li>
             <label for="num_resource">Number of data resources in this study:</label>
             <div class="input">
-              <input id="num_resource" type="text" name="num_resource" required=""/>
+              <input id="num_resource" type="text" name="num_resource" required="" class="input-fit"/>
+              <button title="resource" class="addControl"></button>
             </div>
           </li>
         </ul>

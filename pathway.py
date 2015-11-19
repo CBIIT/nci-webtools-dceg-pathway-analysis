@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import time
+import pprint
 from flask import Flask, Response, request, jsonify, send_from_directory
 from PropertyUtil import PropertyUtil
 from stompest.config import StompConfig
@@ -27,7 +28,7 @@ class Pathway:
       response.mimetype = 'application/json'
       response.status_code = 400
       return response
-    
+
     @staticmethod
     def buildSuccess(message):
       response = jsonify(message=message, success=True)
@@ -54,13 +55,12 @@ class Pathway:
             options = []
             i = 1
             for pathways_file in os.listdir(app.config['PATHWAY_FOLDER']):
-                ind = str(i)
-                if pathways_file.endswith(".txt") or pathways_file.endswith(".pathway"):
+                if pathways_file.endswith(".txt") or pathways_file.endswith(".pathway") or pathways_file.endswith(".txt.xls.gz"):
+                    pathways_filename = pathways_file.split(".")[0]
                     options.append({
-                            'code':"PW_"+ind,
-                            'text': "Pathway "+ind,
-                            'file': pathways_file})
-                    i += 1
+                                     'code': pathways_file,
+                                     'text': pathways_filename
+                                   })
             return Response(json.dumps(options), status=200, mimetype='application/json')
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -73,32 +73,23 @@ class Pathway:
     def population_options():
         try:
             options = []
-            for folder_item in [name for name in os.listdir(app.config['POPULATION_FOLDER'])]:
-                if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],folder_item)):
-                    folder = os.path.join(app.config['POPULATION_FOLDER'],folder_item);
-                    optgroup = {
-                                 'code': folder_item,
-                                 'text': folder_item,
-                                 'subitems': []
-                               }
-                    for folder_item in [name for name in os.listdir(folder) if os.path.isfile(os.path.join(folder,name))]:
-                        optgroup['subitems'].append({
-                                                      'code': folder_item,
-                                                      'text': os.path.splitext(folder_item)[0]
-                                                    })
-                    options.append(optgroup);
-                else:
-                    options.append({
-                                     'code': folder_item,
-                                     'text': os.path.splitext(folder_item)[0]
-                                   })
+            for super_population in [name for name in os.listdir(app.config['POPULATION_FOLDER'])
+                if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'], name))]:
+                    subpopulation_path = os.path.join(app.config['POPULATION_FOLDER'], super_population)
+                    for subpopulation in [sub_name for sub_name in os.listdir(subpopulation_path) if os.path.isdir(subpopulation_path)]:
+                        population_code = subpopulation.split(".")[0]
+                        options.append({
+                                         'group': super_population,
+                                         'subPopulation': population_code,
+                                         'text': population_code
+                                       })
             return Response(json.dumps(options), status=200, mimetype='application/json')
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print( "EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
             return jsonify(error=e, success=False)
-      
+
 
     @app.route('/calculate', methods=['POST'])
     @app.route('/calculate/', methods=['POST'])
@@ -114,7 +105,7 @@ class Pathway:
                 parameters[field] = parameters[field][0]
             filelist = request.files
             studyList = [];
-            
+
             num_studies = int(parameters['num_studies'])
 
             for i in xrange(1,num_studies+1):
@@ -132,7 +123,7 @@ class Pathway:
 
                 studyFile = filelist[studyKey]
                 if studyFile.filename:
-                    if Pathway.testFileExtension(studyFile, app.config["ALLOWED_TYPES"][0]):                  
+                    if Pathway.testFileExtension(studyFile, app.config["ALLOWED_TYPES"][0]):
                         filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
                         studyObj['filename'] = filename
                         studyFile.save(filename)
@@ -148,34 +139,44 @@ class Pathway:
                 pathFile = filelist['file_pathway']
                 if pathFile.filename:
                     if Pathway.testFileExtension(pathFile, app.config["ALLOWED_TYPES"][1]):
-                        del parameters['database_pathway']
-                        filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '.pathway')
-                        parameters['file_pathway'] = filename
+                        filename = os.path.join(app.config['UPLOAD_FOLDER'],ts + '.pathway')
+                        parameters['pathway'] = filename
                         pathFile.save(filename)
                     else:
                         return Pathway.buildFailure("The file '" + pathFile.filename + "' is not the correct type. Expecting '.pathway' file.")
                 else:
                     return Pathway.buildFailure("The pathway file seems to be missing.")
+            elif parameters['pathway_type'] == 'database_pathway':
+                parameters['pathway'] = os.path.join(app.config['PATHWAY_FOLDER'],parameters['database_pathway'])
             else:
-                del parameters['database_pathway']
+                return Pathway.buildFailure("The pathway file seems to be missing.")
+            del parameters['pathway_type']
+            del parameters['database_pathway']
 
-            population = parameters['population'].split('|')
-            if os.path.isfile(os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],population[0],population[1])):
-                parameters['population'] = {}
-                parameters['population']['super'] = population[0]
-                parameters['population']['sub'] = [ os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],population[0],population[1]) ]
-                parameters['plink'] = app.config[Pathway.CONFIG]['pathway.plink.pattern'].replace("$pop",population[0]);
-            else:
+            superpop = {}
+            subpop = {}
+            for population in parameters['populations'].split(","):
+                population = population.split('|')
+                if os.path.isfile(os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')):
+                    superpop[population[0]] = 1;
+                    subpop[os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')] = 1;
+                else:
+                    return Pathway.buildFailure("An invalid population was submitted.")
+            if (len(superpop) > 1):
                 return Pathway.buildFailure("An invalid population was submitted.")
-            
-            #pathwayConfig = app.config[Pathway.CONFIG]
-            #client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
-            #client.connect()
-            #client.send(pathwayConfig.getAsString(Pathway.QUEUE_NAME), json.dumps(parameters))
-            #client.disconnect()
-            robjects.r('''source('ARTP3Wrapper.R')''')
-            x = robjects.r['runARTP3']
-            x(json.dumps(parameters))
+            del parameters['populations']
+            parameters['population'] = {}
+            for population in superpop:
+                parameters['population']['super'] = population
+                parameters['plink'] = app.config[Pathway.CONFIG]['pathway.plink.pattern'].replace("$pop",population);
+            parameters['population']['sub'] = []
+            for population in subpop:
+                parameters['population']['sub'].append(population);
+            pathwayConfig = app.config[Pathway.CONFIG]
+            client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
+            client.connect()
+            client.send(pathwayConfig.getAsString(Pathway.QUEUE_NAME), json.dumps(parameters))
+            client.disconnect()
             return Pathway.buildSuccess("The request has been received. An email will be sent when the calculation has completed.")
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()

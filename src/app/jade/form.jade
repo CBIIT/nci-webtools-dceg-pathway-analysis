@@ -2,17 +2,17 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
     fieldset
         legend.termToDefine(data-term="study") Study Selection
         #studyEntry
-        button.addControl Add Study
+        button.addControl(title="study") Add Study
     fieldset
       legend.termToDefine(data-term="file_pathway") Select or upload the pathway file:
       ul
         li
           label(for='database_pathway')
             input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-            | Select fropm the server:
+            | Select from the server:
           .input
             select#database_pathway(name='database_pathway')
-                option(value='', selected) -- Select an existing pathway --
+                option(value='') -- Select from existing pathways --
         li
             label(for='file_pathway')
                 input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
@@ -23,8 +23,7 @@ form(name='pathForm', action='pathwayRest/calculate/', method='POST', enctype='m
       legend.termToDefine(data-term="population")
         label(for='population') Select the population:
       .input
-        select#population(name='population', required='')
-          option(value='', selected) -- Select a population --
+        select#population(name='population' ,required='', multiple)
     fieldset
       legend Set the following options:
       ul
