@@ -2,6 +2,7 @@ import json
 import os
 import sys
 import time
+import pprint
 from flask import Flask, Response, request, jsonify, send_from_directory
 from PropertyUtil import PropertyUtil
 from stompest.config import StompConfig
@@ -146,8 +147,6 @@ class Pathway:
                         return Pathway.buildFailure("The file '" + pathFile.filename + "' is not the correct type. Expecting '.pathway' file.")
                 else:
                     return Pathway.buildFailure("The pathway file seems to be missing.")
-            else:
-                del parameters['database_pathway']
 
             parameters['selected_subs'] = ""
             for population in parameters['populations'].split(","):
@@ -161,7 +160,7 @@ class Pathway:
 
                 else:
                     return Pathway.buildFailure("An invalid population was submitted.")
-            print(parameters['selected_subs'])
+            pprint.pprint(parameters)
 
             pathwayConfig = app.config[Pathway.CONFIG]
 
