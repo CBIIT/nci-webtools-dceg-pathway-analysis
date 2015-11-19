@@ -151,18 +151,20 @@ class Pathway:
 
             parameters['selected_subs'] = ""
             for population in parameters['populations'].split(","):
+                #
                 sub_pop_code = population.split("|")[1]
                 super_pop_code= population.split("|")[0]
                 filename=sub_pop_code+".txt"
-                print(os.path.join(app.config['POPULATION_FOLDER'], super_pop_code, filename ))
                 if os.path.isfile(os.path.join(app.config['POPULATION_FOLDER'], super_pop_code, filename)):
                     file_path = os.path.join(app.config['POPULATION_FOLDER'], super_pop_code, filename)
                     parameters['selected_subs'] += open(file_path, 'r').read()
 
                 else:
                     return Pathway.buildFailure("An invalid population was submitted.")
+            print(parameters['selected_subs'])
 
             pathwayConfig = app.config[Pathway.CONFIG]
+
             client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
             client.connect()
             client.send(pathwayConfig.getAsString(Pathway.QUEUE_NAME), json.dumps(parameters))
