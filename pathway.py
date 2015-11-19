@@ -6,6 +6,7 @@ from flask import Flask, Response, request, jsonify, send_from_directory
 from PropertyUtil import PropertyUtil
 from stompest.config import StompConfig
 from stompest.sync import Stomp
+import rpy2.robjects as robjects
 
 app = Flask(__name__, static_folder='static', static_url_path="")
 
@@ -72,15 +73,25 @@ class Pathway:
     def population_options():
         try:
             options = []
-            for population_subfolder in [name for name in os.listdir(app.config['POPULATION_FOLDER']) if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],name))]:
-                population_name_file = os.path.join(app.config['POPULATION_FOLDER'],population_subfolder,"population.name.txt")
-                if os.path.isfile(population_name_file):
-                    with open(population_name_file,'r') as f:
-                        population_name = f.read().strip()
+            for folder_item in [name for name in os.listdir(app.config['POPULATION_FOLDER'])]:
+                if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],folder_item)):
+                    folder = os.path.join(app.config['POPULATION_FOLDER'],folder_item);
+                    optgroup = {
+                                 'code': folder_item,
+                                 'text': folder_item,
+                                 'subitems': []
+                               }
+                    for folder_item in [name for name in os.listdir(folder) if os.path.isfile(os.path.join(folder,name))]:
+                        optgroup['subitems'].append({
+                                                      'code': folder_item,
+                                                      'text': os.path.splitext(folder_item)[0]
+                                                    })
+                    options.append(optgroup);
+                else:
                     options.append({
-                                    'code': population_subfolder,
-                                    'text': population_name
-                                  })
+                                     'code': folder_item,
+                                     'text': os.path.splitext(folder_item)[0]
+                                   })
             return Response(json.dumps(options), status=200, mimetype='application/json')
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -121,7 +132,7 @@ class Pathway:
 
                 studyFile = filelist[studyKey]
                 if studyFile.filename:
-                    if Pathway.testFileExtension(studyFile, app.config["ALLLOWED_TYPES"][0]):                  
+                    if Pathway.testFileExtension(studyFile, app.config["ALLOWED_TYPES"][0]):                  
                         filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
                         studyObj['filename'] = filename
                         studyFile.save(filename)
@@ -136,7 +147,7 @@ class Pathway:
             if parameters['pathway_type'] == 'file_pathway':
                 pathFile = filelist['file_pathway']
                 if pathFile.filename:
-                    if Pathway.testFileExtension(pathFile, app.config["ALLLOWED_TYPES"][1]):
+                    if Pathway.testFileExtension(pathFile, app.config["ALLOWED_TYPES"][1]):
                         del parameters['database_pathway']
                         filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '.pathway')
                         parameters['file_pathway'] = filename
@@ -148,16 +159,23 @@ class Pathway:
             else:
                 del parameters['database_pathway']
 
-            if parameters['population'] in [name for name in os.listdir(app.config['POPULATION_FOLDER']) if os.path.isdir(os.path.join(app.config['POPULATION_FOLDER'],name))]:
-                parameters['population'] = os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],parameters['population'])
+            population = parameters['population'].split('|')
+            if os.path.isfile(os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],population[0],population[1])):
+                parameters['population'] = {}
+                parameters['population']['super'] = population[0]
+                parameters['population']['sub'] = [ os.path.join(os.getcwd(),app.config['POPULATION_FOLDER'],population[0],population[1]) ]
+                parameters['plink'] = app.config[Pathway.CONFIG]['pathway.plink.pattern'].replace("$pop",population[0]);
             else:
                 return Pathway.buildFailure("An invalid population was submitted.")
-
-            pathwayConfig = app.config[Pathway.CONFIG]
-            client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
-            client.connect()
-            client.send(pathwayConfig.getAsString(Pathway.QUEUE_NAME), json.dumps(parameters))
-            client.disconnect()
+            
+            #pathwayConfig = app.config[Pathway.CONFIG]
+            #client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
+            #client.connect()
+            #client.send(pathwayConfig.getAsString(Pathway.QUEUE_NAME), json.dumps(parameters))
+            #client.disconnect()
+            robjects.r('''source('ARTP3Wrapper.R')''')
+            x = robjects.r['runARTP3']
+            x(json.dumps(parameters))
             return Pathway.buildSuccess("The request has been received. An email will be sent when the calculation has completed.")
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -170,10 +188,10 @@ class Pathway:
         pathwayConfig[Pathway.QUEUE_CONFIG] = StompConfig(pathwayConfig.getAsString(Pathway.QUEUE_URL))
         app.config[Pathway.CONFIG] = pathwayConfig
         app.config['COMMON_PATH'] = '../common/'
-        app.config['POPULATION_FOLDER'] = pathwayConfig.getAsString(Pathway.POPULATION_FOLDER)
         app.config['PATHWAY_FOLDER'] = pathwayConfig.getAsString(Pathway.PATHWAY_FOLDER)
+        app.config['POPULATION_FOLDER'] = pathwayConfig.getAsString(Pathway.POPULATION_FOLDER)
         app.config['UPLOAD_FOLDER'] = pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER)
-        app.config["ALLLOWED_TYPES"] = ['study', 'pathway','txt']
+        app.config["ALLOWED_TYPES"] = ['study', 'pathway','txt']
         app.run(host='0.0.0.0', port=pathwayConfig.getAsInt(Pathway.PORT), debug=pathwayConfig.getAsBoolean(Pathway.DEBUG))
 
 if __name__ == '__main__':
