@@ -32,11 +32,10 @@ form
             background rgba(225, 0, 0, 0.24)
             &:before
                 content "*"
-     .ms-parent.error
-         button
+    .error
+        &.ms-choice, &.custom-combobox-input
             border 1px solid red
             background rgba(225, 0, 0, 0.24)
-#content
 #content
     display block
     padding 0 25%
@@ -114,13 +113,24 @@ legend
     font-weight bold
 
 form
+    .custom-combobox
+        position relative
+        display inline-block
+        a
+            height 33px !important
+            vertical-align bottom
+        input
+            height 35px !important
+            width 265px !important
+            text-align center
+
     input[type="file"], input[type="text"], input[type="number"], input[type="email"],
     select,button,progress
         width 300px !important
         height 35px !important
         font-size inherit
 
-    button.ui-button-icon-only
+    button.ui-button-icon-only, a.ui-button
         width 2.4em !important
 
 progress
