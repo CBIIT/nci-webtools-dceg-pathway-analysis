@@ -20,7 +20,10 @@ $(function() {
             minimumCountSelected: 2,
             countSelected: false,
             onClick:function(view) {
-                console.log(view);
+               $(pathForm.population).validate();
+            },
+            onOptgroupClick:function(view) {
+               $(pathForm.population).validate();
             }
         });
 

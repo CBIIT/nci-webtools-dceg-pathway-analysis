@@ -88,7 +88,6 @@ function apply_multiselect_options(element){
 }
 
 function apply_options(element){
-
     return function(data) {
 
         data.forEach(function(item, i) {
