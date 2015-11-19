@@ -1,3 +1,134 @@
+$.widget( "custom.combobox", {
+    _create: function() {
+        this.wrapper = $( "<span>" )
+            .addClass( "custom-combobox" )
+            .insertAfter( this.element );
+
+        this.element.hide();
+        this._createAutocomplete();
+        this._createShowAllButton();
+    },
+
+    _createAutocomplete: function() {
+        var selected = this.element.children( ":selected" ),
+            value = selected.val() ? selected.text() : "";
+
+        this.input = $( "<input>" )
+            .appendTo( this.wrapper )
+            .val( value )
+            .attr( "title", "" )
+            .attr("placeholder", "Begin typing or select from list:")
+            .addClass( "custom-combobox-input ui-widget ui-widget-content" )
+            .autocomplete({
+            delay: 0,
+            minLength: 0,
+            source: $.proxy( this, "_source" )
+        })
+            .tooltip({
+            classes: {
+                "ui-tooltip": "ui-state-highlight"
+            }
+        });
+
+        this._on( this.input, {
+            autocompleteselect: function( event, ui ) {
+                ui.item.option.selected = true;
+                this._trigger( "select", event, {
+                    item: ui.item.option
+                });
+            },
+
+            autocompletechange: "_removeIfInvalid"
+        });
+    },
+
+    _createShowAllButton: function() {
+        var input = this.input,
+            wasOpen = false;
+
+        $( "<a>" )
+            .attr( "tabIndex", -1 )
+            .attr( "title", "Show All Items" )
+            .tooltip()
+            .appendTo( this.wrapper )
+            .button({
+            icons: {
+                primary: "ui-icon-circle-triangle-s"
+            },
+            text: false
+        })
+            .removeClass( "ui-corner-all" )
+            .addClass( "custom-combobox-toggle ui-corner-right" )
+            .on( "mousedown", function() {
+            wasOpen = input.autocomplete( "widget" ).is( ":visible" );
+        })
+            .on( "click", function() {
+            input.trigger( "focus" );
+
+           
+            if ( wasOpen ) {
+                return;
+            }
+
+           
+            input.autocomplete( "search", "" );
+        });
+    },
+
+    _source: function( request, response ) {
+        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+        response( this.element.children( "option" ).map(function() {
+            var text = $( this ).text();
+            if ( this.value && ( !request.term || matcher.test(text) ) )
+                return {
+                    label: text,
+                    value: text,
+                    option: this
+                };
+        }) );
+    },
+
+    _removeIfInvalid: function( event, ui ) {
+
+       
+        if ( ui.item ) {
+            return;
+        }
+
+       
+        var value = this.input.val(),
+            valueLowerCase = value.toLowerCase(),
+            valid = false;
+        this.element.children( "option" ).each(function() {
+            if ( $( this ).text().toLowerCase() === valueLowerCase ) {
+                this.selected = valid = true;
+                return false;
+            }
+        });
+
+       
+        if ( valid ) {
+            return;
+        }
+
+       
+        this.input
+            .val( "" )
+            .attr( "title", value + " didn't match any item" )
+            .tooltip( "open" );
+        this.element.val( "" );
+        this._delay(function() {
+            this.input.tooltip( "close" ).attr( "title", "" );
+        }, 2500 );
+        this.input.autocomplete( "instance" ).term = "";
+    },
+
+    _destroy: function() {
+        this.wrapper.remove();
+        this.element.show();
+    }
+});
+
 $(function() {
     $("#calculate").on("click", clickCalculate);
     $("#reset").on("click", resetForm);
@@ -84,9 +215,10 @@ function clickCalculate(e) {
         var numStudies = 0;
 
         $.each(pathForm, function(ind, el) {
-            if( $(el).is("hidden") ||
-               el.id.indexOf("population") > -1 ||
-               el.name.indexOf("population") > -1) { return true;}
+            if( $(el).is("hidden") &&
+               el.id.indexOf("population") > -1 &&
+               el.name.indexOf("population") > -1 &&
+               el.id.indexOf("database_pathway") > -1) { return true;}
 
            
             if(el.id.indexOf("study") > -1) numStudies++;
@@ -98,7 +230,7 @@ function clickCalculate(e) {
             }
         });
 
-        formData.append('populations', $(pathForm.population).multipleSelect("getSelects"));
+        formData.append('populations', $(pathForm.population).val());
         formData.append('num_studies', numStudies);
 
         sendForm(formData).then(submission_result, submission_error)
@@ -159,7 +291,7 @@ $(function(){
             post_request();
     };
    
-    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
+    retrieve_pathways().then(apply_options_combobox($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
     retrieve_populations().then(apply_multiselect_options($(pathForm.population)), get_options_error("population")).always(hold);
 });
 
@@ -235,7 +367,7 @@ function apply_multiselect_options(element){
     };
 }
 
-function apply_options(element){
+function apply_options_combobox(element){
     return function(data) {
 
         data.forEach(function(item, i) {
@@ -246,6 +378,8 @@ function apply_options(element){
 
             element.append(option);
         });
+
+        element.combobox();
     };
 }
 
@@ -571,7 +705,7 @@ $(function(){
         database_pathway: {
             required: {
                 depends:function(element) {
-                    return $("#database_pathway_option").is(":checked");
+                    return $("#database_pathway_option").is(":checked") || element.value.length === 0;
                 }
             }
         },
@@ -591,7 +725,7 @@ $(function(){
         population: {
             required: {
                 depends: function(element) {
-                    return $(element).multipleSelect('getSelects').length <= 0;
+                    return element.value.length === 0;
                 }
             }
         },
@@ -709,7 +843,7 @@ $(function(){
    
    
     jQuery.validator.setDefaults({
-        ignore: "button",
+        ignore: ".ms-parent, .custom-combobox-input",
         focusInvalid: false,
         focusCleanup: true,
         ignoreTitle: true,
@@ -737,17 +871,20 @@ $(function(){
 
    
     $(pathForm).validate({
-        ignore: ":hidden:not('#population')",
+        ignore: ".ms-parent *,.custom-combobox *",
         rules: validationElements,
         messages: validationMessages,
         highlight: function (el, errorClass,validClass) {
-            if(el.id != "population")
+            if(el.id != "population" && el.id != "database_pathway")
                 $(el).addClass(errorClass);
             else
-                $(el).next().addClass(errorClass);
+                $(el).next().find('.custom-combobox-input, .ms-choice').addClass(errorClass);
         },
         unhighlight: function (el, errorClass,validClass) {
-            $(el).removeClass(errorClass);
+            if(el.id != "population" && el.id != "database_pathway")
+                $(el).removeClass(errorClass);
+            else
+                $(el).next().find('.custom-combobox').children().andSelf().find('.error').removeClass(errorClass);
         }
     });
 
