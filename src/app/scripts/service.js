@@ -34,11 +34,10 @@ function post_request() {
 }
 
 function submission_result(response) {
-    console.log(response.data);
-
     if(response.success){
+        resetForm();
+
         // display confirmation message
-        //$(pathForm).reset();
         $( "#successBox #message" ).text(response.message);
         $( "#successBox").show();
         document.querySelector("#successBox").scrollIntoView(true);

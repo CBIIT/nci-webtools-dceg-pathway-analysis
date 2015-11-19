@@ -37,18 +37,18 @@ $(window).load(function() {
         .on("change", changeRadioSelection);
 });
 
-function resetForm(e) {
+function resetForm() {
     $(pathForm).find(".studies").each(function(i, el) {
         if(i !== 0) $(this).detach();
         else {
-            $(lambda_1).val(1.0);
+            $(lambda_1).val("1.0");
+            $(num_resource_1, pathForm.study_1).val("");
             $(pathForm).find(".studyResources").detach();
         }
     });
 
     $(database_pathway_option).attr("checked", "checked");
     $(population).multipleSelect("uncheckAll");
-
     $(nperm).val((1e5).toExponential());
     $(miss_rate).val(0.05);
     $(maf).val(0.05);
@@ -59,7 +59,11 @@ function resetForm(e) {
     $(snp_percent).val(0);
     $(gene_n).val(10);
     $(gene_percent).val(0.05);
-    $(email).val("");
+    $(email,file_pathway).val("");
+    $(refinep)[0].checked = false;
+    $(gene_subset)[0].checked = false;
+    $(database_pathway_option)[0].checked = true;
+    $(database_pathway).find("option:first-child").attr("selected", "selected");
 
     $(pathForm).validate().resetForm();
 }
