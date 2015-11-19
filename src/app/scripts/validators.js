@@ -8,7 +8,7 @@ $(function(){
         database_pathway: {
             required: {
                 depends:function(element) {
-                    return $("#database_pathway_option").is(":checked");
+                    return $("#database_pathway_option").is(":checked") || element.value.length === 0;
                 }
             }
         },
@@ -28,7 +28,7 @@ $(function(){
         population: {
             required: {
                 depends: function(element) {
-                    return $(element).multipleSelect('getSelects').length <= 0;
+                    return element.value.length === 0;
                 }
             }
         },
@@ -146,7 +146,7 @@ $(function(){
     // since there will be multiple validations eventually
     // there should be some default settings that all forms follow
     jQuery.validator.setDefaults({
-        ignore: "button",
+        ignore: ".ms-parent, .custom-combobox-input",
         focusInvalid: false,
         focusCleanup: true,
         ignoreTitle: true,
@@ -174,17 +174,20 @@ $(function(){
 
     // specific validations only for pathForm
     $(pathForm).validate({
-        ignore: ":hidden:not('#population')",
+        ignore: ".ms-parent *,.custom-combobox *",
         rules: validationElements,
         messages: validationMessages,
         highlight: function (el, errorClass,validClass) {
-            if(el.id != "population")
+            if(el.id != "population" && el.id != "database_pathway")
                 $(el).addClass(errorClass);
             else
-                $(el).next().addClass(errorClass);
+                $(el).next().find('.custom-combobox-input, .ms-choice').addClass(errorClass);
         },
         unhighlight: function (el, errorClass,validClass) {
-            $(el).removeClass(errorClass);
+            if(el.id != "population" && el.id != "database_pathway")
+                $(el).removeClass(errorClass);
+            else
+                $(el).next().find('.custom-combobox').children().andSelf().find('.error').removeClass(errorClass);
         }
     });
 
