@@ -7,4 +7,8 @@ static/common
 static/test/
 tests/
 uploads/
+hg19_4k_paths/
+Example_data/
+PLINK/
+subj.id/
 !uploads/.placeholder
