@@ -2,13 +2,11 @@ library(RJSONIO)
 library(ARTP3)
 
 runARTP3 <- function(parameters) {
-  id.str <- "ABC"
+  id.str <- "PID"
   save.setup <- FALSE
   parameters <- fromJSON(parameters)
   
   previousDirectory <- getwd()
-  setwd(parameters$population)
-  
   studies <- parameters$studies
   # Turn Studies into ARTP3 Readable Form
   summary.files <- c()
@@ -29,9 +27,9 @@ runARTP3 <- function(parameters) {
   bim <- vector("character", 22)
   bed <- vector("character", 22)
   for(i in 1:22){
-    fam[i] <- paste("1000genomes.chr", i, ".fam", sep = "")
-    bim[i] <- paste("1000genomes.chr", i, ".bim", sep = "")
-    bed[i] <- paste("1000genomes.chr", i, ".bed", sep = "")
+    fam[i] <- gsub("\\$ext","fam",gsub("\\$vector",i,parameters$plink))
+    bim[i] <- gsub("\\$ext","bim",gsub("\\$vector",i,parameters$plink))
+    bed[i] <- gsub("\\$ext","bed",gsub("\\$vector",i,parameters$plink))
   }
   reference <- data.frame(fam, bim, bed)
   # Set Options
@@ -65,7 +63,6 @@ runARTP3 <- function(parameters) {
   #print(paste("refine.p:",refinePValue))
   # Run the analysis
   returnValue <- toJSON(pathway.summaryData(summary.files, pathway, reference, lambda, sample.size, options = options))
-  setwd(previousDirectory)
   return(returnValue)
 }
 

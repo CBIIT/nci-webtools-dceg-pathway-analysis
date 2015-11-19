@@ -52,11 +52,15 @@ function submission_result(response) {
 function apply_options(element){
     return function(data) {
         data.forEach(function(item, i) {
-            var option = $("<option></option>");
-
-            $(option).val(item.code);
-            $(option).text(item.text);
-
+            var option;
+            if (item.subitems) {
+              option = $('<optgroup value="'+item.code+'" label="'+item.text+'"></optgroup>');
+              apply_options(option)(item.subitems);
+            } else {
+              option = $("<option></option>");
+              $(option).val((element.prop('tagName')=='OPTION'?'':element.attr('value')+'|')+item.code);
+              $(option).text(item.text);
+            }
             element.append(option);
         });
     };
