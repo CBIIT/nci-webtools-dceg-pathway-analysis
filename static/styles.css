@@ -136,7 +136,8 @@ form input.error:before,
 form select.error:before {
   content: "*";
 }
-form .ms-parent.error button {
+form .error.ms-choice,
+form .error.custom-combobox-input {
   border: 1px solid #f00;
   background: rgba(225,0,0,0.24);
 }
@@ -229,6 +230,19 @@ legend {
   font-size: 1em;
   font-weight: bold;
 }
+form .custom-combobox {
+  position: relative;
+  display: inline-block;
+}
+form .custom-combobox a {
+  height: 33px !important;
+  vertical-align: bottom;
+}
+form .custom-combobox input {
+  height: 35px !important;
+  width: 265px !important;
+  text-align: center;
+}
 form input[type="file"],
 form input[type="text"],
 form input[type="number"],
@@ -240,7 +254,8 @@ form progress {
   height: 35px !important;
   font-size: inherit;
 }
-form button.ui-button-icon-only {
+form button.ui-button-icon-only,
+form a.ui-button {
   width: 2.4em !important;
 }
 progress {
