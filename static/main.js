@@ -67,6 +67,9 @@ function clickCalculate(e) {
     var proceed = $(pathForm).valid();
 
     if (proceed) {
+        $(pathForm).find('.error').each(function( ind,el) {
+            $(el).removeClass('error');
+        });
         $("#calculate").hide();
         $("progress").show();
 
@@ -739,11 +742,7 @@ $(function(){
                 $(el).next().addClass(errorClass);
         },
         unhighlight: function (el, errorClass,validClass) {
-
-            if(el.id != "population")
-                $(el).removeClass(errorClass);
-            else
-                $(el).next().removeClass(errorClass);
+            $(el).removeClass(errorClass);
         }
     });
 

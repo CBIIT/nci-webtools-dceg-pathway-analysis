@@ -67,6 +67,9 @@ function clickCalculate(e) {
     var proceed = $(pathForm).valid();
 
     if (proceed) {
+        $(pathForm).find('.error').each(function( ind,el) {
+            $(el).removeClass('error');
+        });
         $("#calculate").hide();
         $("progress").show();
 

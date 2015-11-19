@@ -184,11 +184,7 @@ $(function(){
                 $(el).next().addClass(errorClass);
         },
         unhighlight: function (el, errorClass,validClass) {
-
-            if(el.id != "population")
-                $(el).removeClass(errorClass);
-            else
-                $(el).next().removeClass(errorClass);
+            $(el).removeClass(errorClass);
         }
     });
 
