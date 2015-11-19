@@ -84,9 +84,10 @@ function clickCalculate(e) {
         var numStudies = 0;
 
         $.each(pathForm, function(ind, el) {
-            if( $(el).is("hidden") ||
-               el.id.indexOf("population") > -1 ||
-               el.name.indexOf("population") > -1) { return true;}
+            if( $(el).is("hidden") &&
+               el.id.indexOf("population") > -1 &&
+               el.name.indexOf("population") > -1 &&
+               el.id.indexOf("database_pathway") > -1) { return true;}
 
             // get a count of studies and append to formData
             if(el.id.indexOf("study") > -1) numStudies++;
@@ -98,7 +99,7 @@ function clickCalculate(e) {
             }
         });
 
-        formData.append('populations', $(pathForm.population).multipleSelect("getSelects"));
+        formData.append('populations', $(pathForm.population).val());
         formData.append('num_studies', numStudies);
 
         sendForm(formData).then(submission_result, submission_error)
