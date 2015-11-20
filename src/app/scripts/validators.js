@@ -8,7 +8,7 @@ $(function(){
         database_pathway: {
             required: {
                 depends:function(element) {
-                    return $("#database_pathway_option").is(":checked") || element.value.length === 0;
+                    return $("#database_pathway_option").is(":checked");
                 }
             }
         },
