@@ -88,13 +88,10 @@ function apply_multiselect_options(element){
 
 function apply_options_combobox(element){
     return function(data) {
-
         data.forEach(function(item, i) {
             var option = $("<option></option>");
-
             $(option).val(item.code);
             $(option).text(item.text);
-
             element.append(option);
         });
 
