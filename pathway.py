@@ -7,7 +7,6 @@ from flask import Flask, Response, request, jsonify, send_from_directory
 from PropertyUtil import PropertyUtil
 from stompest.config import StompConfig
 from stompest.sync import Stomp
-import rpy2.robjects as robjects
 
 app = Flask(__name__, static_folder='static', static_url_path="")
 
@@ -104,7 +103,7 @@ class Pathway:
             for field in parameters:
                 parameters[field] = parameters[field][0]
             filelist = request.files
-            studyList = [];
+            studyList = []
 
             num_studies = int(parameters['num_studies'])
 
@@ -131,7 +130,7 @@ class Pathway:
                         return Pathway.buildFailure("The file '" + studyFile.filename + "' is not the correct type. Expecting '.study' file.")
                 else:
                     return Pathway.buildFailure("The file seems to be missing from Study #" + i + ".")
-                studyList.append(studyObj);
+                studyList.append(studyObj)
             del parameters['num_studies']
             parameters['studies'] = studyList
 
@@ -150,7 +149,6 @@ class Pathway:
                 parameters['pathway'] = os.path.join(app.config['PATHWAY_FOLDER'],parameters['database_pathway'])
             else:
                 return Pathway.buildFailure("The pathway file seems to be missing.")
-            del parameters['pathway_type']
             del parameters['database_pathway']
 
             superpop = {}
@@ -158,20 +156,26 @@ class Pathway:
             for population in parameters['populations'].split(","):
                 population = population.split('|')
                 if os.path.isfile(os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')):
-                    superpop[population[0]] = 1;
-                    subpop[os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')] = 1;
+                    superpop[population[0]] = 1
+                    subpop_file = os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')
+                    with open(subpop_file, 'r') as subpop_file:
+                        for line in subpop_file:
+                            subpop[line.strip()] = 1
                 else:
                     return Pathway.buildFailure("An invalid population was submitted.")
             if (len(superpop) > 1):
                 return Pathway.buildFailure("An invalid population was submitted.")
             del parameters['populations']
-            parameters['population'] = {}
+            del parameters['selectItempopulation']
             for population in superpop:
-                parameters['population']['super'] = population
-                parameters['plink'] = app.config[Pathway.CONFIG]['pathway.plink.pattern'].replace("$pop",population);
-            parameters['population']['sub'] = []
+                parameters['plink'] = app.config[Pathway.CONFIG]['pathway.plink.pattern'].replace("$pop",population)
+            parameters['population'] = []
             for population in subpop:
-                parameters['population']['sub'].append(population);
+                parameters['population'].append(population)
+            parameters['outdir'] = app.config[Pathway.CONFIG]['pathway.folder.out']
+            parameters['refinep'] = parameters.get('refinep',False)
+            parameters['gene_subset'] = parameters.get('gene_subset',False)
+
             pathwayConfig = app.config[Pathway.CONFIG]
             client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
             client.connect()

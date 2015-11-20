@@ -5,8 +5,6 @@ runARTP3 <- function(parameters) {
   id.str <- "PID"
   save.setup <- FALSE
   parameters <- fromJSON(parameters)
-  
-  previousDirectory <- getwd()
   studies <- parameters$studies
   # Turn Studies into ARTP3 Readable Form
   summary.files <- c()
@@ -18,10 +16,7 @@ runARTP3 <- function(parameters) {
     sample.size[[length(sample.size)+1]] <- as.numeric(study$sample_sizes)
   }
   # Derive Pathway File
-  pathway = switch(parameters$pathway_type,
-    file_pathway = parameters$file_pathway,
-    database_pathway = c(),
-    c())
+  pathway = parameters$pathway
   # Derive population reference
   fam <- vector("character", 22)
   bim <- vector("character", 22)
@@ -33,7 +28,9 @@ runARTP3 <- function(parameters) {
   }
   reference <- data.frame(fam, bim, bed)
   # Set Options
-  options <- list(id.str = id.str,
+  out.dir = parameters$outdir
+  options <- list(out.dir = out.dir,
+                  id.str = id.str,
                   nperm = as.numeric(parameters$nperm),
                   snp.miss.rate = as.numeric(parameters$miss_rate),
                   maf = as.numeric(parameters$maf),
@@ -42,27 +39,36 @@ runARTP3 <- function(parameters) {
                   gene.R2 = as.numeric(parameters$gene),
                   rm.gene.subset = parameters$gene_subset,
                   save.setup = save.setup,
+                  selected.subs = parameters$population,
                   inspect.snp.n = as.numeric(parameters$snp_n),
                   inspect.snp.percent = as.numeric(parameters$snp_percent),
                   inspect.gene.n = as.numeric(parameters$gene_n),
                   inspect.gene.percent = as.numeric(parameters$gene_percent))
-  # Uhh...
-  refinePValue <- parameters$refinep
-  # print parameters
-  #print("Study File:")
-  #print(summary.files)
-  #print(paste("Pathway File:",pathway))
-  #print("Reference:")
-  #print(reference)
-  #print("Lambda:")
-  #print(lambda)
-  #print("Sample Size:")
-  #print(sample.size)
-  #print("Options:")
-  #print(options)
-  #print(paste("refine.p:",refinePValue))
   # Run the analysis
-  returnValue <- toJSON(pathway.summaryData(summary.files, pathway, reference, lambda, sample.size, options = options))
-  return(returnValue)
+  returnValue <- pathway.summaryData(summary.files, pathway, reference, lambda, sample.size, options = options)
+  save(returnValue,file=file.path(out.dir,"1.Rdata"))
+  returnValue <- returnValue$pathway.pvalue
+  if (parameters$refinep) {
+    options <- list(out.dir = out.dir,
+                    id.str = id.str,
+                    nperm = as.numeric(parameters$nperm)*10,
+                    snp.miss.rate = as.numeric(parameters$miss_rate),
+                    maf = as.numeric(parameters$maf),
+                    HWE.p = as.numeric(parameters$hwep),
+                    chr.R2 = as.numeric(parameters$chr),
+                    gene.R2 = as.numeric(parameters$gene),
+                    rm.gene.subset = options$rm.gene.subset,
+                    save.setup = save.setup,
+                    selected.subs = parameters$population,
+                    inspect.snp.n = as.numeric(parameters$snp_n),
+                    inspect.snp.percent = as.numeric(parameters$snp_percent),
+                    inspect.gene.n = as.numeric(parameters$gene_n),
+                    inspect.gene.percent = as.numeric(parameters$gene_percent))
+    refinedValue <- pathway.summaryData(summary.files, pathway, reference, lambda, sample.size, options = options)
+    save(refinedValue,file=file.path(out.dir,"2.Rdata"))
+    returnValue <- c(returnValue,refinedValue$pathway.pvalue)
+  } else {
+    returnValue <- c(returnValue)
+  }
+  return(toJSON(returnValue))
 }
-
