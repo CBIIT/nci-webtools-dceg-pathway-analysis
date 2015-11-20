@@ -3,6 +3,9 @@ import os
 import rpy2.robjects as robjects
 import smtplib
 
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from PropertyUtil import PropertyUtil
 from stompest.async import Stomp
 from stompest.async.listener import SubscriptionListener
@@ -18,13 +21,24 @@ class RequestProcessor:
   MAIL_HOST = 'mail.host'
   MAIL_SENDER = 'mail.sender'
 
-  def composeMail(self,recipients,message):
+  def composeMail(self,recipients,message,files=[]):
     if not isinstance(recipients,list):
       recipients = [recipients]
-    message = "From: Pathway Analysis Tool\r\nTo: " + ", ".join(recipients) + "\r\nSubject: Pathway Analysis Results\r\n\r\n"+message
+    packet = MIMEMultipart()
+    packet['Subject'] = "Subject: Pathway Analysis Results"
+    packet['From'] = "Pathway Analysis Tool"
+    packet['To'] = ", ".join(recipients)
+    packet.attach(MIMEText(message))
+    for file in files:
+      with open(file,"rb") as openfile:
+        packet.attach(MIMEApplication(
+          openfile.read(),
+          Content_Disposition='attachment; filename="%s"' % os.path.basename(file),
+          Name=os.path.basename(file)
+        ))
     config = self.CONFIG
     smtp = smtplib.SMTP(config.getAsString(RequestProcessor.MAIL_HOST))
-    smtp.sendmail(config.getAsString(RequestProcessor.MAIL_SENDER),recipients,message)
+    smtp.sendmail(config.getAsString(RequestProcessor.MAIL_SENDER),recipients,packet.as_string())
 
   def consume(self, client, frame):
     parameters = frame.body
@@ -33,12 +47,17 @@ class RequestProcessor:
     # email results
     message = "Result: " + artp3Result
     parameters = json.loads(parameters)
-    self.composeMail(parameters['email'],message)
+    files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
+    if (parameters['refinep']):
+        files.append(os.path.join(parameters['outdir'],'2.Rdata'))
+    self.composeMail(parameters['email'],message,files)
     # remove the already used files
     for study in parameters['studies']:
       os.remove(study['filename'])
     if (parameters['pathway_type'] == 'file_pathway'):
       os.remove(parameters['file_pathway'])
+    for file in files:
+      os.remove(file)
 
   @defer.inlineCallbacks
   def run(self):
