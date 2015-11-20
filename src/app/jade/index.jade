@@ -4,6 +4,7 @@ html(lang="en")
       meta(name="viewport", content="width=device-width, initial-scale=1.0")
       meta(http-equiv="X-UA-Compatible", content="IE=edge")
       meta(http-equiv="Pragma", content="no-cache")
+      link(href='https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css', rel='stylesheet', type='text/css')
       link(href='https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css', rel='stylesheet', type='text/css')
       link(href='/common/css/style.css', rel='stylesheet', type='text/css')
       link(href='styles.css', rel='stylesheet', type='text/css')
@@ -11,13 +12,14 @@ html(lang="en")
       script(src='https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', type='application/javascript')
       script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js', type='application/javascript')
       script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js', type='application/javascript')
+      script(src='https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js', type='application/javascript')
       script(src='/common/js/popover-functions.js', type='application/javascript')
       script(src='main.js', type='application/javascript')
     body
         include templates/header
         #content
             #subHeading Calculate gene and pathway using the ARTP test and summary data.
-            #errorDisplay.ui-state-error
+            #errorDisplay.box-error
             #successBox
                 span.ui-icon.ui-icon-circle-check
                 #message

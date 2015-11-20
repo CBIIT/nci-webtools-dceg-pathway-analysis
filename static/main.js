@@ -9,8 +9,26 @@ $(function() {
     });
 
    
-    $("button").button();
+    $(pathForm.population).multipleSelect(
+        {
+            name: pathForm.population.id,
+            width: "100%",
+            placeholder:"Select Population(s)",
+            selectAll: false,
+            multiple: true,
+            multipleWidth: 300,
+            minimumCountSelected: 2,
+            countSelected: false,
+            onClick:function(view) {
+               $(pathForm.population).validate();
+            },
+            onOptgroupClick:function(view) {
+               $(pathForm.population).validate();
+            }
+        });
 
+   
+    $("button").button();
     $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 });
 
@@ -19,19 +37,18 @@ $(window).load(function() {
         .on("change", changeRadioSelection);
 });
 
-function resetForm(e) {
-
+function resetForm() {
     $(pathForm).find(".studies").each(function(i, el) {
         if(i !== 0) $(this).detach();
         else {
-            $(lambda_1).val(1.0);
+            $(lambda_1).val("1.0");
+            $(num_resource_1, pathForm.study_1).val("");
             $(pathForm).find(".studyResources").detach();
         }
     });
 
     $(database_pathway_option).attr("checked", "checked");
-    $("#population option:first").attr("selected", "selected");
-
+    $(population).multipleSelect("uncheckAll");
     $(nperm).val((1e5).toExponential());
     $(miss_rate).val(0.05);
     $(maf).val(0.05);
@@ -42,7 +59,13 @@ function resetForm(e) {
     $(snp_percent).val(0);
     $(gene_n).val(10);
     $(gene_percent).val(0.05);
-    $(email).val("");
+    $(email,file_pathway).val("");
+    $(refinep)[0].checked = false;
+    $(gene_subset)[0].checked = false;
+    $(database_pathway_option)[0].checked = true;
+    $(database_pathway).find("option:first-child").attr("selected", "selected");
+
+    $(pathForm).validate().resetForm();
 }
 
 function clickCalculate(e) {
@@ -51,6 +74,9 @@ function clickCalculate(e) {
     var proceed = $(pathForm).valid();
 
     if (proceed) {
+        $(pathForm).find('.error').each(function( ind,el) {
+            $(el).removeClass('error');
+        });
         $("#calculate").hide();
         $("progress").show();
 
@@ -58,18 +84,47 @@ function clickCalculate(e) {
         var numStudies = 0;
 
         $.each(pathForm, function(ind, el) {
+            if( $(el).is("hidden") ||
+               el.id.indexOf("population") > -1 ||
+               el.name.indexOf("population") > -1) { return true;}
+
            
             if(el.id.indexOf("study") > -1) numStudies++;
 
            
-            if(el.type == "checkbox") formData.append(el.id, el.checked);
+            if(el.type == "checkbox"){
+                if(el.checked && el.id)
+                    formData.append(el.id, el.checked);
+            }
         });
 
+        formData.append('populations', $(pathForm.population).multipleSelect("getSelects"));
         formData.append('num_studies', numStudies);
 
         sendForm(formData).then(submission_result, submission_error)
             .always(post_request);
     }
+    else {
+        document.querySelector("#errorDisplay").scrollIntoView(true);
+    }
+}
+
+function retrieveMultiselects(selectedItems) {
+    var valuesContainer = {};
+
+    $.each(selectedItems, function(i, item) {
+        var groupCode = $(pathForm.population).find("option[value='" + item + "']")
+        .parent().attr("label");
+
+       
+       
+        if(!valuesContainer[groupCode])
+            valuesContainer[groupCode] = [item];
+        else
+            valuesContainer[groupCode].push(item);
+    });
+
+    return valuesContainer;
 }
 
 function changeRadioSelection(){
@@ -93,17 +148,19 @@ function displayErrors(el, messagesArray){
 }
 
 
-var serviceBase = window.location.hostname + "/Pathway/";
+var serviceBase = "/pathwayRest/";
+var buttons = $("button").button();
+
 $(function(){
     var count = 2;
     var hold = function() {
-      count--;
-      if (count <= 0)
-        post_request();
+        count--;
+        if (count <= 0)
+            post_request();
     };
    
     retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
-    retrieve_populations().then(apply_options($(pathForm.population)), get_options_error("population")).always(hold);
+    retrieve_populations().then(apply_multiselect_options($(pathForm.population)), get_options_error("population")).always(hold);
 });
 
 function pre_request() {
@@ -112,7 +169,7 @@ function pre_request() {
 
    
     $(pathForm).find(":input").prop("disabled",true);
-    $("button").button("disable");
+    buttons.button("disable");
 }
 
 function post_request() {
@@ -121,15 +178,14 @@ function post_request() {
     $("progress, #spinner").hide();
 
    
-    $("button").button("enable");
+    buttons.button("enable");
     $(pathForm).find(":input").removeAttr("disabled");
 }
 
 function submission_result(response) {
-    console.log(response.data);
-
     if(response.success){
-       
+        resetForm();
+
        
         $( "#successBox #message" ).text(response.message);
         $( "#successBox").show();
@@ -139,32 +195,68 @@ function submission_result(response) {
             $( "#successBox" ).fadeOut().hide();
             $( "#successBox #message" ).html("");
         }, 10000);
-
     }
+}
+
+function apply_multiselect_options(element){
+    population_labels ={'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
+
+    return function(data) {
+        $.each(data, function (key, population) {
+            var optGroup = $(element).has("optgroup[label='" + population.group + "']").length > 0 ? $(element).find("optgroup[label='" + population.group + "']") : $("<optgroup label='" + population.group + "'/>");
+
+            var superLabel = population_labels[population.group].fullName;
+            var subLabel = population_labels[population.group].subPopulations[population.subPopulation];
+            var option = $("<option />", { value: population.group+"|"+population.subPopulation, text: subLabel });
+
+            optGroup.append(option);
+
+            $(element).append(optGroup).multipleSelect('refresh');
+        });
+
+        $(element).multipleSelect("uncheckAll");
+
+        $(".group input[type='checkbox']").on("click", function(e) {
+            var targetedElement = e.target;
+           
+            var otherGroups = $("label.optgroup").not(this.parentElement);
+
+            otherGroups.find("input[type='checkbox']").not(targetedElement).each(function(i, el){
+                if(el != targetedElement && el.checked) {
+                    $(el).trigger("click");
+                }
+            });
+
+            if(!targetedElement.checked){
+                $(targetedElement).trigger("click");
+            }
+           
+        });
+    };
 }
 
 function apply_options(element){
     return function(data) {
         data.forEach(function(item, i) {
             var option = $("<option></option>");
-
             $(option).val(item.code);
             $(option).text(item.text);
-
             element.append(option);
         });
     };
 }
 
 function submission_error(request, statusText, error) {
+    var errorObj = JSON.parse(request.responseText);
+
     displayErrors("#errorDisplay",
-                  ["The request failed with the following message: <br/> "+ request.responseText + "'"]);
+                  ["The request failed with the following message: <br/> "+ errorObj.message]);
 }
 
 function get_options_error(option_type) {
     return function(request, statusText, error) {
         displayErrors("#errorDisplay",
-          ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+                      ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
     };
 }
 
@@ -194,7 +286,7 @@ function sendForm(formData) {
 
 function retrieve_pathways(){
     return $.ajax({
-        url: "/pathwayRest/options/pathway_options/",
+        url: serviceBase + "options/pathway_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
@@ -205,7 +297,7 @@ function retrieve_pathways(){
 
 function retrieve_populations(){
     return $.ajax({
-        url: "/pathwayRest/options/population_options/",
+        url: serviceBase + "options/population_options/",
         type: "GET",
         beforeSend: pre_request,
         contentType: "application/json",
@@ -218,20 +310,45 @@ function retrieve_populations(){
 
 
 $(window).on('load', function(){
-    $(".addControl")
+    $(".addControl[title='study']")
         .button({text: true, icons: {primary: "ui-icon-circle-plus"}})
         .on("click", function(e){
         e.preventDefault();
 
         var previousValid = false;
-        var validator = $(pathForm).validate();
         $(pathForm).find(".studies input").each(function(i, el) {
+            var validator = $(this).validate();
             previousValid = validator.element("#" + el.id);
             return previousValid;
         });
 
         if(previousValid)
             addStudy();
+    });
+
+    $(".addControl[title='resource']")
+        .button({ text: false, icons: {primary: "ui-icon-circle-plus" }})
+        .on("click", function(e) {
+            e.preventDefault();
+
+            var el = $(this);
+            var previousValid = false;
+            var validator = $(pathForm).validate();
+
+            var resource_tb = $(this).prev();
+            var resourceValue = resource_tb.val();
+
+            previousValid = resource_tb.validator.element("#" + resource_tb.id);
+
+            if(previousValid){
+                for(var i = 0; i != resourceValue; i++) {
+                   
+                   
+                    $(el.parent().parent()[0]).append(
+                        addStudyResource(el.prop('id').substr(13),(i+1))
+                    );
+                }
+            }
     });
 
     addStudy();// add first element by default
@@ -241,7 +358,7 @@ $(window).on('load', function(){
         var studyTemplate = $("#snippets").find(".studies").clone();
 
        
-        var studyCount = $("form .studies").length;
+        var studyCount = $(pathForm).find(".studies").length;
         var studyIndex = studyCount + 1;
 
         studyTemplate.find(".studyTitle").append(studyIndex);
@@ -260,26 +377,32 @@ $(window).on('load', function(){
        
         $("#studyEntry").append(studyTemplate);
 
-        $("#studyEntry .studies:last")
-            .find("input[id*='num_resource']")
+        var activeIndex = $("#studyEntry").accordion("option", "active");
+
+        $(pathForm)
+            .find(".studies:nth("+ activeIndex+ ") input[id*='num_resource']")
             .on("change", function(e) {
             if(Number(this.value)) {
-                $("#studyEntry .studies:last .studyResources").remove();
+                var choice;
+                if(this.value > 20)
+                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
+                else
+                    choice = true;
 
-                for(var i = 0; i != this.value; i++) {
-                   
-                   
-                    $($(this).parent().parent()[0]).append(
-                        addStudyResource($(this).prop('id').substr(13),(i+1))
-                    );
+                if(choice) {
+                    if($(pathForm).find(".studyResources").length > 0)
+                        $(pathForm).find(".studyResources").detach();
+
+                    for(var i = 0; i != this.value; i++) {
+                       
+                       
+                        $(addStudyResource(
+                            $(this).prop('id').substr(13), (i+1) ).appendTo("#studyEntry .studies:nth("+ activeIndex+ ") ul")
+                         );
+                    }
                 }
             }
         });
-
-
-
-
-
 
         $(pathForm).find(".studies:last")
             .find("input, select")
@@ -310,11 +433,10 @@ $(window).on('load', function(){
        
         $("#studyEntry").accordion( "refresh" );
 
-        if(studyCount >= 1){
-            $("#studyEntry").accordion({
-                active: studyCount
-            });
-        }
+        $("#studyEntry").accordion({
+            active: studyCount
+        });
+
     }
 
     function addStudyResource(study,ind) {
@@ -336,11 +458,36 @@ $(window).on('load', function(){
 
     function removeStudyResource(parentElement, ind) {
        
-        parentElement.find(".studyResources:nth(" + ind + ") input").each(function(){
+        parentElement.find(".studyResources:nth(" + ind + ") input").each(function() {
             $(this).rules("remove");
             $(this).remove();
         });
     }
+
+    function createConfirmationBox(messageText) {
+        $("<div />").html(messageText).dialog({
+            width: 450,
+            buttons: [
+                {
+                    text: "Yes",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return true;
+                    }
+                },
+                {
+                    text: "No",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return false;
+                    }
+                }
+            ],
+            resizable: false,
+            modal: true
+        });
+    }
+
 });
 
 var terms = {
@@ -438,6 +585,13 @@ $(function(){
                 }
             }
         },
+        population: {
+            required: {
+                depends: function(element) {
+                    return $(element).multipleSelect('getSelects').length <= 0;
+                }
+            }
+        },
         nperm:{
             required: true,
             scientific_notation_check: true,
@@ -507,6 +661,9 @@ $(function(){
         database_pathway:{
             required: "You must select a pathway from the server",
         },
+        population:{
+            required: "You must select at least one population",
+        },
         nperm:{
             required: "nperm is required",
         },
@@ -557,7 +714,7 @@ $(function(){
         errorLabelContainer: "#errorDisplay",
         errorPlacement: function(error, element) {
             errors_div.find("ul").append(error);
-            $(element).addClass("ui-state-error");
+            $(element).addClass("error");
         },
         showErrors: function(errorMap, errorList) {
            
@@ -568,24 +725,27 @@ $(function(){
                 this.defaultShowErrors();
 
                 errors_div.show();
-                document.querySelector("#errorDisplay").scrollIntoView(true);
             } else {
-                $(pathForm).find('input,select').removeClass('ui-state-error');
+                $(pathForm).find('input,select').removeClass('error');
                 errors_div.hide().empty();
             }
-        },
-        highlight: function (el, errorClass,validClass) {
-            $(el).addClass("ui-state-error");
-        },
-        unhighlight: function (el, errorClass,validClass) {
-            $(el).removeClass("ui-state-error");
         }
     });
 
    
     $(pathForm).validate({
+        ignore: ":hidden:not('#population')",
         rules: validationElements,
         messages: validationMessages,
+        highlight: function (el, errorClass,validClass) {
+            if(el.id != "population")
+                $(el).addClass(errorClass);
+            else
+                $(el).next().addClass(errorClass);
+        },
+        unhighlight: function (el, errorClass,validClass) {
+            $(el).removeClass(errorClass);
+        }
     });
 
    

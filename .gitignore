@@ -1,3 +1,4 @@
+.Rhistory
 *.pyc
 config.ini
 examples/
@@ -7,4 +8,10 @@ static/common
 static/test/
 tests/
 uploads/
+hg19_4k_paths/
+Example_data/
+PLINK/
+subj.id/
+out/
 !uploads/.placeholder
+!out/.placeholder

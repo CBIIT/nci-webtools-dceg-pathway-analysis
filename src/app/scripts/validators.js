@@ -25,6 +25,13 @@ $(function(){
                 }
             }
         },
+        population: {
+            required: {
+                depends: function(element) {
+                    return $(element).multipleSelect('getSelects').length <= 0;
+                }
+            }
+        },
         nperm:{
             required: true,
             scientific_notation_check: true,
@@ -94,6 +101,9 @@ $(function(){
         database_pathway:{
             required: "You must select a pathway from the server",
         },
+        population:{
+            required: "You must select at least one population",
+        },
         nperm:{
             required: "nperm is required",
         },
@@ -144,7 +154,7 @@ $(function(){
         errorLabelContainer: "#errorDisplay",
         errorPlacement: function(error, element) {
             errors_div.find("ul").append(error);
-            $(element).addClass("ui-state-error");
+            $(element).addClass("error");
         },
         showErrors: function(errorMap, errorList) {
             // 'this' refers to the form
@@ -155,24 +165,27 @@ $(function(){
                 this.defaultShowErrors();
 
                 errors_div.show();
-                document.querySelector("#errorDisplay").scrollIntoView(true);
             } else {
-                $(pathForm).find('input,select').removeClass('ui-state-error');
+                $(pathForm).find('input,select').removeClass('error');
                 errors_div.hide().empty();
             }
-        },
-        highlight: function (el, errorClass,validClass) {
-            $(el).addClass("ui-state-error");
-        },
-        unhighlight: function (el, errorClass,validClass) {
-            $(el).removeClass("ui-state-error");
         }
     });
 
     // specific validations only for pathForm
     $(pathForm).validate({
+        ignore: ":hidden:not('#population')",
         rules: validationElements,
         messages: validationMessages,
+        highlight: function (el, errorClass,validClass) {
+            if(el.id != "population")
+                $(el).addClass(errorClass);
+            else
+                $(el).next().addClass(errorClass);
+        },
+        unhighlight: function (el, errorClass,validClass) {
+            $(el).removeClass(errorClass);
+        }
     });
 
     // custom validator for scientific notation
