@@ -10,7 +10,7 @@ $(function(){
             post_request();
     };
     // retrive options from server
-    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
+    retrieve_pathways().then(apply_options_combobox($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
     retrieve_populations().then(apply_multiselect_options($(pathForm.population)), get_options_error("population")).always(hold);
 });
 
@@ -86,7 +86,7 @@ function apply_multiselect_options(element){
     };
 }
 
-function apply_options(element){
+function apply_options_combobox(element){
     return function(data) {
         data.forEach(function(item, i) {
             var option = $("<option></option>");
@@ -94,6 +94,8 @@ function apply_options(element){
             $(option).text(item.text);
             element.append(option);
         });
+
+        element.combobox();
     };
 }
 
