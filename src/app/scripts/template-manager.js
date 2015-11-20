@@ -2,20 +2,45 @@
 // or removing dynamic templates from the DOM here
 
 $(window).on('load', function(){
-    $(".addControl")
+    $(".addControl[title='study']")
         .button({text: true, icons: {primary: "ui-icon-circle-plus"}})
         .on("click", function(e){
         e.preventDefault();
 
         var previousValid = false;
-        var validator = $(pathForm).validate();
         $(pathForm).find(".studies input").each(function(i, el) {
+            var validator = $(this).validate();
             previousValid = validator.element("#" + el.id);
             return previousValid;
         });
 
         if(previousValid)
             addStudy();
+    });
+
+    $(".addControl[title='resource']")
+        .button({ text: false, icons: {primary: "ui-icon-circle-plus" }})
+        .on("click", function(e) {
+            e.preventDefault();
+
+            var el = $(this);
+            var previousValid = false;
+            var validator = $(pathForm).validate();
+
+            var resource_tb = $(this).prev();
+            var resourceValue = resource_tb.val();
+
+            previousValid = resource_tb.validator.element("#" + resource_tb.id);
+
+            if(previousValid){
+                for(var i = 0; i != resourceValue; i++) {
+                    // what they enter for num_resource should
+                    // control the times addStudyResource is run
+                    $(el.parent().parent()[0]).append(
+                        addStudyResource(el.prop('id').substr(13),(i+1))
+                    );
+                }
+            }
     });
 
     addStudy();// add first element by default
@@ -25,7 +50,7 @@ $(window).on('load', function(){
         var studyTemplate = $("#snippets").find(".studies").clone();
 
         // get count of existing study elements
-        var studyCount = $("form .studies").length;
+        var studyCount = $(pathForm).find(".studies").length;
         var studyIndex = studyCount + 1;
 
         studyTemplate.find(".studyTitle").append(studyIndex);
@@ -44,26 +69,32 @@ $(window).on('load', function(){
         // place new control before add button
         $("#studyEntry").append(studyTemplate);
 
-        $("#studyEntry .studies:last")
-            .find("input[id*='num_resource']")
+        var activeIndex = $("#studyEntry").accordion("option", "active");
+
+        $(pathForm)
+            .find(".studies:nth("+ activeIndex+ ") input[id*='num_resource']")
             .on("change", function(e) {
             if(Number(this.value)) {
-                $("#studyEntry .studies:last .studyResources").remove();
+                var choice;
+                if(this.value > 20)
+                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
+                else
+                    choice = true;
 
-                for(var i = 0; i != this.value; i++) {
-                    // what they enter for num_resource should
-                    // control the times addStudyResource is run
-                    $($(this).parent().parent()[0]).append(
-                        addStudyResource($(this).prop('id').substr(13),(i+1))
-                    );
+                if(choice) {
+                    if($(pathForm).find(".studyResources").length > 0)
+                        $(pathForm).find(".studyResources").detach();
+
+                    for(var i = 0; i != this.value; i++) {
+                        // what they enter for num_resource should
+                        // control the times addStudyResource is run
+                        $(addStudyResource(
+                            $(this).prop('id').substr(13), (i+1) ).appendTo("#studyEntry .studies:nth("+ activeIndex+ ") ul")
+                         );
+                    }
                 }
             }
         });
-
-//        $(pathForm).find(".studies:last")
-//            .find(".tooltip")
-//            .on("click", activateTooltips)
-//            .on("hover", activateTooltips);
 
         $(pathForm).find(".studies:last")
             .find("input, select")
@@ -94,11 +125,10 @@ $(window).on('load', function(){
         // refresh accordion
         $("#studyEntry").accordion( "refresh" );
 
-        if(studyCount >= 1){
-            $("#studyEntry").accordion({
-                active: studyCount
-            });
-        }
+        $("#studyEntry").accordion({
+            active: studyCount
+        });
+
     }
 
     function addStudyResource(study,ind) {
@@ -120,9 +150,34 @@ $(window).on('load', function(){
 
     function removeStudyResource(parentElement, ind) {
         // remove the rules
-        parentElement.find(".studyResources:nth(" + ind + ") input").each(function(){
+        parentElement.find(".studyResources:nth(" + ind + ") input").each(function() {
             $(this).rules("remove");
             $(this).remove();
         });
     }
+
+    function createConfirmationBox(messageText) {
+        $("<div />").html(messageText).dialog({
+            width: 450,
+            buttons: [
+                {
+                    text: "Yes",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return true;
+                    }
+                },
+                {
+                    text: "No",
+                    click: function() {
+                        $( this ).dialog( "close" );
+                        return false;
+                    }
+                }
+            ],
+            resizable: false,
+            modal: true
+        });
+    }
+
 });
