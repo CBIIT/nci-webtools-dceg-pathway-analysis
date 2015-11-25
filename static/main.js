@@ -280,7 +280,7 @@ function displayErrors(el, messagesArray){
 }
 
 
-var serviceBase = "/pathwayRest/";
+var serviceBase = "pathwayRest/";
 var buttons = $("button").button();
 
 $(function(){

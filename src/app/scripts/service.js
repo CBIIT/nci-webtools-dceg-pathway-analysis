@@ -1,5 +1,5 @@
 // handle sevice call and actions here
-var serviceBase = "/pathwayRest/";
+var serviceBase = "pathwayRest/";
 var buttons = $("button").button();
 
 $(function(){
