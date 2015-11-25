@@ -45,11 +45,14 @@ class RequestProcessor:
     # Run R-Script
     artp3Result = self.r_runARTP3(parameters)[0]
     # email results
-    message = "Result: " + artp3Result
     parameters = json.loads(parameters)
     files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
     if (parameters['refinep']):
         files.append(os.path.join(parameters['outdir'],'2.Rdata'))
+        artp3Result = json.loads(artp3Result)
+        message = "Unrefined Result: " + str(artp3Result[0]) + "\nRefined Result: " + str(artp3Result[1])
+    else:
+        message = "Result: " + artp3Result
     self.composeMail(parameters['email'],message,files)
     # remove the already used files
     for study in parameters['studies']:
@@ -80,4 +83,3 @@ class RequestProcessor:
 if __name__ == '__main__':
   RequestProcessor().run()
   reactor.run()
-
