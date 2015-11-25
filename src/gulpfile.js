@@ -35,6 +35,8 @@ if (gutil.env.env === 'production') {
     production = true;
 }
 
+gulp.task('default',['build']);
+
 gulp.task('build', ['jade-compile', 'bower', 'js:copy', 'css'], function(){
     notifier.notify({
         title: 'Compilation Complete',
