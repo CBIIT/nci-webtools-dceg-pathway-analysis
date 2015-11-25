@@ -20,10 +20,10 @@ $(function() {
             minimumCountSelected: 2,
             countSelected: false,
             onClick:function(view) {
-               $(pathForm.population).validate();
+                $(pathForm.population).validate();
             },
             onOptgroupClick:function(view) {
-               $(pathForm.population).validate();
+                $(pathForm.population).validate();
             }
         });
 
@@ -43,6 +43,8 @@ function resetForm() {
         else {
             $(lambda_1).val("1.0");
             $(num_resource_1, pathForm.study_1).val("");
+            $(study_1).wrap("<form>").closest("form").get(0).reset();
+            $(study_1).unwrap();
             $(pathForm).find(".studyResources").detach();
         }
     });
@@ -59,13 +61,17 @@ function resetForm() {
     $(snp_percent).val(0);
     $(gene_n).val(10);
     $(gene_percent).val(0.05);
-    $(email,file_pathway).val("");
+    $(email).val("");
+    $(".custom-combobox input").val("");
     $(refinep)[0].checked = false;
     $(gene_subset)[0].checked = false;
     $(database_pathway_option)[0].checked = true;
     $(database_pathway).find("option:first-child").attr("selected", "selected");
+    $(file_pathway).wrap("<form>").closest("form").get(0).reset();
+    $(file_pathway).unwrap();
 
     $(pathForm).validate().resetForm();
+    $(pathForm).find("button,input,select,div,span").removeClass("error");
 }
 
 function clickCalculate(e) {
