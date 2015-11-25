@@ -42,8 +42,13 @@ class RequestProcessor:
 
   def consume(self, client, frame):
     parameters = frame.body
-    # Run R-Script
-    artp3Result = self.r_runARTP3(parameters)[0]
+    try:
+      # Run R-Script
+      artp3Result = self.r_runARTP3(parameters)[0]
+    except Exception as e:
+      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_SENDER),str(e)+"\n\n"+parameters)
+      self.composeMail(json.loads(parameters)['email'],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem.")
+      return
     # email results
     parameters = json.loads(parameters)
     files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
