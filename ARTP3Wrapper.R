@@ -1,4 +1,4 @@
-library(RJSONIO)
+library(rjson)
 library(ARTP3)
 
 runARTP3 <- function(parameters) {
