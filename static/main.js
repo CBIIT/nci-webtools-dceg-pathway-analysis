@@ -151,10 +151,10 @@ $(function() {
             minimumCountSelected: 2,
             countSelected: false,
             onClick:function(view) {
-               $(pathForm.population).validate();
+                $(pathForm.population).validate();
             },
             onOptgroupClick:function(view) {
-               $(pathForm.population).validate();
+                $(pathForm.population).validate();
             }
         });
 
@@ -174,6 +174,8 @@ function resetForm() {
         else {
             $(lambda_1).val("1.0");
             $(num_resource_1, pathForm.study_1).val("");
+            $(study_1).wrap("<form>").closest("form").get(0).reset();
+            $(study_1).unwrap();
             $(pathForm).find(".studyResources").detach();
         }
     });
@@ -190,13 +192,17 @@ function resetForm() {
     $(snp_percent).val(0);
     $(gene_n).val(10);
     $(gene_percent).val(0.05);
-    $(email,file_pathway).val("");
+    $(email).val("");
+    $(".custom-combobox input").val("");
     $(refinep)[0].checked = false;
     $(gene_subset)[0].checked = false;
     $(database_pathway_option)[0].checked = true;
     $(database_pathway).find("option:first-child").attr("selected", "selected");
+    $(file_pathway).wrap("<form>").closest("form").get(0).reset();
+    $(file_pathway).unwrap();
 
     $(pathForm).validate().resetForm();
+    $(pathForm).find("button,input,select,div,span").removeClass("error");
 }
 
 function clickCalculate(e) {
@@ -800,36 +806,52 @@ $(function(){
         },
         nperm:{
             required: "nperm is required",
+            scientific_notation_check: "The value you entered for nperm is invalid. The value must be a floating number or in scientific notation.",
+            max: "The value for nperm must be less than " + Number(1e7)
         },
         lambda: {
             required: "Lambda is required",
+            min: "The value you entered for lambda is invalid. The value must be a greater than or equal to 1."
         },
         miss_rate: {
-            required: "snp.miss.rate is required",//decimal"
+            required: "snp.miss.rate is required",
+            scientific_notation_check: "The value you entered for snp.miss.rate is invalid. The value must be a floating number or in scientific notation.",
+            range: "The value you entered for snp.miss.rate is invalid. The value must be a floating number between 0 and 1."
         },
         maf: {
             required: "maf is required",//decimal"
+            range: "The value you entered for maf is invalid. The value must be a floating number between 0 and 0.5.",
+            scientific_notation_check: "The value you entered for maf is invalid. The value must be a floating number or in scientific notation."
         },
         hwep:{
             required: "HWE.p is required",
+            range: "The value you entered for HWE.p is invalid. The value must be a floating number between 0 and 1.",
+            scientific_notation_check: "The value you entered for HWE.p is invalid. The value must be a floating number or in scientific notation."
         },
         gene: {
-            required: "Gene.R2 is required",//decimal"
+            required: "Gene.R2 is required",
+            range: "The value you entered for Gene.R2 is invalid. The value must be a floating number between 0 and 1.",
+            scientific_notation_check: "The value you entered for Gene.R2 is invalid. The value must be a floating number or in scientific notation."
         },
         chr: {
-            required: "Chr.R2 is required",//decimal"
+            required: "Chr.R2 is required",
+            range: "The value you entered for Chr.R2 is invalid. The value must be a floating number between 0 and 1.",
+            scientific_notation_check: "The value you entered for Chr.R2 is invalid. The value must be a floating number or in scientific notation."
         },
         snp_n: {
-            required: "inspect.snp.n is required",//integer
+            required: "inspect.snp.n is required",
+            min: "The value you entered for inspect.snp.n is invalid. The value must be a greater than or equal to 1."
         },
         snp_percent: {
             required: "inspect.snp.percent is required",//decimal"
         },
         gene_n: {
-            required: "inspect.gene.n is required",//integer
+            required: "inspect.gene.n is required",
+            min: "The value you entered for inspect.gene.n is invalid. The value must be a greater than or equal to 1."
         },
         gene_percent: {
             required: "inspect.gene.percent is required",
+            range: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number between 0 and 1."
         },
         email: {
             required: "An E-Mail address is required",
@@ -890,7 +912,7 @@ $(function(){
         if(Number(value))
             return true;
         return false;
-    }, jQuery.validator.format('The value you entered for {0} is invalid. The value must be a floating number or in scientific notation.'));
+    });
 
     jQuery.validator.addMethod('comma_delim_numerical_check', function(valuesString, el) {
         var valid = false;
