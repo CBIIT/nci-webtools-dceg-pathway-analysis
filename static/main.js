@@ -130,6 +130,15 @@ $.widget( "custom.combobox", {
 });
 
 $(function() {
+    $(pathForm).on('keyup keypress', function(e) {
+       
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
     $("#calculate").on("click", clickCalculate);
     $("#reset").on("click", resetForm);
     $("#errorDisplay, #successBox,progress").hide();
@@ -457,9 +466,8 @@ $(window).on('load', function(){
 
         var previousValid = false;
         $(pathForm).find(".studies input").each(function(i, el) {
-            var validator = $(this).validate();
-            previousValid = validator.element("#" + el.id);
-            return previousValid;
+            var validator = $(el).validate().element("#" + el.id);
+            return validator;
         });
 
         if(previousValid)
@@ -473,9 +481,9 @@ $(window).on('load', function(){
 
             var el = $(this);
             var previousValid = false;
-            var validator = $(pathForm).validate();
-
             var resource_tb = $(this).prev();
+            var validator = resource_tb.validate();
+
             var resourceValue = resource_tb.val();
 
             previousValid = resource_tb.validator.element("#" + resource_tb.id);
@@ -730,7 +738,8 @@ $(function(){
                 depends: function(element) {
                     return element.value.length === 0;
                 }
-            }
+            },
+            multiselect_group_check:true
         },
         nperm:{
             required: true,
@@ -803,6 +812,7 @@ $(function(){
         },
         population:{
             required: "You must select at least one population",
+            multiselect_group_check: "You selected populations from more than one super population group. Only populations from the same super population group can be selected at a time."
         },
         nperm:{
             required: "nperm is required",
@@ -936,7 +946,24 @@ $(function(){
         var splitFilenameLength = splitFilename.length;
         var fileExtension = splitFilename[splitFilenameLength - 1];
 
-        return fileExtension == validExtension || fileExtension == "txt" ;
+        return fileExtension == validExtension || fileExtension == "txt" || fileExtension == "gz";
     }, jQuery.validator.format("You must upload a valid (.{0} or .txt) file."));
+
+    jQuery.validator.addMethod('multiselect_group_check', function(values, el) {
+        var single_group_code = values[0].split("|")[0];
+        var valid = false;
+        $.each(values,function(index, selectionValue) {
+            var this_code = selectionValue.split("|")[0];
+            valid = ( this_code == single_group_code ? true : false);
+
+            if(valid){
+                $(el).find('.error').removeClass('error');
+                $('.ms-parent').find('.error').removeClass('error');
+            }
+
+            return valid;
+        });
+        return valid;
+    });
 
 });
