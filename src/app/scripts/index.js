@@ -81,6 +81,8 @@ function resetForm() {
 
     $(pathForm).validate().resetForm();
     $(pathForm).find("button,input,select,div,span").removeClass("error");
+
+    $("#studyEntry").accordion("option", "active", 0);
 }
 
 function clickCalculate(e) {
