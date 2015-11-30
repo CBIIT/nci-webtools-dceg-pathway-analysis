@@ -9,9 +9,8 @@ $(window).on('load', function(){
 
         var previousValid = false;
         $(pathForm).find(".studies input").each(function(i, el) {
-            var validator = $(this).validate();
-            previousValid = validator.element("#" + el.id);
-            return previousValid;
+            var validator = $(el).validate().element("#" + el.id);
+            return validator;
         });
 
         if(previousValid)
@@ -25,9 +24,9 @@ $(window).on('load', function(){
 
             var el = $(this);
             var previousValid = false;
-            var validator = $(pathForm).validate();
-
             var resource_tb = $(this).prev();
+            var validator = resource_tb.validate();
+
             var resourceValue = resource_tb.val();
 
             previousValid = resource_tb.validator.element("#" + resource_tb.id);
