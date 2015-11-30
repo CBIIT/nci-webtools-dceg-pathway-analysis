@@ -466,8 +466,8 @@ $(window).on('load', function(){
 
         var previousValid = false;
         $(pathForm).find(".studies input").each(function(i, el) {
-            var validator = $(el).validate().element("#" + el.id);
-            return validator;
+            previousValid = $(el).validate().element("#" + el.id);
+            return previousValid;
         });
 
         if(previousValid)
