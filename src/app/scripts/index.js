@@ -1,4 +1,13 @@
 $(function() {
+    $(pathForm).on('keyup keypress', function(e) {
+        // disable enter key submitting form
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
     $("#calculate").on("click", clickCalculate);
     $("#reset").on("click", resetForm);
     $("#errorDisplay, #successBox,progress").hide();
