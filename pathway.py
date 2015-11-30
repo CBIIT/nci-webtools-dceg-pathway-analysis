@@ -35,10 +35,6 @@ class Pathway:
       response.status_code = 200
       return response
 
-    @staticmethod
-    def testFileExtension(fileItem,ext):
-        return fileItem.filename.split('.')[-1] == ext
-
     @app.route('/')
     def root():
         return app.send_static_file('index.html')
@@ -122,7 +118,7 @@ class Pathway:
 
                 studyFile = filelist[studyKey]
                 if studyFile.filename:
-                    if Pathway.testFileExtension(studyFile, app.config["ALLOWED_TYPES"][0]):
+                    if studyFile.filename.split('.')[-1] in app.config["ALLOWED_TYPES"]:
                         filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
                         studyObj['filename'] = filename
                         studyFile.save(filename)
@@ -137,7 +133,7 @@ class Pathway:
             if parameters['pathway_type'] == 'file_pathway':
                 pathFile = filelist['file_pathway']
                 if pathFile.filename:
-                    if Pathway.testFileExtension(pathFile, app.config["ALLOWED_TYPES"][1]):
+                    if pathFile.filename.split('.')[-1] in app.config["ALLOWED_TYPES"]:
                         filename = os.path.join(app.config['UPLOAD_FOLDER'],ts + '.pathway')
                         parameters['pathway'] = filename
                         pathFile.save(filename)
@@ -196,7 +192,7 @@ class Pathway:
         app.config['PATHWAY_FOLDER'] = pathwayConfig.getAsString(Pathway.PATHWAY_FOLDER)
         app.config['POPULATION_FOLDER'] = pathwayConfig.getAsString(Pathway.POPULATION_FOLDER)
         app.config['UPLOAD_FOLDER'] = pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER)
-        app.config["ALLOWED_TYPES"] = ['study', 'pathway','txt']
+        app.config["ALLOWED_TYPES"] = ['study','pathway','txt','gz']
         app.run(host='0.0.0.0', port=pathwayConfig.getAsInt(Pathway.PORT), debug=pathwayConfig.getAsBoolean(Pathway.DEBUG))
 
 if __name__ == '__main__':
