@@ -20,26 +20,26 @@ $(window).on('load', function(){
     $(".addControl[title='resource']")
         .button({ text: false, icons: {primary: "ui-icon-circle-plus" }})
         .on("click", function(e) {
-            e.preventDefault();
+        e.preventDefault();
 
-            var el = $(this);
-            var previousValid = false;
-            var resource_tb = $(this).prev();
-            var validator = resource_tb.validate();
+        var el = $(this);
+        var previousValid = false;
+        var resource_tb = $(this).prev();
+        var validator = resource_tb.validate();
 
-            var resourceValue = resource_tb.val();
+        var resourceValue = resource_tb.val();
 
-            previousValid = resource_tb.validator.element("#" + resource_tb.id);
+        previousValid = resource_tb.validator.element("#" + resource_tb.id);
 
-            if(previousValid){
-                for(var i = 0; i != resourceValue; i++) {
-                    // what they enter for num_resource should
-                    // control the times addStudyResource is run
-                    $(el.parent().parent()[0]).append(
-                        addStudyResource(el.prop('id').substr(13),(i+1))
-                    );
-                }
+        if(previousValid){
+            for(var i = 0; i != resourceValue; i++) {
+                // what they enter for num_resource should
+                // control the times addStudyResource is run
+                $(el.parent().parent()[0]).append(
+                    addStudyResource(el.prop('id').substr(13),(i+1))
+                );
             }
+        }
     });
 
     addStudy();// add first element by default
@@ -67,33 +67,6 @@ $(window).on('load', function(){
 
         // place new control before add button
         $("#studyEntry").append(studyTemplate);
-
-        var activeIndex = $("#studyEntry").accordion("option", "active");
-
-        $(pathForm)
-            .find(".studies:nth("+ activeIndex+ ") input[id*='num_resource']")
-            .on("change", function(e) {
-            if(Number(this.value)) {
-                var choice;
-                if(this.value > 20)
-                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
-                else
-                    choice = true;
-
-                if(choice) {
-                    if($(pathForm).find(".studyResources").length > 0)
-                        $(pathForm).find(".studyResources").detach();
-
-                    for(var i = 0; i != this.value; i++) {
-                        // what they enter for num_resource should
-                        // control the times addStudyResource is run
-                        $(addStudyResource(
-                            $(this).prop('id').substr(13), (i+1) ).appendTo("#studyEntry .studies:nth("+ activeIndex+ ") ul")
-                         );
-                    }
-                }
-            }
-        });
 
         $(pathForm).find(".studies:last")
             .find("input, select")
@@ -126,6 +99,36 @@ $(window).on('load', function(){
 
         $("#studyEntry").accordion({
             active: studyCount
+        });
+
+        var activeIndex = $("#studyEntry").accordion("option", "active");
+
+        $(pathForm)
+            .find(".studies:nth(" + activeIndex + ") input[id*='num_resource']")
+            .on("change", function(e) {
+            var activeIndex = $("#studyEntry").accordion("option", "active");
+            if(Number(this.value)) {
+                var choice;
+                if(this.value > 20)
+                    choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
+                else
+                    choice = true;
+
+                if(choice) {
+                    var activeStudyPanel = $("#studyEntry .studies:nth(" + activeIndex + ")");
+
+                    if(activeStudyPanel.find(".studyResources").length > 0)
+                        activeStudyPanel.find(".studyResources").detach();
+
+                    for(var i = 0; i != this.value; i++) {
+                        // what they enter for num_resource should
+                        // control the times addStudyResource is run
+                        $(addStudyResource(
+                            $(this).prop('id').substr(13), (i+1) ).appendTo( activeStudyPanel.find("ul")
+                         ));
+                    }
+                }
+            }
         });
 
     }
