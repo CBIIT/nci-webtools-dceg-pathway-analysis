@@ -17,33 +17,21 @@ $(function() {
         header: ".studyTitle"
     });
 
-    // setting options for the multiselect control
-    $(pathForm.population).multipleSelect(
-        {
-            name: pathForm.population.id,
-            width: "100%",
-            placeholder:"Select Population(s)",
-            selectAll: false,
-            multiple: true,
-            multipleWidth: 300,
-            minimumCountSelected: 2,
-            countSelected: false,
-            onClick:function(view) {
-                $(pathForm.population).validate();
-            },
-            onOptgroupClick:function(view) {
-                $(pathForm.population).validate();
-            }
-        });
-
     // initialize button using jquery ui
-    $("button").button();
+//    $("button").button();
     $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 });
 
 $(window).load(function() {
     $("select[name='database_pathway'], input[name='file_pathway']")
         .on("change", changeRadioSelection);
+
+    $("select#super_population").on('change', function() {
+        apply_multiselect_options(
+            $(population),
+            this.value);
+
+    });
 });
 
 function resetForm() {
@@ -59,7 +47,6 @@ function resetForm() {
     });
 
     $(database_pathway_option).attr("checked", "checked");
-    $(population).multipleSelect("uncheckAll");
     $(nperm).val((1e5).toExponential());
     $(miss_rate).val(0.05);
     $(maf).val(0.05);
@@ -72,14 +59,17 @@ function resetForm() {
     $(gene_percent).val(0.05);
     $(email).val("");
     $(".custom-combobox input").val("");
+    $(population).html("");
     $(refinep)[0].checked = false;
     $(gene_subset)[0].checked = false;
     $(database_pathway_option)[0].checked = true;
     $(database_pathway).find("option:first-child").attr("selected", "selected");
+    $(super_population).find("option:first-child").attr("selected", "selected");
     $(file_pathway).wrap("<form>").closest("form").get(0).reset();
     $(file_pathway).unwrap();
 
     $(pathForm).validate().resetForm();
+    $(population.parentElement).addClass('hide');
     $(pathForm).find("button,input,select,div,span").removeClass("error");
 
     $("#studyEntry").accordion("option", "active", 0);
@@ -131,7 +121,7 @@ function retrieveMultiselects(selectedItems) {
     var valuesContainer = {};
 
     $.each(selectedItems, function(i, item) {
-        var groupCode = $(pathForm.population).find("option[value='" + item + "']")
+        var groupCode = $(population).find("option[value='" + item + "']")
         .parent().attr("label");
 
         // Add values in the population group

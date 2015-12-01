@@ -149,32 +149,20 @@ $(function() {
     });
 
    
-    $(pathForm.population).multipleSelect(
-        {
-            name: pathForm.population.id,
-            width: "100%",
-            placeholder:"Select Population(s)",
-            selectAll: false,
-            multiple: true,
-            multipleWidth: 300,
-            minimumCountSelected: 2,
-            countSelected: false,
-            onClick:function(view) {
-                $(pathForm.population).validate();
-            },
-            onOptgroupClick:function(view) {
-                $(pathForm.population).validate();
-            }
-        });
 
-   
-    $("button").button();
     $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 });
 
 $(window).load(function() {
     $("select[name='database_pathway'], input[name='file_pathway']")
         .on("change", changeRadioSelection);
+
+    $("select#super_population").on('change', function() {
+        apply_multiselect_options(
+            $(population),
+            this.value);
+
+    });
 });
 
 function resetForm() {
@@ -190,7 +178,6 @@ function resetForm() {
     });
 
     $(database_pathway_option).attr("checked", "checked");
-    $(population).multipleSelect("uncheckAll");
     $(nperm).val((1e5).toExponential());
     $(miss_rate).val(0.05);
     $(maf).val(0.05);
@@ -203,14 +190,17 @@ function resetForm() {
     $(gene_percent).val(0.05);
     $(email).val("");
     $(".custom-combobox input").val("");
+    $(population).html("");
     $(refinep)[0].checked = false;
     $(gene_subset)[0].checked = false;
     $(database_pathway_option)[0].checked = true;
     $(database_pathway).find("option:first-child").attr("selected", "selected");
+    $(super_population).find("option:first-child").attr("selected", "selected");
     $(file_pathway).wrap("<form>").closest("form").get(0).reset();
     $(file_pathway).unwrap();
 
     $(pathForm).validate().resetForm();
+    $(population.parentElement).addClass('hide');
     $(pathForm).find("button,input,select,div,span").removeClass("error");
 
     $("#studyEntry").accordion("option", "active", 0);
@@ -262,7 +252,7 @@ function retrieveMultiselects(selectedItems) {
     var valuesContainer = {};
 
     $.each(selectedItems, function(i, item) {
-        var groupCode = $(pathForm.population).find("option[value='" + item + "']")
+        var groupCode = $(population).find("option[value='" + item + "']")
         .parent().attr("label");
 
        
@@ -300,6 +290,8 @@ function displayErrors(el, messagesArray){
 var serviceBase = "pathwayRest/";
 var buttons = $("button").button();
 
+population_labels ={'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
+
 $(function(){
     var count = 2;
     var hold = function() {
@@ -308,8 +300,9 @@ $(function(){
             post_request();
     };
    
-    retrieve_pathways().then(apply_options_combobox($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
-    retrieve_populations().then(apply_multiselect_options($(pathForm.population)), get_options_error("population")).always(hold);
+    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
+    retrieve_populations().then(apply_options($(pathForm.super_population), population_labels), get_options_error("super population")).always(hold);
+   
 });
 
 function pre_request() {
@@ -347,54 +340,60 @@ function submission_result(response) {
     }
 }
 
-function apply_multiselect_options(element){
-    population_labels ={'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
+function apply_multiselect_options(element, group){
+        element.html("");
 
-    return function(data) {
-        $.each(data, function (key, population) {
-            var optGroup = $(element).has("optgroup[label='" + population.group + "']").length > 0 ? $(element).find("optgroup[label='" + population.group + "']") : $("<optgroup label='" + population.group + "'/>");
+        $.each(population_labels[group].subPopulations, function (subCode, text) {
+            var subOption = $("<option />", { value: group + "|" + subCode, text: text });
 
-            var superLabel = population_labels[population.group].fullName;
-            var subLabel = population_labels[population.group].subPopulations[population.subPopulation];
-            var option = $("<option />", { value: population.group+"|"+population.subPopulation, text: subLabel });
-
-            optGroup.append(option);
-
-            $(element).append(optGroup).multipleSelect('refresh');
+            element.append(subOption).multipleSelect('refresh');
+            element.multipleSelect("uncheckAll");
         });
 
-        $(element).multipleSelect("uncheckAll");
-
-        $(".group input[type='checkbox']").on("click", function(e) {
-            var targetedElement = e.target;
-           
-            var otherGroups = $("label.optgroup").not(this.parentElement);
-
-            otherGroups.find("input[type='checkbox']").not(targetedElement).each(function(i, el){
-                if(el != targetedElement && el.checked) {
-                    $(el).trigger("click");
-                }
-            });
-
-            if(!targetedElement.checked){
-                $(targetedElement).trigger("click");
+       
+        element.multipleSelect({
+            name: population.id,
+            width: "100%",
+            placeholder: "Select Sub Population(s)",
+            selectAll: true,
+            multiple: true,
+            multipleWidth: 300,
+            minimumCountSelected: 2,
+            countSelected: false,
+            onClick:function(view) {
+                element.validate();
             }
-           
         });
-    };
+        element.multipleSelect("refresh");
+        $(population.labels[0]).show();
+        element.parent().removeClass('hide');
 }
 
-function apply_options_combobox(element){
-    return function(data) {
-        data.forEach(function(item, i) {
-            var option = $("<option></option>");
-            $(option).val(item.code);
-            $(option).text(item.text);
-            element.append(option);
-        });
-
-        element.combobox();
-    };
+function apply_options(element, items, combo){
+    if (typeof items === 'undefined') {
+        return function(data) {
+            data.forEach(function(item, i) {
+                var option = $("<option></option>");
+                $(option).val(item.code);
+                $(option).text(item.text);
+                element.append(option);
+            });
+            if(data.length > 10)
+                element.combobox();
+        };
+    }
+    else {
+        return function() {
+            $.each(items, function(key, item) {
+                var option = $("<option></option>");
+                $(option).val(key);
+                $(option).text(item.fullName);
+                element.append(option);
+            });
+            if(items.length > 10)
+                element.combobox();
+        };
+    }
 }
 
 function submission_error(request, statusText, error) {
