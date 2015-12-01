@@ -115,7 +115,7 @@ class Pathway:
       parameters['population'] = []
       for population in subpop:
         parameters['population'].append(population)
-      parameters['outdir'] = app.config[Pathway.CONFIG][OUT_FOLDER]
+      parameters['outdir'] = app.config[Pathway.CONFIG][Pathway.OUT_FOLDER]
       parameters['refinep'] = parameters.get('refinep',False)
       parameters['gene_subset'] = parameters.get('gene_subset',False)
 
