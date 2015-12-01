@@ -109,7 +109,6 @@ class Pathway:
       if (len(superpop) > 1):
         return Pathway.buildFailure("An invalid population was submitted.")
       del parameters['populations']
-      del parameters['selectItempopulation']
       for population in superpop:
         parameters['plink'] = app.config[Pathway.CONFIG]['pathway.plink.pattern'].replace("$pop",population)
       parameters['population'] = []

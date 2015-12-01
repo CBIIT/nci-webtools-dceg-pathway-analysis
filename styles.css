@@ -121,7 +121,7 @@ body {
   max-height: 250px;
 }
 .ui-widget {
-  font-size: 1em;
+  font-size: initial !important;
 }
 p {
   padding: 20px 24px;
@@ -230,7 +230,7 @@ label {
 fieldset {
   margin: 2% auto;
   padding: 1em;
-  border: 0.2em groove;
+  border: 0.1em groove;
 }
 legend {
   font-size: 1em;
@@ -259,6 +259,9 @@ form progress {
   width: 300px !important;
   height: 35px !important;
   font-size: inherit;
+}
+form input[name='pathway_type'] {
+  float: inherit;
 }
 form button.ui-button-icon-only,
 form a.ui-button {
@@ -310,7 +313,11 @@ progress {
 }
 .buttonGroup {
   margin: 0 auto;
-  max-width: 300px;
+  width: 550px;
+}
+.buttonGroup button {
+  width: 250px !important;
+  display: inline-block;
 }
 .input {
   float: right;
@@ -333,7 +340,8 @@ progress {
   margin: 0 auto;
   display: none;
 }
-#snippets {
+#snippets,
+.hide {
   display: none;
 }
 footer {

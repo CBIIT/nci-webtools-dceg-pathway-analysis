@@ -9,21 +9,28 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
         li
           label(for='database_pathway')
             input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-            | Select from the server:
+            label(for="database_pathway_option") Select from the server:
           .input.ui-widget
             select#database_pathway(name='database_pathway')
                 option(value='') -- Select from existing pathways --
         li
             label(for='file_pathway')
                 input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
-                | Upload from the client:
+                label(for="file_pathway_option") Upload from the client:
             .input
                 input#file_pathway(type='file', name='file_pathway')
     fieldset
-      legend.termToDefine(data-term="population")
-        label(for='population') Select the population:
-      .input
-        select#population(name='population' ,required='', multiple)
+        legend.termToDefine(data-term="population") Select the population:
+        ul
+            li
+                .input
+                    label(for="super_population") Super Population:
+                    select#super_population(required='')
+                        option(value='') -- Select a Super Population --
+            li
+                .input.hide
+                    label(for="population") Sub Population:
+                    select#population(required='', multiple)
     fieldset
       legend Set the following options:
       ul
@@ -81,7 +88,7 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
             .input
                 input#email(type='email', name='email', required='')
     .buttonGroup
-        button#reset(type='button') Reset
         button#calculate(type='button') Calculation
+        button#reset(type='button') Reset
         progress(value='0')
     #spinner

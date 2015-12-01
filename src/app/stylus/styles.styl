@@ -1,3 +1,5 @@
+@import 'nib'
+
 html
     background linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,.4) 19%, rgba(255,255,255,0.2) 100%)
 
@@ -21,7 +23,7 @@ body
     max-height 250px
 
 .ui-widget
-    font-size 1em
+    font-size initial !important
 
 p
     padding 20px 24px
@@ -112,7 +114,7 @@ label
 fieldset
     margin 2% auto
     padding 1em
-    border 0.2em groove
+    border 0.1em groove
 
 legend
     font-size 1em
@@ -135,6 +137,9 @@ form
         width 300px !important
         height 35px !important
         font-size inherit
+
+    input[name='pathway_type']
+        float inherit
 
     button.ui-button-icon-only, a.ui-button
         width 2.4em !important
@@ -181,7 +186,10 @@ progress
 
 .buttonGroup
     margin 0 auto
-    max-width 300px
+    width 550px
+    button
+        width 250px !important
+        display inline-block
 
 .input
     float right
@@ -201,7 +209,7 @@ progress
     margin 0 auto
     display none
 
-#snippets
+#snippets,.hide
     display none
 footer
     padding 2% 0
