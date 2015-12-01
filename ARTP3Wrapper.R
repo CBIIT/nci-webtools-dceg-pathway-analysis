@@ -5,6 +5,8 @@ runARTP3 <- function(parameters) {
   id.str <- "PID"
   save.setup <- FALSE
   parameters <- fromJSON(parameters)
+  out.dir <- parameters$outdir
+  setwd(out.dir)
   studies <- parameters$studies
   # Turn Studies into ARTP3 Readable Form
   summary.files <- c()
@@ -28,7 +30,6 @@ runARTP3 <- function(parameters) {
   }
   reference <- data.frame(fam, bim, bed)
   # Set Options
-  out.dir = parameters$outdir
   options <- list(out.dir = out.dir,
                   id.str = id.str,
                   nperm = as.numeric(parameters$nperm),
