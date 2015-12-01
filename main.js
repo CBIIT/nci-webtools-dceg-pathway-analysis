@@ -364,7 +364,7 @@ function apply_multiselect_options(element, group){
     }
   });
   element.multipleSelect("refresh");
-  $(population.labels[0]).show();
+  $(population_labels[0]).show();
   element.parent().removeClass('hide');
 }
 
