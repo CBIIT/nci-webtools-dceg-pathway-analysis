@@ -1,130 +1,198 @@
-$.widget( "custom.combobox", {
-    _create: function() {
-        this.wrapper = $( "<span>" )
-            .addClass( "custom-combobox" )
-            .insertAfter( this.element );
+$.widget( "custom.combobox", $.ui.autocomplete, 
+        {
+        options: { 
+            /* override default values here */
+            minLength: 2,
+            /* the argument to pass to ajax to get the complete list */
+            ajaxGetAll: {get: "all"}
+        },
 
-        this.element.hide();
-        this._createAutocomplete();
-        this._createShowAllButton();
-    },
-
-    _createAutocomplete: function() {
-        var selected = this.element.children( ":selected" ),
-            value = selected.val() ? selected.text() : "";
-
-        this.input = $( "<input>" )
-            .appendTo( this.wrapper )
-            .val( value )
-            .attr( "title", "" )
-            .attr("placeholder", "Begin typing or select from list:")
-            .addClass( "custom-combobox-input ui-widget ui-widget-content" )
-            .autocomplete({
-            delay: 0,
-            minLength: 0,
-            source: $.proxy( this, "_source" )
-        })
-            .tooltip({
-            classes: {
-                "ui-tooltip": "ui-state-highlight"
-            }
-        });
-
-        this._on( this.input, {
-            autocompleteselect: function( event, ui ) {
-                ui.item.option.selected = true;
-                this._trigger( "select", event, {
-                    item: ui.item.option
-                });
-            },
-
-            autocompletechange: "_removeIfInvalid"
-        });
-    },
-
-    _createShowAllButton: function() {
-        var input = this.input,
-            wasOpen = false;
-
-        $( "<a>" )
-            .attr( "tabIndex", -1 )
-            .attr( "title", "Show All Items" )
-            .tooltip()
-            .appendTo( this.wrapper )
-            .button({
-            icons: {
-                primary: "ui-icon-circle-triangle-s"
-            },
-            text: false
-        })
-            .removeClass( "ui-corner-all" )
-            .addClass( "custom-combobox-toggle ui-corner-right" )
-            .on( "mousedown", function() {
-            wasOpen = input.autocomplete( "widget" ).is( ":visible" );
-        })
-            .on( "click", function() {
-            input.trigger( "focus" );
-
-            // Close if already visible
-            if ( wasOpen ) {
+        _create: function(){
+            if (this.element.is("SELECT")){
+                this._selectInit();
                 return;
             }
 
-            // Pass empty string as value to search for, displaying all results
-            input.autocomplete( "search", "" );
-        });
-    },
+            $.ui.autocomplete.prototype._create.call(this);
+            var input = this.element;
+            input.addClass( "ui-widget ui-widget-content ui-corner-left" );
 
-    _source: function( request, response ) {
-        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-        response( this.element.children( "option" ).map(function() {
-            var text = $( this ).text();
-            if ( this.value && ( !request.term || matcher.test(text) ) )
-                return {
-                    label: text,
-                    value: text,
-                    option: this
-                };
-        }) );
-    },
+            this.button = $( "<button type='button'>&nbsp;</button>" )
+            .attr( "tabIndex", -1 )
+            .attr( "title", "Show All Items" )
+            .insertAfter( input )
+            .button({
+                icons: { primary: "ui-icon-triangle-1-s" },
+                text: false
+            })
+            .removeClass( "ui-corner-all" )
+            .addClass( "ui-corner-right ui-button-icon" )
+            .click(function(event) {
+                // close if already visible
+                if ( input.combobox( "widget" ).is( ":visible" ) ) {
+                    input.combobox( "close" );
+                    return;
+                }
+                // when user clicks the show all button, we display the cached full menu
+                var data = input.data("combobox");
+                clearTimeout( data.closing );
+                if (!input.isFullMenu){
+                    data._swapMenu();
+                    input.isFullMenu = true;
+                }
+                /* input/select that are initially hidden (display=none, i.e. second level menus), 
+                   will not have position cordinates until they are visible. */
+                input.combobox( "widget" ).css( "display", "block" )
+                .position($.extend({ of: input },
+                    data.options.position
+                    ));
+                input.focus();
+                data._trigger( "open" );
+            });
 
-    _removeIfInvalid: function( event, ui ) {
+            /* to better handle large lists, put in a queue and process sequentially */
+            $(document).queue(function(){
+                var data = input.data("combobox");
+                if ($.isArray(data.options.source)){ 
+                    $.ui.combobox.prototype._renderFullMenu.call(data, data.options.source);
+                }else if (typeof data.options.source === "string") {
+                    $.getJSON(data.options.source, data.options.ajaxGetAll , function(source){
+                        $.ui.combobox.prototype._renderFullMenu.call(data, source);
+                    });
+                }else {
+                    $.ui.combobox.prototype._renderFullMenu.call(data, data.source());
+                }
+            });
+        },
 
-        // Selected an item, nothing to do
-        if ( ui.item ) {
-            return;
-        }
-
-        // Search for a match (case-insensitive)
-        var value = this.input.val(),
-            valueLowerCase = value.toLowerCase(),
-            valid = false;
-        this.element.children( "option" ).each(function() {
-            if ( $( this ).text().toLowerCase() === valueLowerCase ) {
-                this.selected = valid = true;
-                return false;
+        /* initialize the full list of items, this menu will be reused whenever the user clicks the show all button */
+        _renderFullMenu: function(source){
+            var self = this,
+                input = this.element,
+                ul = input.data( "combobox" ).menu.element,
+                lis = [];
+            source = this._normalize(source); 
+            input.data( "combobox" ).menuAll = input.data( "combobox" ).menu.element.clone(true).appendTo("body");
+            for(var i=0; i<source.length; i++){
+                lis[i] = "<li class=\"ui-menu-item\" role=\"menuitem\"><a class=\"ui-corner-all\" tabindex=\"-1\">"+source[i].label+"</a></li>";
             }
-        });
+            ul.append(lis.join(""));
+            this._resizeMenu();
+            // setup the rest of the data, and event stuff
+            setTimeout(function(){
+                self._setupMenuItem.call(self, ul.children("li"), source );
+            }, 0);
+            input.isFullMenu = true;
+        },
 
-        // Found a match, nothing to do
-        if ( valid ) {
-            return;
+        /* incrementally setup the menu items, so the browser can remains responsive when processing thousands of items */
+        _setupMenuItem: function( items, source ){
+            var self = this,
+                itemsChunk = items.splice(0, 500),
+                sourceChunk = source.splice(0, 500);
+            for(var i=0; i<itemsChunk.length; i++){
+                $(itemsChunk[i])
+                .data( "item.autocomplete", sourceChunk[i])
+                .mouseenter(function( event ) {
+                    self.menu.activate( event, $(this));
+                })
+                .mouseleave(function() {
+                    self.menu.deactivate();
+                });
+            }
+            if (items.length > 0){
+                setTimeout(function(){
+                    self._setupMenuItem.call(self, items, source );
+                }, 0);
+            }else { // renderFullMenu for the next combobox.
+                $(document).dequeue();
+            }
+        },
+
+        /* overwrite. make the matching string bold */
+        _renderItem: function( ul, item ) {
+            var label = item.label.replace( new RegExp(
+                "(?![^&;]+;)(?!<[^<>]*)(" + $.ui.autocomplete.escapeRegex(this.term) + 
+                ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong>$1</strong>" );
+            return $( "<li></li>" )
+                .data( "item.autocomplete", item )
+                .append( "<a>" + label + "</a>" )
+                .appendTo( ul );
+        },
+
+        /* overwrite. to cleanup additional stuff that was added */
+        destroy: function() {
+            if (this.element.is("SELECT")){
+                this.input.remove();
+                this.element.removeData().show();
+                return;
+            }
+            // super()
+            $.ui.autocomplete.prototype.destroy.call(this);
+            // clean up new stuff
+            this.element.removeClass( "ui-widget ui-widget-content ui-corner-left" );
+            this.button.remove();
+        },
+
+        /* overwrite. to swap out and preserve the full menu */ 
+        search: function( value, event){
+            var input = this.element;
+            if (input.isFullMenu){
+                this._swapMenu();
+                input.isFullMenu = false;
+            }
+            // super()
+            $.ui.autocomplete.prototype.search.call(this, value, event);
+        },
+
+        _change: function( event ){
+            abc = this;
+            if ( !this.selectedItem ) {
+                var matcher = new RegExp( "^" + $.ui.autocomplete.escapeRegex( this.element.val() ) + "$", "i" ),
+                    match = $.grep( this.options.source, function(value) {
+                        return matcher.test( value.label );
+                    });
+                if (match.length){
+                    match[0].option.selected = true;
+                }else {
+                    // remove invalid value, as it didn't match anything
+                    this.element.val( "" );
+                    if (this.options.selectElement) {
+                        this.options.selectElement.val( "" );
+                    }
+                }
+            }                
+            // super()
+            $.ui.autocomplete.prototype._change.call(this, event);
+        },
+
+        _swapMenu: function(){
+            var input = this.element, 
+                data = input.data("combobox"),
+                tmp = data.menuAll;
+            data.menuAll = data.menu.element.hide();
+            data.menu.element = tmp;
+        },
+
+        /* build the source array from the options of the select element */
+        _selectInit: function(){
+            var select = this.element.hide(),
+            selected = select.children( ":selected" ),
+            value = selected.val() ? selected.text() : "";
+            this.options.source = select.children( "option[value!='']" ).map(function() {
+                return { label: $.trim(this.text), option: this };
+            }).toArray();
+            var userSelectCallback = this.options.select;
+            var userSelectedCallback = this.options.selected;
+            this.options.select = function(event, ui){
+                ui.item.option.selected = true;
+                if (userSelectCallback) userSelectCallback(event, ui);
+                // compatibility with jQuery UI's combobox.
+                if (userSelectedCallback) userSelectedCallback(event, ui);
+            };
+            this.options.selectElement = select;
+            this.input = $( "<input>" ).insertAfter( select )
+                .val( value ).combobox(this.options);
         }
-
-        // Remove invalid value
-        this.input
-            .val( "" )
-            .attr( "title", value + " didn't match any item" )
-            .tooltip( "open" );
-        this.element.val( "" );
-        this._delay(function() {
-            this.input.tooltip( "close" ).attr( "title", "" );
-        }, 2500 );
-        this.input.autocomplete( "instance" ).term = "";
-    },
-
-    _destroy: function() {
-        this.wrapper.remove();
-        this.element.show();
     }
-});
+);
