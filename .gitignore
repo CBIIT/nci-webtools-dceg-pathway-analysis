@@ -1,6 +1,9 @@
 .Rhistory
+*.json
 *.pyc
 config.ini
+localserver.py
+common/
 examples/
 src/node_modules/
 src/bower_components/

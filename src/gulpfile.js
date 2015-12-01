@@ -61,7 +61,7 @@ gulp.task('jade-compile', function(){
     return gulp.src(['app/jade/index.jade']).pipe(gulpJade({
         pretty: pretty,
         basedir: parentDir
-    })).pipe(gulp.dest(parentDir + "/static"));
+    })).pipe(gulp.dest(parentDir));
 });
 
 gulpBower = require('gulp-bower');
@@ -89,7 +89,7 @@ gulp.task('js:copy', ['bower'], function(){
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-stylish'))
         .pipe(gulpConcat('main.js'))
-        .pipe(gulp.dest(parentDir+"/static"));
+        .pipe(gulp.dest(parentDir));
     return s.done();
 });
 
@@ -103,7 +103,7 @@ gulp.task('css', ['bower'], function(){
     })).pipe(gulpStylus({
         use: [nib()],
         'import': ['nib']
-    })).pipe(gulpConcat('styles.css')).pipe(gulp.dest(parentDir+"/static"));
+    })).pipe(gulpConcat('styles.css')).pipe(gulp.dest(parentDir));
 
     return s = streamqueue({
         objectMode: true

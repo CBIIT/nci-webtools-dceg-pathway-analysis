@@ -19,14 +19,14 @@ class RequestProcessor:
   URL = 'queue.url'
   UPLOAD_FOLDER = 'pathway.folder.upload'
   MAIL_HOST = 'mail.host'
-  MAIL_SENDER = 'mail.sender'
+  MAIL_ADMIN = 'mail.admin'
 
   def composeMail(self,recipients,message,files=[]):
     if not isinstance(recipients,list):
       recipients = [recipients]
     packet = MIMEMultipart()
     packet['Subject'] = "Subject: Pathway Analysis Results"
-    packet['From'] = "Pathway Analysis Tool"
+    packet['From'] = "Pathway Analysis Tool <do.not.reply@nih.gov>"
     packet['To'] = ", ".join(recipients)
     packet.attach(MIMEText(message))
     for file in files:
@@ -38,7 +38,7 @@ class RequestProcessor:
         ))
     config = self.CONFIG
     smtp = smtplib.SMTP(config.getAsString(RequestProcessor.MAIL_HOST))
-    smtp.sendmail(config.getAsString(RequestProcessor.MAIL_SENDER),recipients,packet.as_string())
+    smtp.sendmail(config.getAsString(RequestProcessor.MAIL_ADMIN),recipients,packet.as_string())
 
   def consume(self, client, frame):
     parameters = frame.body
@@ -46,8 +46,8 @@ class RequestProcessor:
       # Run R-Script
       artp3Result = self.r_runARTP3(parameters)[0]
     except Exception as e:
-      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_SENDER),str(e)+"\n\n"+parameters)
-      self.composeMail(json.loads(parameters)['email'],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem.")
+      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),str(e)+"\n\n"+parameters)
+      #self.composeMail(json.loads(parameters)['email'],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem.")
       return
     # email results
     parameters = json.loads(parameters)
