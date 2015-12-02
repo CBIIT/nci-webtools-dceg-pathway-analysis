@@ -499,6 +499,8 @@ $(window).on('load', function(){
         }
     });
 
+    $(".addControl").button("enable");
+
     addStudy();// add first element by default
 
     function addStudy() {
