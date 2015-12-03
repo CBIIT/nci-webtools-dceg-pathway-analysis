@@ -1,5 +1,4 @@
 $(function(){
-
     var errors_div = $("#errorDisplay");
     var validationElements = {
         study: {

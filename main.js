@@ -31,12 +31,18 @@ $.widget( "custom.combobox", {
         });
 
         this._on( this.input, {
-            autocompleteselect: function( event, ui ) {
-                ui.item.option.selected = true;
-                this._trigger( "select", event, {
-                    item: ui.item.option
-                });
-            },
+          autocompleteselect: function( event, ui ) {
+              ui.item.selected = true;
+              this._trigger( "select", event, {
+                  item: ui.item
+              });
+          },
+           
+           
+           
+           
+           
+           
 
             autocompletechange: "_removeIfInvalid"
         });
@@ -76,16 +82,24 @@ $.widget( "custom.combobox", {
     },
 
     _source: function( request, response ) {
-        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-        response( this.element.children( "option" ).map(function() {
-            var text = $( this ).text();
-            if ( this.value && ( !request.term || matcher.test(text) ) )
-                return {
-                    label: text,
-                    value: text,
-                    option: this
-                };
-        }) );
+      if(request.term.length > 0){
+
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+        return response( this.element.children( "option" ).not("[value*='"+ request.term +"']"));
+      }
+      else{
+        return response( this.element.children( "option" ).not("[value='']"));
+
+      }
     },
 
     _removeIfInvalid: function( event, ui ) {
@@ -151,6 +165,121 @@ $(function() {
    
 
     $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
+    function checkedStateToValue(e) {
+        return $(this).val(this.checked);
+    }
+
+    function resetForm() {
+        $(pathForm).find(".studies").each(function(i, el) {
+            if(i !== 0) $(this).detach();
+            else {
+                $(lambda_1).val("1.0");
+                $(num_resource_1, pathForm.study_1).val("");
+                $(study_1).wrap("<form>").closest("form").get(0).reset();
+                $(study_1).unwrap();
+                $(pathForm).find(".studyResources").detach();
+            }
+        });
+
+        $(database_pathway_option).attr("checked", "checked");
+        $(nperm).val((1e5).toExponential());
+        $(miss_rate).val(0.05);
+        $(maf).val(0.05);
+        $(hwep).val((1e-5).toExponential());
+        $(gene).val(0.95);
+        $(chr).val(0.95);
+        $(snp_n).val(5);
+        $(snp_percent).val(0);
+        $(gene_n).val(10);
+        $(gene_percent).val(0.05);
+        $(email).val("");
+        $(".custom-combobox input").val("");
+        $(population).html("");
+        $(refinep)[0].checked = false;
+        $(gene_subset)[0].checked = false;
+        $(database_pathway_option)[0].checked = true;
+        $(database_pathway).find("option:first-child").attr("selected", "selected");
+        $(super_population).find("option:first-child").attr("selected", "selected");
+        $(file_pathway).wrap("<form>").closest("form").get(0).reset();
+        $(file_pathway).unwrap();
+
+        $(pathForm).validate().resetForm();
+        $(population.parentElement).addClass('hide');
+        $(pathForm).find("button,input,select,div,span").removeClass("error");
+
+        $("#studyEntry").accordion("option", "active", 0);
+    }
+
+    function clickCalculate(e) {
+        e.preventDefault();
+        $(pathForm).validate();
+        var proceed = $(pathForm).valid();
+
+        if (proceed) {
+            $(pathForm).find('.error').each(function( ind,el) {
+                $(el).removeClass('error');
+            });
+            $("#calculate").hide();
+            $("progress").show();
+
+            var formData = new FormData(pathForm);
+            var numStudies = 0;
+
+            $.each(pathForm, function(ind, el) {
+                if( $(el).is("hidden") &&
+                   el.id.indexOf("population") > -1 &&
+                   el.name.indexOf("population") > -1 &&
+                   el.id.indexOf("database_pathway") > -1) { return true;}
+
+               
+                if(el.id.indexOf("study") > -1) numStudies++;
+
+               
+                if(el.type == "checkbox"){
+                    if(el.checked && el.id)
+                        formData.append(el.id, el.checked);
+                }
+            });
+
+            formData.append('populations', $(pathForm.population).val());
+            formData.append('num_studies', numStudies);
+
+            sendForm(formData).then(submission_result, submission_error)
+                .always(post_request);
+        }
+        else {
+            document.querySelector("#errorDisplay").scrollIntoView(true);
+        }
+    }
+
+    function retrieveMultiselects(selectedItems) {
+        var valuesContainer = {};
+
+        $.each(selectedItems, function(i, item) {
+            var groupCode = $(population).find("option[value='" + item + "']")
+            .parent().attr("label");
+
+           
+           
+            if(!valuesContainer[groupCode])
+                valuesContainer[groupCode] = [item];
+            else
+                valuesContainer[groupCode].push(item);
+        });
+
+        return valuesContainer;
+    }
+
+    function displayErrors(el, messagesArray){
+        $(el).empty();
+
+        messagesArray.forEach(function(message, index){
+            $(el).append(message + "<br />");
+        });
+
+        $(el).show();
+        document.querySelector(el).scrollIntoView(true);
+    }
 });
 
 $(window).load(function() {
@@ -163,298 +292,183 @@ $(window).load(function() {
             this.value);
 
     });
-});
+    
+    function apply_multiselect_options(element, group){
+      element.html("");
 
-function resetForm() {
-    $(pathForm).find(".studies").each(function(i, el) {
-        if(i !== 0) $(this).detach();
-        else {
-            $(lambda_1).val("1.0");
-            $(num_resource_1, pathForm.study_1).val("");
-            $(study_1).wrap("<form>").closest("form").get(0).reset();
-            $(study_1).unwrap();
-            $(pathForm).find(".studyResources").detach();
+      $.each(population_labels[group].subPopulations, function (subCode, text) {
+        var subOption = $("<option />", { value: group + "|" + subCode, text: text });
+
+        element.append(subOption).multipleSelect('refresh');
+        element.multipleSelect("uncheckAll");
+      });
+
+     
+      element.multipleSelect({
+        name: population.id,
+        width: "100%",
+        placeholder: "Select Sub Population(s)",
+        selectAll: true,
+        multiple: true,
+        multipleWidth: 300,
+        minimumCountSelected: 2,
+        countSelected: false,
+        onClick:function(view) {
+            element.validate();
         }
-    });
-
-    $(database_pathway_option).attr("checked", "checked");
-    $(nperm).val((1e5).toExponential());
-    $(miss_rate).val(0.05);
-    $(maf).val(0.05);
-    $(hwep).val((1e-5).toExponential());
-    $(gene).val(0.95);
-    $(chr).val(0.95);
-    $(snp_n).val(5);
-    $(snp_percent).val(0);
-    $(gene_n).val(10);
-    $(gene_percent).val(0.05);
-    $(email).val("");
-    $(".custom-combobox input").val("");
-    $(population).html("");
-    $(refinep)[0].checked = false;
-    $(gene_subset)[0].checked = false;
-    $(database_pathway_option)[0].checked = true;
-    $(database_pathway).find("option:first-child").attr("selected", "selected");
-    $(super_population).find("option:first-child").attr("selected", "selected");
-    $(file_pathway).wrap("<form>").closest("form").get(0).reset();
-    $(file_pathway).unwrap();
-
-    $(pathForm).validate().resetForm();
-    $(population.parentElement).addClass('hide');
-    $(pathForm).find("button,input,select,div,span").removeClass("error");
-
-    $("#studyEntry").accordion("option", "active", 0);
-}
-
-function clickCalculate(e) {
-    e.preventDefault();
-    $(pathForm).validate();
-    var proceed = $(pathForm).valid();
-
-    if (proceed) {
-        $(pathForm).find('.error').each(function( ind,el) {
-            $(el).removeClass('error');
-        });
-        $("#calculate").hide();
-        $("progress").show();
-
-        var formData = new FormData(pathForm);
-        var numStudies = 0;
-
-        $.each(pathForm, function(ind, el) {
-            if( $(el).is("hidden") &&
-               el.id.indexOf("population") > -1 &&
-               el.name.indexOf("population") > -1 &&
-               el.id.indexOf("database_pathway") > -1) { return true;}
-
-           
-            if(el.id.indexOf("study") > -1) numStudies++;
-
-           
-            if(el.type == "checkbox"){
-                if(el.checked && el.id)
-                    formData.append(el.id, el.checked);
-            }
-        });
-
-        formData.append('populations', $(pathForm.population).val());
-        formData.append('num_studies', numStudies);
-
-        sendForm(formData).then(submission_result, submission_error)
-            .always(post_request);
+      });
+      element.multipleSelect("refresh");
+      $(population_labels[0]).show();
+      element.parent().removeClass('hide');
     }
-    else {
-        document.querySelector("#errorDisplay").scrollIntoView(true);
+
+    function changeRadioSelection(){
+        $("input[name='pathway_type'][value='" + this.name + "']")
+            .prop("checked", true);
     }
-}
 
-function retrieveMultiselects(selectedItems) {
-    var valuesContainer = {};
-
-    $.each(selectedItems, function(i, item) {
-        var groupCode = $(population).find("option[value='" + item + "']")
-        .parent().attr("label");
-
-       
-       
-        if(!valuesContainer[groupCode])
-            valuesContainer[groupCode] = [item];
-        else
-            valuesContainer[groupCode].push(item);
-    });
-
-    return valuesContainer;
-}
-
-function changeRadioSelection(){
-    $("input[name='pathway_type'][value='" + this.name + "']")
-        .prop("checked", true);
-}
-
-function checkedStateToValue(e) {
-    return $(this).val(this.checked);
-}
-
-function displayErrors(el, messagesArray){
-    $(el).empty();
-
-    messagesArray.forEach(function(message, index){
-        $(el).append(message + "<br />");
-    });
-
-    $(el).show();
-    document.querySelector(el).scrollIntoView(true);
-}
+});
 
 
 var buttons = $("button").button();
+var population_labels = {'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
 
-population_labels ={'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
-
-$(function(){
+$(function() {
   var count = 2;
   var hold = function() {
       count--;
-      if (count <= 0)
-          post_request();
+      if (count <= 0) post_request();
   };
  
   retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
   retrieve_populations().then(apply_options($(pathForm.super_population), population_labels), get_options_error("super population")).always(hold);
- 
-});
 
-function pre_request() {
- 
-  $("#spinner").show();
-
- 
-  $(pathForm).find(":input").prop("disabled",true);
-  buttons.button("disable");
-}
-
-function post_request() {
- 
-  $("button#calculate").show();
-  $("progress, #spinner").hide();
-
- 
-  buttons.button("enable");
-  $(pathForm).find(":input").removeAttr("disabled");
-}
-
-function submission_result(response) {
-  if(response.success){
-    resetForm();
+  function pre_request() {
+   
+    $("#spinner").show();
 
    
-    $( "#successBox #message" ).text(response.message);
-    $( "#successBox").show();
-    document.querySelector("#successBox").scrollIntoView(true);
-
-    setTimeout(function(){
-      $( "#successBox" ).fadeOut().hide();
-      $( "#successBox #message" ).html("");
-    }, 10000);
+    $(pathForm).find(":input").prop("disabled",true);
+    buttons.button("disable");
   }
-}
 
-function apply_multiselect_options(element, group){
-  element.html("");
+  function post_request() {
+   
+    $("button#calculate").show();
+    $("progress, #spinner").hide();
 
-  $.each(population_labels[group].subPopulations, function (subCode, text) {
-    var subOption = $("<option />", { value: group + "|" + subCode, text: text });
+   
+    buttons.button("enable");
+    $(pathForm).find(":input").removeAttr("disabled");
+  }
 
-    element.append(subOption).multipleSelect('refresh');
-    element.multipleSelect("uncheckAll");
-  });
-
- 
-  element.multipleSelect({
-    name: population.id,
-    width: "100%",
-    placeholder: "Select Sub Population(s)",
-    selectAll: true,
-    multiple: true,
-    multipleWidth: 300,
-    minimumCountSelected: 2,
-    countSelected: false,
-    onClick:function(view) {
-        element.validate();
-    }
-  });
-  element.multipleSelect("refresh");
-  $(population_labels[0]).show();
-  element.parent().removeClass('hide');
-}
-
-function apply_options(element, items, combo){
-  if (typeof items === 'undefined') {
-    return function(data) {
-      data.forEach(function(item, i) {
-        var option = $("<option></option>");
-        $(option).val(item.code);
-        $(option).text(item.text);
-        element.append(option);
+  function sendForm(formData) {
+    return $.ajax({
+      beforeSend: pre_request,
+      type: pathForm.method,
+      url: pathForm.action,
+      data: formData,
+      cache: false,
+      processData: false,
+      contentType: false,
+      xhr: function() {
+        var myXhr = $.ajaxSettings.xhr();
+        if (myXhr.upload) {
+          myXhr.upload.addEventListener("progress", function(other) {
+            if (other.lengthComputable) {
+              $("progress").attr({value:other.loaded,max:other.total});
+            }
+          }, false);
+        }
+        return myXhr;
+      },
+      dataType: "json"
     });
-      if(data.length > 10)
-        element.combobox();
-    };
   }
-  else {
-    return function() {
-      $.each(items, function(key, item) {
-        var option = $("<option></option>");
-        $(option).val(key);
-        $(option).text(item.fullName);
-        element.append(option);
-      });
-      if(items.length > 10)
-        element.combobox();
-    };
+
+  function retrieve_pathways(){
+    return $.ajax({
+      url: "pathway_options.json",
+      type: "GET",
+      beforeSend: pre_request,
+      contentType: "application/json",
+      dataType: "json",
+      cache: false
+    });
   }
-}
 
-function submission_error(request, statusText, error) {
-  var errorObj = JSON.parse(request.responseText);
+  function retrieve_populations(){
+    return $.ajax({
+      url: "population_options.json",
+      type: "GET",
+      beforeSend: pre_request,
+      contentType: "application/json",
+      dataType: "json",
+      cache: false
+    });
+  }
 
-  displayErrors("#errorDisplay",
-          ["The request failed with the following message: <br/> "+ errorObj.message]);
-}
+  function submission_result(response) {
+    if(response.success){
+      resetForm();
 
-function get_options_error(option_type) {
-  return function(request, statusText, error) {
+     
+      $( "#successBox #message" ).text(response.message);
+      $( "#successBox").show();
+      document.querySelector("#successBox").scrollIntoView(true);
+
+      setTimeout(function(){
+        $( "#successBox" ).fadeOut().hide();
+        $( "#successBox #message" ).html("");
+      }, 10000);
+    }
+  }
+
+  function apply_options(element, items, combo){
+    var source = [];
+    if (typeof items === 'undefined') {
+      return function(data) {
+        data.forEach(function(item, i) {
+          var option = $("<option></option>");
+          $(option).val(item.code);
+          $(option).text(item.text);
+          element.append(option);
+
+          source.push({label: item.text, value: item.code, option: option});
+        });
+        if(data.length > 10)
+          element.combobox(source);
+      };
+    }
+    else {
+      return function() {
+        $.each(items, function(key, item) {
+          var option = $("<option></option>");
+          $(option).val(key);
+          $(option).text(item.fullName);
+          element.append(option);
+          source.push({label: item.fullName, value: key, option: option});
+        });
+        if(items.length > 10)
+          element.combobox(source);
+      };
+    }
+  }
+
+  function submission_error(request, statusText, error) {
+    var errorObj = JSON.parse(request.responseText);
+
     displayErrors("#errorDisplay",
-          ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
-  };
-}
+            ["The request failed with the following message: <br/> "+ errorObj.message]);
+  }
 
-function sendForm(formData) {
-  return $.ajax({
-    beforeSend: pre_request,
-    type: pathForm.method,
-    url: pathForm.action,
-    data: formData,
-    cache: false,
-    processData: false,
-    contentType: false,
-    xhr: function() {
-      var myXhr = $.ajaxSettings.xhr();
-      if (myXhr.upload) {
-        myXhr.upload.addEventListener("progress", function(other) {
-          if (other.lengthComputable) {
-            $("progress").attr({value:other.loaded,max:other.total});
-          }
-        }, false);
-      }
-      return myXhr;
-    },
-    dataType: "json"
-  });
-}
-
-function retrieve_pathways(){
-  return $.ajax({
-    url: "pathway_options.json",
-    type: "GET",
-    beforeSend: pre_request,
-    contentType: "application/json",
-    dataType: "json",
-    cache: false
-  });
-}
-
-function retrieve_populations(){
-  return $.ajax({
-    url: "population_options.json",
-    type: "GET",
-    beforeSend: pre_request,
-    contentType: "application/json",
-    dataType: "json",
-    cache: false
-  });
-}
-
+  function get_options_error(option_type) {
+    return function(request, statusText, error) {
+      displayErrors("#errorDisplay",
+            ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+    };
+  }
+});
 
 
 
@@ -498,10 +512,6 @@ $(window).on('load', function(){
             }
         }
     });
-
-    $(".addControl").button("enable");
-
-    addStudy();// add first element by default
 
     function addStudy() {
        
@@ -640,7 +650,8 @@ $(window).on('load', function(){
             modal: true
         });
     }
-
+    $(".addControl").button("enable");
+    addStudy();// add first element by default, function declaration in template-manager
 });
 
 var terms = {
@@ -712,7 +723,6 @@ $(function() {
 });
 
 $(function(){
-
     var errors_div = $("#errorDisplay");
     var validationElements = {
         study: {

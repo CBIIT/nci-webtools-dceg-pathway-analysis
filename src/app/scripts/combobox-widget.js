@@ -31,12 +31,18 @@ $.widget( "custom.combobox", {
         });
 
         this._on( this.input, {
-            autocompleteselect: function( event, ui ) {
-                ui.item.option.selected = true;
-                this._trigger( "select", event, {
-                    item: ui.item.option
-                });
-            },
+          autocompleteselect: function( event, ui ) {
+              ui.item.selected = true;
+              this._trigger( "select", event, {
+                  item: ui.item
+              });
+          },
+            // autocompleteselect: function( event, ui ) {
+            //     ui.item.option.selected = true;
+            //     this._trigger( "select", event, {
+            //         item: ui.item.option
+            //     });
+            // },
 
             autocompletechange: "_removeIfInvalid"
         });
@@ -76,16 +82,24 @@ $.widget( "custom.combobox", {
     },
 
     _source: function( request, response ) {
-        var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
-        response( this.element.children( "option" ).map(function() {
-            var text = $( this ).text();
-            if ( this.value && ( !request.term || matcher.test(text) ) )
-                return {
-                    label: text,
-                    value: text,
-                    option: this
-                };
-        }) );
+      if(request.term.length > 0){
+
+        // var matcher = new RegExp( $.ui.autocomplete.escapeRegex(request.term), "i" );
+        // response( this.element.children( "option" ).map(function() {
+        //     var text = $( this ).text();
+        //     if ( this.value && ( !request.term || matcher.test(text) ) )
+        //         return {
+        //             label: text,
+        //             value: text,
+        //             option: this
+        //         };
+        // }) );
+        return response( this.element.children( "option" ).not("[value*='"+ request.term +"']"));
+      }
+      else{
+        return response( this.element.children( "option" ).not("[value='']"));
+
+      }
     },
 
     _removeIfInvalid: function( event, ui ) {

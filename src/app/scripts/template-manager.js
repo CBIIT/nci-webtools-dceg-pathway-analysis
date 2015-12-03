@@ -1,6 +1,5 @@
 // place all logic relating to appending, modifying
 // or removing dynamic templates from the DOM here
-
 $(window).on('load', function(){
     $(".addControl[title='study']")
         .button({text: true, icons: {primary: "ui-icon-circle-plus"}})
@@ -41,10 +40,6 @@ $(window).on('load', function(){
             }
         }
     });
-
-    $(".addControl").button("enable");
-
-    addStudy();// add first element by default
 
     function addStudy() {
         // get template element to use as a copy in actual form
@@ -183,5 +178,6 @@ $(window).on('load', function(){
             modal: true
         });
     }
-
+    $(".addControl").button("enable");
+    addStudy();// add first element by default, function declaration in template-manager
 });
