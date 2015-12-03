@@ -141,6 +141,8 @@ class Pathway:
     app.config["ALLOWED_TYPES"] = ['study','pathway','txt','gz']
     if not os.path.exists(pathwayConfig.getAsString(Pathway.OUT_FOLDER)):
       os.makedirs(pathwayConfig.getAsString(Pathway.OUT_FOLDER))
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+      os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(host='0.0.0.0', port=pathwayConfig.getAsInt(Pathway.PORT), debug=pathwayConfig.getAsBoolean(Pathway.DEBUG))
 
 if __name__ == '__main__':
