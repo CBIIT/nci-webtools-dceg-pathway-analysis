@@ -198,13 +198,13 @@ $(function(){
             if(el.id != "population" && el.id != "database_pathway")
                 $(el).addClass(errorClass);
             else
-                $(el).next().find('.custom-combobox-input, .ms-choice').addClass(errorClass);
+                $(el).next().find('.select2, .ms-choice').addClass(errorClass);
         },
         unhighlight: function (el, errorClass,validClass) {
             if(el.id != "population" && el.id != "database_pathway")
                 $(el).removeClass(errorClass);
             else
-                $(el).next().find('.custom-combobox').children().andSelf().find('.error').removeClass(errorClass);
+                $(el).next().find('.select2').children().andSelf().find('.error').removeClass(errorClass);
         }
     });
 

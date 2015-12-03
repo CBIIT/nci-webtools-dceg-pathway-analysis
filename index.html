@@ -6,10 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta http-equiv="Pragma" content="no-cache"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet"/>
     <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css"/>
     <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/js/select2.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js" type="application/javascript"></script>
@@ -43,8 +45,8 @@
                 <label for="database_pathway_option">Select from the server:</label>
               </label>
               <div class="input ui-widget">
-                <select id="database_pathway" name="database_pathway">
-                  <option value="">-- Select from existing pathways --</option>
+                <select id="database_pathway" name="database_pathway" placeholder="-- Select from existing pathways --">
+                  <option value=""></option>
                 </select>
               </div>
             </li>
@@ -66,7 +68,7 @@
               <div class="input">
                 <label for="super_population">Super Population:</label>
                 <select id="super_population" required="">
-                  <option value="">-- Select a Super Population --</option>
+                  <option value="">-- Select a super population --</option>
                 </select>
               </div>
             </li>

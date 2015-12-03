@@ -11,8 +11,8 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
             input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
             label(for="database_pathway_option") Select from the server:
           .input.ui-widget
-            select#database_pathway(name='database_pathway')
-                option(value='') -- Select from existing pathways --
+            select#database_pathway(name='database_pathway', placeholder="-- Select from existing pathways --")
+                option(value="")
         li
             label(for='file_pathway')
                 input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
@@ -26,7 +26,7 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
                 .input
                     label(for="super_population") Super Population:
                     select#super_population(required='')
-                        option(value='') -- Select a Super Population --
+                      option(value='') -- Select a super population --
             li
                 .input.hide
                     label(for="population") Sub Population:

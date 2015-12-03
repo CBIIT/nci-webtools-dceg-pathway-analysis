@@ -106,7 +106,10 @@ $(function() {
           source.push({label: item.text, value: item.code, option: option});
         });
         if(data.length > 10)
-          element.combobox(source);
+          element.select2({
+              placeholder:"Type to filter or select from dropdown",
+              allowClear: true
+          });
       };
     }
     else {
@@ -119,7 +122,10 @@ $(function() {
           source.push({label: item.fullName, value: key, option: option});
         });
         if(items.length > 10)
-          element.combobox(source);
+          element.select2({
+              placeholder:"Type to filter or select from dropdown",
+              allowClear: true
+          });
       };
     }
   }
