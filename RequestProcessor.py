@@ -47,13 +47,11 @@ class RequestProcessor:
       artp3Result = self.r_runARTP3(parameters)[0]
     except Exception as e:
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),str(e)+"\n\n"+parameters)
-      #self.composeMail(json.loads(parameters)['email'],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem.")
       return
     # email results
     parameters = json.loads(parameters)
     files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
     if (parameters['refinep']):
-        files.append(os.path.join(parameters['outdir'],'2.Rdata'))
         artp3Result = json.loads(artp3Result)
         message = "Unrefined Result: " + str(artp3Result[0]) + "\nRefined Result: " + str(artp3Result[1])
     else:
