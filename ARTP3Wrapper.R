@@ -21,6 +21,17 @@ runARTP3 <- function(parameters) {
   # Derive Pathway File
   pathway = parameters$pathway
   
+  ## added by Han: to avoid error message 'The follow gene(s) are included in more than one chromosome', please add the following lines
+  ## added by Han: make sure that pathway is a data frame
+  tmp <- (table(pathway$Gene, pathway$Chr)!=0)
+  tmp <- apply(tmp, 1, sum)
+  if(any(tmp > 1)){
+    err.gene.id <- which(tmp > 1)
+    rm.gene <- names(err.gene.id)
+    pathway <- pathway[!(pathway$Gene %in% rm.gene), ]
+  }
+  ## end of edit
+  
   if(max(pathway$Chr) > 22){
     chr.id <- 1:22
   }else{
