@@ -15,16 +15,24 @@ runARTP3 <- function(parameters) {
   for (study in studies) {
     summary.files <- c(summary.files,study$filename)
     lambda <- c(lambda,as.numeric(study$lambda))
-    sample.size[[length(sample.size)+1]] <- as.numeric(study$sample_sizes)
+    sample.size[[length(sample.size)+1]] <- as.integer(study$sample_sizes)
   }
   # Derive Pathway File
-  pathway <- data.frame(read.table(parameters$pathway, header=TRUE), stringAsFactors = FALSE)
+  pathway <- read.table(parameters$pathway, header=TRUE, as.is = TRUE)
   rm.gene <- apply(table(pathway$Gene, pathway$Chr)!=0, 1, sum)
   rm.gene <- names(which(rm.gene > 1))
   pathway <- pathway[!(pathway$Gene %in% rm.gene), ]
-
-  chr.id <- sort(unique(pathway$Chr))
-  chr.id <- chr.id[chr.id <= 22]
+  
+  ## comments from Han: min(pathway$Chr) > 22 has a special meaning
+  ## comments from Han: in that case, the numbers in the column $Chr are not a real chromosome numbers
+  ## comments from Han: instead, the users may re-define the grouping, and the SNPs in that pathway can distribute at all 22 chromosomes
+  ## comments from Han: I have changed 'max' to 'min' in this version
+  if(min(pathway$Chr) > 22){
+    chr.id <- 1:22
+  }else{
+    chr.id <- sort(unique(pathway$Chr))
+  }
+  
   # Derive population reference
   fam <- vector("character", length(chr.id))
   bim <- vector("character", length(chr.id))
@@ -41,17 +49,17 @@ runARTP3 <- function(parameters) {
   # Set Options
   options <- list(out.dir = out.dir,
                   id.str = id.str,
-                  nperm = as.numeric(parameters$nperm),
+                  nperm = as.integer(parameters$nperm),
                   snp.miss.rate = as.numeric(parameters$miss_rate),
                   maf = as.numeric(parameters$maf),
                   HWE.p = as.numeric(parameters$hwep),
                   chr.R2 = as.numeric(parameters$chr),
                   gene.R2 = as.numeric(parameters$gene),
                   rm.gene.subset = parameters$gene_subset,
-                  selected.subs = parameters$population,
-                  inspect.snp.n = as.numeric(parameters$snp_n),
+                  selected.subs = as.character(parameters$population),
+                  inspect.snp.n = as.integer(parameters$snp_n),
                   inspect.snp.percent = as.numeric(parameters$snp_percent),
-                  inspect.gene.n = as.numeric(parameters$gene_n),
+                  inspect.gene.n = as.integer(parameters$gene_n),
                   inspect.gene.percent = as.numeric(parameters$gene_percent), 
                   only.setup = TRUE, 
                   save.setup = FALSE)
@@ -62,6 +70,14 @@ runARTP3 <- function(parameters) {
   ret1$setup <- NULL
   pvalue <- ret1$pathway.pvalue
   saveValue <- ret1
+  
+  ## comments from Han: save the initial result once we have it
+  ## comments from Han: just in case the upcoming refining procedure is interrupted for some reasons
+  ## comments from Han: at least we can have something for the users, especially when it has taken a long time to get ret1
+  save(saveValue,file=file.path(out.dir,"1.Rdata"))
+  ## comments from Han: It would be great if we can check from the outside of runARTP3() to see if we have at least one 1.Rdata for this job (a unique job ID is then essential)
+  ## comments from Han: If we have a 1.Rdata, then we can send something to the users no matter if there is an error during refining or not.
+  ## comments from Han: If we do not have extra hours for this project, we can do that in the future. 
   
   if (parameters$refinep && ret1$options$nperm <= 1e7 && !ret1$accurate && ret1$test.timing/3600 * 10 < 72) {
     ret2 <- pathway.warm.start(setup, nperm = ret1$options$nperm * 10)
