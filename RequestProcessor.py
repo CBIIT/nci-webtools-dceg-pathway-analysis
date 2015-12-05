@@ -44,18 +44,32 @@ class RequestProcessor:
     parameters = frame.body
     try:
       # Run R-Script
-      artp3Result = self.r_runARTP3(parameters)[0]
+      artp3Result = json.loads(self.r_runARTP3(parameters)[0])
     except Exception as e:
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),str(e)+"\n\n"+parameters)
+      return
+    message = ""
+    if "warnings" in artp3Result:
+      message += "\nWarnings:\n"
+      if (isinstance(artp3Result["warnings"],list)):
+        for warning in artp3Result["warnings"]:
+          message += warning.strip() + "\n\n"
+      else:
+        message += artp3Result["warnings"].strip() + "\n\n"
+    if "messages" in artp3Result:
+      message += "\nMessages:\n"
+      if (isinstance(artp3Result["messages"],list)):
+        for returnedMessage in artp3Result["messages"]:
+          message += returnedMessage.strip() + "\n\n"
+      else:
+        message += artp3Result["messages"].strip() + "\n\n"
+    if "error" in artp3Result:
+      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),"Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +parameters)
       return
     # email results
     parameters = json.loads(parameters)
     files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
-    if (parameters['refinep']):
-        artp3Result = json.loads(artp3Result)
-        message = "Unrefined Result: " + str(artp3Result[0]) + "\nRefined Result: " + str(artp3Result[1])
-    else:
-        message = "Result: " + artp3Result
+    message = "P-Value: " + str(artp3Result["pvalue"]) + "\n" + messsage
     self.composeMail(parameters['email'],message,files)
     # remove the already used files
     for study in parameters['studies']:
@@ -81,7 +95,7 @@ class RequestProcessor:
     config[RequestProcessor.CONFIG] = StompConfig(config.getAsString(RequestProcessor.URL))
     self.CONFIG = config
     robjects.r('''source('ARTP3Wrapper.R')''')
-    self.r_runARTP3 = robjects.r['runARTP3']
+    self.r_runARTP3 = robjects.r['runARTP3WithHandlers']
 
 if __name__ == '__main__':
   RequestProcessor().run()

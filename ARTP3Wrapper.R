@@ -18,7 +18,7 @@ runARTP3 <- function(parameters) {
     sample.size[[length(sample.size)+1]] <- as.numeric(study$sample_sizes)
   }
   # Derive Pathway File
-  pathway <- data.frame(read.table(file(parameters$pathway, "r"), header=TRUE), stringAsFactors = FALSE)
+  pathway <- data.frame(read.table(parameters$pathway, header=TRUE), stringAsFactors = FALSE)
   rm.gene <- apply(table(pathway$Gene, pathway$Chr)!=0, 1, sum)
   rm.gene <- names(which(rm.gene > 1))
   pathway <- pathway[!(pathway$Gene %in% rm.gene), ]
@@ -60,6 +60,7 @@ runARTP3 <- function(parameters) {
   ret1 <- pathway.warm.start(setup)
   
   ret1$setup <- NULL
+  pvalue <- ret1$pathway.pvalue
   saveValue <- ret1
   
   if (parameters$refinep && ret1$options$nperm <= 1e7 && !ret1$accurate && ret1$test.timing/3600 * 10 < 72) {
@@ -67,10 +68,30 @@ runARTP3 <- function(parameters) {
     ret2$setup <- NULL
     
     saveValue <- ret2
-    returnValue <- c(ret1$pathway.pvalue,ret2$pathway.pvalue)
-  } else {
-    returnValue <- c(ret1$pathway.pvalue)
+    pvalue <- ret2$pathway.pvalue
   }
   save(saveValue,file=file.path(out.dir,"1.Rdata"))
+  return(pvalue)
+}
+
+runARTP3WithHandlers <- function(parameters) {
+  suppressWarnings(suppressMessages({
+    returnValue <- list()
+    returnValue$pvalue <- tryCatch(
+      withCallingHandlers(
+        runARTP3(parameters),
+        message=function(m) {
+          returnValue$messages <<- append(returnValue$messages, m$message)
+        },
+        warning=function(w) {
+          returnValue$warnings <<- append(returnValue$warnings, w$message)
+        }
+      ),
+      error=function(e) {
+        returnValue$error <<- e$message
+        return(NULL)
+      }
+    )
+  }))
   return(toJSON(returnValue))
 }
