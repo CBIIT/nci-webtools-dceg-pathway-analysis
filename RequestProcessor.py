@@ -56,20 +56,16 @@ class RequestProcessor:
           message += warning.strip() + "\n\n"
       else:
         message += artp3Result["warnings"].strip() + "\n\n"
-    if "messages" in artp3Result:
-      message += "\nMessages:\n"
-      if (isinstance(artp3Result["messages"],list)):
-        for returnedMessage in artp3Result["messages"]:
-          message += returnedMessage.strip() + "\n\n"
-      else:
-        message += artp3Result["messages"].strip() + "\n\n"
     if "error" in artp3Result:
-      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),"Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +parameters)
+      message = "Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +parameters
+      print message
+      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),message)
       return
     # email results
     parameters = json.loads(parameters)
     files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
     message = "P-Value: " + str(artp3Result["pvalue"]) + "\n" + messsage
+    print message
     self.composeMail(parameters['email'],message,files)
     # remove the already used files
     for study in parameters['studies']:

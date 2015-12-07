@@ -100,7 +100,7 @@ runARTP3WithHandlers <- function(parameters) {
       withCallingHandlers(
         runARTP3(parameters),
         message=function(m) {
-          returnValue$messages <<- append(returnValue$messages, m$message)
+          print(m$message)
         },
         warning=function(w) {
           returnValue$warnings <<- append(returnValue$warnings, w$message)
