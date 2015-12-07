@@ -78,7 +78,7 @@ runARTP3 <- function(parameters) {
   ## comments from Han: If we have a 1.Rdata, then we can send something to the users no matter if there is an error during refining or not.
   ## comments from Han: If we do not have extra hours for this project, we can do that in the future. 
   
-  if (parameters$refinep && ret1$options$nperm <= 1e7 && !ret1$accurate && ret1$test.timing/3600 * 10 < 72) {
+  if (as.logical(parameters$refinep) && ret1$options$nperm <= 1e7 && !ret1$accurate && ret1$test.timing/3600 * 10 < 72) {
     ret2 <- pathway.warm.start(setup, nperm = ret1$options$nperm * 10)
     ret2$setup <- NULL
     

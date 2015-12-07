@@ -64,7 +64,7 @@ class RequestProcessor:
     # email results
     parameters = json.loads(parameters)
     files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
-    message = "P-Value: " + str(artp3Result["pvalue"]) + "\n" + messsage
+    message = "P-Value: " + str(artp3Result["pvalue"]) + "\n" + message
     print message
     self.composeMail(parameters['email'],message,files)
     # remove the already used files

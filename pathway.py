@@ -118,9 +118,9 @@ class Pathway:
       for population in subpop:
         parameters['population'].append(population)
       parameters['outdir'] = app.config[Pathway.CONFIG][Pathway.OUT_FOLDER]
-      parameters['refinep'] = parameters.get('refinep',False)
-      parameters['gene_subset'] = parameters.get('gene_subset',False)
-
+      parameters['refinep'] = parameters.get('refinep',"").lower() in ['true','t','1']
+      parameters['gene_subset'] = parameters.get('gene_subset',"").lower() in ['true','t','1']
+      
       pathwayConfig = app.config[Pathway.CONFIG]
       client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
       client.connect()
