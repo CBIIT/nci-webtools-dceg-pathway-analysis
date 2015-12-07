@@ -6,7 +6,6 @@ runARTP3 <- function(parameters) {
   
   parameters <- fromJSON(parameters)
   out.dir <- parameters$outdir
-  setwd(out.dir)
   studies <- parameters$studies
   # Turn Studies into ARTP3 Readable Form
   summary.files <- c()
@@ -88,6 +87,10 @@ runARTP3 <- function(parameters) {
   }
   save(saveValue,file=file.path(out.dir,"1.Rdata"))
   return(pvalue)
+}
+
+runARTP3FromConsole <- function(file) {
+  print(runARTP3(toJSON(fromJSON(file=file))))
 }
 
 runARTP3WithHandlers <- function(parameters) {

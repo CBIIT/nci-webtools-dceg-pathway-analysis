@@ -94,7 +94,8 @@ class Pathway:
         return Pathway.buildFailure("The pathway file seems to be missing.")
       del parameters['database_pathway']
 
-      del parameters['selectAll']
+      if "selectAll" in parameters:
+        del parameters['selectAll']
       del parameters['selectItem']
       superpop = {}
       subpop = {}

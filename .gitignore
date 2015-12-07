@@ -3,6 +3,7 @@
 *.pyc
 config.ini
 localserver.py
+study1.study
 common/
 examples/
 src/node_modules/
