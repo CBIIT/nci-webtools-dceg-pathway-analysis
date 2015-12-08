@@ -353,7 +353,8 @@ function sendForm(formData) {
       }
       return myXhr;
     },
-    dataType: "json"
+    dataType: "json",
+    timeout: 5000
   });
 }
 
@@ -435,10 +436,17 @@ function apply_options(element, items, combo){
 }
 
 function submission_error(request, statusText, error) {
-  var errorObj = JSON.parse(request.responseText);
-
-  displayErrors("#errorDisplay",
-          ["The request failed with the following message: <br/> "+ errorObj.message]);
+  var errorMessage;
+  if (error === "timeout") {
+    errorMessage = "The calculation service appears to be down. Please try again later or contact the administrator.";
+  } else {
+    if (request.status == 500) {
+      errorMessage = "An unknown error occurred. The service may be unavailable. Please try again later or contact the administrator.";
+    } else {
+      errorMessage = "The request failed with the following message: <br/> "+ JSON.parse(request.responseText).message;
+    }
+    displayErrors("#errorDisplay",[errorMessage]);
+  }
 }
 
 function get_options_error(option_type) {
