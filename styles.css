@@ -62,6 +62,10 @@ form input.input-fit[type='text'],
 form select.input-fit[type='text'] {
   width: 254px;
 }
+form ul#select2-database_pathway-results {
+  float: left;
+  width: 100%;
+}
 form ul li {
   list-style: none;
 }
