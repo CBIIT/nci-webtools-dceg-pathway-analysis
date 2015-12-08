@@ -131,7 +131,7 @@ class Pathway:
       exc_type, exc_obj, exc_tb = sys.exc_info()
       fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
       print("EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
-      return jsonify(data="",message=e, success=False)
+      return Pathway.buildSuccess(e)
 
   def __init__(self):
     pathwayConfig = PropertyUtil(r"config.ini")

@@ -260,7 +260,59 @@ $(function(){
 });
 
 
-var population_labels = {'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
+var population_labels = {
+  'AFR': {
+    'fullName':'African',
+    'subPopulations':{
+      'YRI':'Yoruba in Ibadan, Nigera',
+      'LWK':'Luhya in Webuye, Kenya',
+      'GWD':'Gambian in Western Gambia',
+      'MSL':'Mende in Sierra Leone',
+      'ESN':'Esan in Nigera',
+      'ASW':'Americans of African Ancestry in SW USA',
+      'ACB':'African Carribbeans in Barbados'
+    }
+  },
+  'AMR': {
+    'fullName':'Ad Mixed American',
+    'subPopulations':{
+      'MXL':'Mexican Ancestry from Los Angeles, USA',
+      'PUR':'Puerto Ricans from Puerto Rico',
+      'CLM':'Colombians from Medellin, Colombia',
+      'PEL':'Peruvians from Lima, Peru'
+    }
+  },
+  'EAS':{
+    'fullName':'East Asian',
+    'subPopulations':{
+      'CHB':'Han Chinese in Bejing, China',
+      'JPT':'Japanese in Tokyo, Japan',
+      'CHS':'Southern Han Chinese',
+      'CDX':'Chinese Dai in Xishuangbanna, China',
+      'KHV':'Kinh in Ho Chi Minh City, Vietnam'
+    }
+  },
+  'EUR':{
+    'fullName':'European',
+    'subPopulations':{
+      'CEU':'Utah Residents from North and West Europe',
+      'TSI':'Toscani in Italia',
+      'FIN':'Finnish in Finland',
+      'GBR':'British in England and Scotland',
+      'IBS':'Iberian population in Spain'
+    }
+  },
+  'SAS':{
+    'fullName':'South Asian',
+    'subPopulations':{
+      'GIH':'Gujarati Indian from Houston, Texas',
+      'PJL':'Punjabi from Lahore, Pakistan',
+      'BEB':'Bengali from Bangladesh',
+      'STU':'Sri Lankan Tamil from the UK',
+      'ITU':'Indian Telugu from the UK'
+    }
+  }
+};
 
 function pre_request() {
  
@@ -301,7 +353,8 @@ function sendForm(formData) {
       }
       return myXhr;
     },
-    dataType: "json"
+    dataType: "json",
+    timeout: 5000
   });
 }
 
@@ -355,36 +408,45 @@ function apply_options(element, items, combo){
 
         source.push({label: item.text, value: item.code, option: option});
       });
-      if(data.length > 10)
+      if (data.length > 10) {
         element.select2({
+            dropdownParent: element.parent(),
             placeholder:"Type to filter or select from dropdown",
             allowClear: true
         });
+      }
     };
-  }
-  else {
-    return function() {
-      $.each(items, function(key, item) {
+  } else {
+    return function(data) {
+      var populations = {};
+      data.forEach(function(item, i) {
+        populations[item.group] = populations[item.group] || (items[item.group]?{fullName:items[item.group].fullName,subPopulations:{}}:{fullName:item.group,subPopulations:{}});
+        populations[item.group].subPopulations[item.subPopulation] = items[item.group].subPopulations[item.subPopulation] || item.text;
+      });
+      population_labels = populations;
+      $.each(population_labels, function(key, item) {
         var option = $("<option></option>");
         $(option).val(key);
-        $(option).text(item.fullName);
+        $(option).text('(' + key + ') ' + item.fullName);
         element.append(option);
         source.push({label: item.fullName, value: key, option: option});
       });
-      if(items.length > 10)
-        element.select2({
-            placeholder:"Type to filter or select from dropdown",
-            allowClear: true
-        });
     };
   }
 }
 
 function submission_error(request, statusText, error) {
-  var errorObj = JSON.parse(request.responseText);
-
-  displayErrors("#errorDisplay",
-          ["The request failed with the following message: <br/> "+ errorObj.message]);
+  var errorMessage;
+  if (error === "timeout") {
+    errorMessage = "The calculation service appears to be down. Please try again later or contact the administrator.";
+  } else {
+    if (request.status == 500) {
+      errorMessage = "An unknown error occurred. The service may be unavailable. Please try again later or contact the administrator.";
+    } else {
+      errorMessage = "The request failed with the following message: <br/> "+ JSON.parse(request.responseText).message;
+    }
+    displayErrors("#errorDisplay",[errorMessage]);
+  }
 }
 
 function get_options_error(option_type) {
@@ -647,40 +709,41 @@ function checkedStateToValue(e) {
 
 function resetForm() {
   $(pathForm).find(".studies").each(function(i, el) {
-    if(i !== 0) $(this).detach();
-    else {
-      $(lambda_1).val("1.0");
-      $(num_resource_1, pathForm.study_1).val("");
-      $(study_1).wrap("<form>").closest("form").get(0).reset();
-      $(study_1).unwrap();
+    if(i !== 0) {
+      $(this).detach();
+    } else {
+      $(pathForm.lambda_1).val("1.0");
+      $(pathForm.num_resource_1, pathForm.study_1).val("");
+      $(pathForm.study_1).wrap("<form>").closest("form").get(0).reset();
+      $(pathForm.study_1).unwrap();
       $(pathForm).find(".studyResources").detach();
     }
   });
 
-  $(database_pathway_option).attr("checked", "checked");
-  $(nperm).val((1e5).toExponential());
-  $(miss_rate).val(0.05);
-  $(maf).val(0.05);
-  $(hwep).val((1e-5).toExponential());
-  $(gene).val(0.95);
-  $(chr).val(0.95);
-  $(snp_n).val(5);
-  $(snp_percent).val(0);
-  $(gene_n).val(10);
-  $(gene_percent).val(0.05);
-  $(email).val("");
+  $(pathForm.database_pathway_option).attr("checked", "checked");
+  $(pathForm.nperm).val((1e5).toExponential());
+  $(pathForm.miss_rate).val(0.05);
+  $(pathForm.maf).val(0.05);
+  $(pathForm.hwep).val((1e-5).toExponential());
+  $(pathForm.gene).val(0.95);
+  $(pathForm.chr).val(0.95);
+  $(pathForm.snp_n).val(5);
+  $(pathForm.snp_percent).val(0);
+  $(pathForm.gene_n).val(10);
+  $(pathForm.gene_percent).val(0.05);
+  $(pathForm.email).val("");
   $(".custom-combobox input").val("");
-  $(population).html("");
-  $(refinep)[0].checked = false;
-  $(gene_subset)[0].checked = false;
-  $(database_pathway_option)[0].checked = true;
-  $(database_pathway).find("option:first-child").attr("selected", "selected");
-  $(super_population).find("option:first-child").attr("selected", "selected");
-  $(file_pathway).wrap("<form>").closest("form").get(0).reset();
-  $(file_pathway).unwrap();
+  $(pathForm.population).html("");
+  $(pathForm.refinep)[0].checked = false;
+  $(pathForm.gene_subset)[0].checked = false;
+  $(pathForm.database_pathway_option)[0].checked = true;
+  $(pathForm.database_pathway).find("option:first-child").attr("selected", "selected");
+  $(pathForm.super_population).find("option:first-child").attr("selected", "selected");
+  $(pathForm.file_pathway).wrap("<form>").closest("form").get(0).reset();
+  $(pathForm.file_pathway).unwrap();
 
   $(pathForm).validate().resetForm();
-  $(population.parentElement).addClass('hide');
+  $(pathForm.population.parentElement).addClass('hide');
   $(pathForm).find("button,input,select,div,span").removeClass("error");
 }
 
@@ -730,7 +793,7 @@ function retrieveMultiselects(selectedItems) {
   var valuesContainer = {};
 
   $.each(selectedItems, function(i, item) {
-    var groupCode = $(population).find("option[value='" + item + "']")
+    var groupCode = $(pathForm.population).find("option[value='" + item + "']")
     .parent().attr("label");
 
    
@@ -759,31 +822,25 @@ function apply_multiselect_options(element, group){
   element.html("");
   if(group.length > 0){
     $.each(population_labels[group].subPopulations, function (subCode, text) {
-      var subOption = $("<option />", { value: group + "|" + subCode, text: text });
-
-      element.append(subOption).multipleSelect('refresh');
-      element.multipleSelect("uncheckAll");
+      element.append($("<option />", { value: group + "|" + subCode, text: '(' + subCode + ') ' + text }));
     });
 
    
     element.multipleSelect({
-      name: population.id,
-      width: "100%",
+      name: pathForm.population.id,
+      width: 400,
       placeholder: "Select Sub Population(s)",
       selectAll: true,
-      multiple: true,
-      multipleWidth: 300,
       minimumCountSelected: 2,
       countSelected: false,
       onClick:function(view) {
         element.validate();
       }
     });
-    element.multipleSelect("refresh");
-    $(population_labels[0]).show();
+    element.multipleSelect("refresh").multipleSelect("uncheckAll");
+   
     element.parent().removeClass('hide');
-  }
-  else{
+  } else {
     element.parent().addClass('hide');
 
   }
@@ -821,7 +878,7 @@ $(function() {
   $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
 
   $("select#super_population").on('change', function() {
-    apply_multiselect_options($(population), this.value);
+    apply_multiselect_options($(pathForm.population), this.value);
   });
 
   $("#studyEntry").accordion("option", "active", 0);

@@ -1,5 +1,57 @@
 // handle sevice call and actions here
-var population_labels = {'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
+var population_labels = {
+  'AFR': {
+    'fullName':'African',
+    'subPopulations':{
+      'YRI':'Yoruba in Ibadan, Nigera',
+      'LWK':'Luhya in Webuye, Kenya',
+      'GWD':'Gambian in Western Gambia',
+      'MSL':'Mende in Sierra Leone',
+      'ESN':'Esan in Nigera',
+      'ASW':'Americans of African Ancestry in SW USA',
+      'ACB':'African Carribbeans in Barbados'
+    }
+  },
+  'AMR': {
+    'fullName':'Ad Mixed American',
+    'subPopulations':{
+      'MXL':'Mexican Ancestry from Los Angeles, USA',
+      'PUR':'Puerto Ricans from Puerto Rico',
+      'CLM':'Colombians from Medellin, Colombia',
+      'PEL':'Peruvians from Lima, Peru'
+    }
+  },
+  'EAS':{
+    'fullName':'East Asian',
+    'subPopulations':{
+      'CHB':'Han Chinese in Bejing, China',
+      'JPT':'Japanese in Tokyo, Japan',
+      'CHS':'Southern Han Chinese',
+      'CDX':'Chinese Dai in Xishuangbanna, China',
+      'KHV':'Kinh in Ho Chi Minh City, Vietnam'
+    }
+  },
+  'EUR':{
+    'fullName':'European',
+    'subPopulations':{
+      'CEU':'Utah Residents from North and West Europe',
+      'TSI':'Toscani in Italia',
+      'FIN':'Finnish in Finland',
+      'GBR':'British in England and Scotland',
+      'IBS':'Iberian population in Spain'
+    }
+  },
+  'SAS':{
+    'fullName':'South Asian',
+    'subPopulations':{
+      'GIH':'Gujarati Indian from Houston, Texas',
+      'PJL':'Punjabi from Lahore, Pakistan',
+      'BEB':'Bengali from Bangladesh',
+      'STU':'Sri Lankan Tamil from the UK',
+      'ITU':'Indian Telugu from the UK'
+    }
+  }
+};
 
 function pre_request() {
   // display spinner
@@ -40,7 +92,8 @@ function sendForm(formData) {
       }
       return myXhr;
     },
-    dataType: "json"
+    dataType: "json",
+    timeout: 5000
   });
 }
 
@@ -94,36 +147,45 @@ function apply_options(element, items, combo){
 
         source.push({label: item.text, value: item.code, option: option});
       });
-      if(data.length > 10)
+      if (data.length > 10) {
         element.select2({
+            dropdownParent: element.parent(),
             placeholder:"Type to filter or select from dropdown",
             allowClear: true
         });
+      }
     };
-  }
-  else {
-    return function() {
-      $.each(items, function(key, item) {
+  } else {
+    return function(data) {
+      var populations = {};
+      data.forEach(function(item, i) {
+        populations[item.group] = populations[item.group] || (items[item.group]?{fullName:items[item.group].fullName,subPopulations:{}}:{fullName:item.group,subPopulations:{}});
+        populations[item.group].subPopulations[item.subPopulation] = items[item.group].subPopulations[item.subPopulation] || item.text;
+      });
+      population_labels = populations;
+      $.each(population_labels, function(key, item) {
         var option = $("<option></option>");
         $(option).val(key);
-        $(option).text(item.fullName);
+        $(option).text('(' + key + ') ' + item.fullName);
         element.append(option);
         source.push({label: item.fullName, value: key, option: option});
       });
-      if(items.length > 10)
-        element.select2({
-            placeholder:"Type to filter or select from dropdown",
-            allowClear: true
-        });
     };
   }
 }
 
 function submission_error(request, statusText, error) {
-  var errorObj = JSON.parse(request.responseText);
-
-  displayErrors("#errorDisplay",
-          ["The request failed with the following message: <br/> "+ errorObj.message]);
+  var errorMessage;
+  if (error === "timeout") {
+    errorMessage = "The calculation service appears to be down. Please try again later or contact the administrator.";
+  } else {
+    if (request.status == 500) {
+      errorMessage = "An unknown error occurred. The service may be unavailable. Please try again later or contact the administrator.";
+    } else {
+      errorMessage = "The request failed with the following message: <br/> "+ JSON.parse(request.responseText).message;
+    }
+    displayErrors("#errorDisplay",[errorMessage]);
+  }
 }
 
 function get_options_error(option_type) {

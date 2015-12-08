@@ -4,40 +4,41 @@ function checkedStateToValue(e) {
 
 function resetForm() {
   $(pathForm).find(".studies").each(function(i, el) {
-    if(i !== 0) $(this).detach();
-    else {
-      $(lambda_1).val("1.0");
-      $(num_resource_1, pathForm.study_1).val("");
-      $(study_1).wrap("<form>").closest("form").get(0).reset();
-      $(study_1).unwrap();
+    if(i !== 0) {
+      $(this).detach();
+    } else {
+      $(pathForm.lambda_1).val("1.0");
+      $(pathForm.num_resource_1, pathForm.study_1).val("");
+      $(pathForm.study_1).wrap("<form>").closest("form").get(0).reset();
+      $(pathForm.study_1).unwrap();
       $(pathForm).find(".studyResources").detach();
     }
   });
 
-  $(database_pathway_option).attr("checked", "checked");
-  $(nperm).val((1e5).toExponential());
-  $(miss_rate).val(0.05);
-  $(maf).val(0.05);
-  $(hwep).val((1e-5).toExponential());
-  $(gene).val(0.95);
-  $(chr).val(0.95);
-  $(snp_n).val(5);
-  $(snp_percent).val(0);
-  $(gene_n).val(10);
-  $(gene_percent).val(0.05);
-  $(email).val("");
+  $(pathForm.database_pathway_option).attr("checked", "checked");
+  $(pathForm.nperm).val((1e5).toExponential());
+  $(pathForm.miss_rate).val(0.05);
+  $(pathForm.maf).val(0.05);
+  $(pathForm.hwep).val((1e-5).toExponential());
+  $(pathForm.gene).val(0.95);
+  $(pathForm.chr).val(0.95);
+  $(pathForm.snp_n).val(5);
+  $(pathForm.snp_percent).val(0);
+  $(pathForm.gene_n).val(10);
+  $(pathForm.gene_percent).val(0.05);
+  $(pathForm.email).val("");
   $(".custom-combobox input").val("");
-  $(population).html("");
-  $(refinep)[0].checked = false;
-  $(gene_subset)[0].checked = false;
-  $(database_pathway_option)[0].checked = true;
-  $(database_pathway).find("option:first-child").attr("selected", "selected");
-  $(super_population).find("option:first-child").attr("selected", "selected");
-  $(file_pathway).wrap("<form>").closest("form").get(0).reset();
-  $(file_pathway).unwrap();
+  $(pathForm.population).html("");
+  $(pathForm.refinep)[0].checked = false;
+  $(pathForm.gene_subset)[0].checked = false;
+  $(pathForm.database_pathway_option)[0].checked = true;
+  $(pathForm.database_pathway).find("option:first-child").attr("selected", "selected");
+  $(pathForm.super_population).find("option:first-child").attr("selected", "selected");
+  $(pathForm.file_pathway).wrap("<form>").closest("form").get(0).reset();
+  $(pathForm.file_pathway).unwrap();
 
   $(pathForm).validate().resetForm();
-  $(population.parentElement).addClass('hide');
+  $(pathForm.population.parentElement).addClass('hide');
   $(pathForm).find("button,input,select,div,span").removeClass("error");
 }
 
@@ -87,7 +88,7 @@ function retrieveMultiselects(selectedItems) {
   var valuesContainer = {};
 
   $.each(selectedItems, function(i, item) {
-    var groupCode = $(population).find("option[value='" + item + "']")
+    var groupCode = $(pathForm.population).find("option[value='" + item + "']")
     .parent().attr("label");
 
     // Add values in the population group
@@ -116,31 +117,25 @@ function apply_multiselect_options(element, group){
   element.html("");
   if(group.length > 0){
     $.each(population_labels[group].subPopulations, function (subCode, text) {
-      var subOption = $("<option />", { value: group + "|" + subCode, text: text });
-
-      element.append(subOption).multipleSelect('refresh');
-      element.multipleSelect("uncheckAll");
+      element.append($("<option />", { value: group + "|" + subCode, text: '(' + subCode + ') ' + text }));
     });
 
     // setting options for the multiselect control
     element.multipleSelect({
-      name: population.id,
-      width: "100%",
+      name: pathForm.population.id,
+      width: 400,
       placeholder: "Select Sub Population(s)",
       selectAll: true,
-      multiple: true,
-      multipleWidth: 300,
       minimumCountSelected: 2,
       countSelected: false,
       onClick:function(view) {
         element.validate();
       }
     });
-    element.multipleSelect("refresh");
-    $(population_labels[0]).show();
+    element.multipleSelect("refresh").multipleSelect("uncheckAll");
+    //$(population_labels[0]).show();
     element.parent().removeClass('hide');
-  }
-  else{
+  } else {
     element.parent().addClass('hide');
 
   }
@@ -178,7 +173,7 @@ $(function() {
   $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
 
   $("select#super_population").on('change', function() {
-    apply_multiselect_options($(population), this.value);
+    apply_multiselect_options($(pathForm.population), this.value);
   });
 
   $("#studyEntry").accordion("option", "active", 0);

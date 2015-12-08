@@ -10,9 +10,9 @@ html
 body
     background white
     padding-bottom 1%
-    font 0.9em "Verdana", "Geneva", "sans-serif" !important
+    font-size 1em
     margin 0 auto
-    width 93%
+    width 100%
     float right
     box-shadow -9px 17px 31px -4px rgba(0,0,0,0.75)
 
@@ -30,7 +30,6 @@ p
 
 form
     background white
-    margin 0 auto
     ul
         li
             list-style none
@@ -45,8 +44,11 @@ form
             border 1px solid red
             background rgba(225, 0, 0, 0.24)
 #content
+    box-sizing border-box
     display block
-    padding 0 25%
+    width 100%
+    margin 0px auto
+    max-width 800px
 
 #mainTitle
     text-align center
@@ -192,10 +194,13 @@ progress
         display inline-block
 
 .input
+    position relative
     float right
     clear right
     input.input-fit
         width 260px !important
+    .ms-drop
+        left -100px
 .ms-drop
     font-size 85%
     li:not(.group)
