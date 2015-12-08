@@ -96,7 +96,8 @@ class Pathway:
 
       if "selectAll" in parameters:
         del parameters['selectAll']
-      del parameters['selectItem']
+      if "selectItem" in parameters:
+        del parameters['selectItem']
       superpop = {}
       subpop = {}
       for population in parameters['populations'].split(","):
