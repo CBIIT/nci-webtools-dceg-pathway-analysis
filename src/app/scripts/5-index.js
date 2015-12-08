@@ -133,7 +133,6 @@ function apply_multiselect_options(element, group){
       }
     });
     element.multipleSelect("refresh").multipleSelect("uncheckAll");
-    //$(population_labels[0]).show();
     element.parent().removeClass('hide');
   } else {
     element.parent().addClass('hide');

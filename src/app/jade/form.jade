@@ -23,13 +23,13 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
         legend.termToDefine(data-term="population") Select the population:
         ul
             li
+                label(for="super_population") Super Population:
                 .input
-                    label(for="super_population") Super Population:
                     select#super_population(required='')
                       option(value='') -- Select a super population --
             li
+                label(for="population") Sub Population:
                 .input.hide
-                    label(for="population") Sub Population:
                     select#population(required='', multiple)
     fieldset
       legend Set the following options:
@@ -39,7 +39,7 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
             .input
                 input#nperm(type='text', name='nperm', value='1e+5')
         li
-            #refinep_div
+            #refinep_div.input
                 input#refinep(type='checkbox', name='refinep')
                 label(for='refinep') Refine p-Value
         li
@@ -64,7 +64,7 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
                 input#chr(type='number', name='chr', value='0.95', required='')
         li
             label.termToDefine(data-term="gene_subset", for='gene_subset') rm.gene.subset:
-            .input.left-align
+            .input
                 input#gene_subset(type='checkbox', name='gene_subset')
         li
             label.termToDefine(data-term="snp_n", for='snp_n') inspect.snp.n:

@@ -838,7 +838,6 @@ function apply_multiselect_options(element, group){
       }
     });
     element.multipleSelect("refresh").multipleSelect("uncheckAll");
-   
     element.parent().removeClass('hide');
   } else {
     element.parent().addClass('hide');

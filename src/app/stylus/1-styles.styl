@@ -23,22 +23,38 @@ body
     max-height 250px
 
 .ui-widget
-    font-size inherit !important
+    font-size inherit
 
 p
     padding 20px 24px
 
 form
     background white
-    ul
-        li
-            list-style none
+    button.ui-button-icon-only, a.ui-button
+        height 35px
+        margin 0px
+        width 40px
     input, select
+        float left
         &.error
             border 1px solid red
             background rgba(225, 0, 0, 0.24)
             &:before
                 content "*"
+        &:not([type='radio']):not([type='checkbox'])
+            height 35px
+            width 100%
+        &.input-fit[type='text']
+            width 254px
+    ul
+        li
+            list-style none
+    .custom-combobox
+        position relative
+        display inline-block
+        a
+            height 33px
+            vertical-align bottom
     .error
         &.ms-choice, &.custom-combobox-input
             border 1px solid red
@@ -110,8 +126,8 @@ li
     clear both
 
 label
-    display block !important
-    float left !important
+    display block
+    float left
 
 fieldset
     margin 2% auto
@@ -121,30 +137,6 @@ fieldset
 legend
     font-size 1em
     font-weight bold
-
-form
-    .custom-combobox
-        position relative
-        display inline-block
-        a
-            height 33px !important
-            vertical-align bottom
-        input
-            height 35px !important
-            width 265px !important
-            text-align center
-
-    input[type="file"], input[type="text"], input[type="number"], input[type="email"],
-    select,button,progress
-        width 300px !important
-        height 35px !important
-        font-size inherit
-
-    input[name='pathway_type']
-        float inherit
-
-    button.ui-button-icon-only, a.ui-button
-        width 2.4em !important
 
 progress
     display block
@@ -159,24 +151,15 @@ progress
     float right
     label
         padding 0 5px
-#refinep_div
-    float right
-
 #refinep
     input[type="checkbox"]
         display inline-block
     label
         display inline-block
-        width auto
-        float none
 
 .box-error
     border 2px solid maroon
     background rgba(255, 115, 115, 0.5)
-
-.left-align
-    float right
-    margin-right 280px
 
 .spacer
     content "|"
@@ -188,23 +171,26 @@ progress
 
 .buttonGroup
     margin 0 auto
-    width 550px
+    text-align center
     button
-        width 250px !important
+        width 300px
         display inline-block
 
 .input
     position relative
     float right
     clear right
-    input.input-fit
-        width 260px !important
+    text-align left
+    width 300px 
     .ms-drop
+        font-size 85%
         left -100px
-.ms-drop
-    font-size 85%
-    li:not(.group)
-        text-indent 20px
+        li:not(.group)
+            text-indent 20px
+    .ms-parent
+        width 100%
+        > button
+          width 100% !important
 
 #spinner
     background url("/common/images/loading.gif") no-repeat center/50%
@@ -223,7 +209,7 @@ footer
     font-size small
     ul li
         list-style none
-        display inline-block !important
+        display inline-block
         margin 0 5px
         a
             color black

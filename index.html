@@ -65,16 +65,16 @@
           <legend data-term="population" class="termToDefine">Select the population:</legend>
           <ul>
             <li>
+              <label for="super_population">Super Population:</label>
               <div class="input">
-                <label for="super_population">Super Population:</label>
                 <select id="super_population" required="">
                   <option value="">-- Select a super population --</option>
                 </select>
               </div>
             </li>
             <li>
+              <label for="population">Sub Population:</label>
               <div class="input hide">
-                <label for="population">Sub Population:</label>
                 <select id="population" required="" multiple="multiple"></select>
               </div>
             </li>
@@ -90,7 +90,7 @@
               </div>
             </li>
             <li>
-              <div id="refinep_div">
+              <div id="refinep_div" class="input">
                 <input id="refinep" type="checkbox" name="refinep"/>
                 <label for="refinep">Refine p-Value</label>
               </div>
@@ -127,7 +127,7 @@
             </li>
             <li>
               <label data-term="gene_subset" for="gene_subset" class="termToDefine">rm.gene.subset:</label>
-              <div class="input left-align">
+              <div class="input">
                 <input id="gene_subset" type="checkbox" name="gene_subset"/>
               </div>
             </li>

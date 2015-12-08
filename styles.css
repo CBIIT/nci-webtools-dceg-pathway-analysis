@@ -26,7 +26,7 @@ body {
   max-height: 250px;
 }
 .ui-widget {
-  font-size: inherit !important;
+  font-size: inherit;
 }
 p {
   padding: 20px 24px;
@@ -34,8 +34,15 @@ p {
 form {
   background: #fff;
 }
-form ul li {
-  list-style: none;
+form button.ui-button-icon-only,
+form a.ui-button {
+  height: 35px;
+  margin: 0px;
+  width: 40px;
+}
+form input,
+form select {
+  float: left;
 }
 form input.error,
 form select.error {
@@ -45,6 +52,26 @@ form select.error {
 form input.error:before,
 form select.error:before {
   content: "*";
+}
+form input:not([type='radio']):not([type='checkbox']),
+form select:not([type='radio']):not([type='checkbox']) {
+  height: 35px;
+  width: 100%;
+}
+form input.input-fit[type='text'],
+form select.input-fit[type='text'] {
+  width: 254px;
+}
+form ul li {
+  list-style: none;
+}
+form .custom-combobox {
+  position: relative;
+  display: inline-block;
+}
+form .custom-combobox a {
+  height: 33px;
+  vertical-align: bottom;
 }
 form .error.ms-choice,
 form .error.custom-combobox-input {
@@ -133,8 +160,8 @@ li {
   clear: both;
 }
 label {
-  display: block !important;
-  float: left !important;
+  display: block;
+  float: left;
 }
 fieldset {
   margin: 2% auto;
@@ -144,37 +171,6 @@ fieldset {
 legend {
   font-size: 1em;
   font-weight: bold;
-}
-form .custom-combobox {
-  position: relative;
-  display: inline-block;
-}
-form .custom-combobox a {
-  height: 33px !important;
-  vertical-align: bottom;
-}
-form .custom-combobox input {
-  height: 35px !important;
-  width: 265px !important;
-  text-align: center;
-}
-form input[type="file"],
-form input[type="text"],
-form input[type="number"],
-form input[type="email"],
-form select,
-form button,
-form progress {
-  width: 300px !important;
-  height: 35px !important;
-  font-size: inherit;
-}
-form input[name='pathway_type'] {
-  float: inherit;
-}
-form button.ui-button-icon-only,
-form a.ui-button {
-  width: 2.4em !important;
 }
 progress {
   display: block;
@@ -192,24 +188,15 @@ progress {
 .studyResources label {
   padding: 0 5px;
 }
-#refinep_div {
-  float: right;
-}
 #refinep input[type="checkbox"] {
   display: inline-block;
 }
 #refinep label {
   display: inline-block;
-  width: auto;
-  float: none;
 }
 .box-error {
   border: 2px solid #800000;
   background: rgba(255,115,115,0.5);
-}
-.left-align {
-  float: right;
-  margin-right: 280px;
 }
 .spacer {
   content: "|";
@@ -222,28 +209,31 @@ progress {
 }
 .buttonGroup {
   margin: 0 auto;
-  width: 550px;
+  text-align: center;
 }
 .buttonGroup button {
-  width: 250px !important;
+  width: 300px;
   display: inline-block;
 }
 .input {
   position: relative;
   float: right;
   clear: right;
-}
-.input input.input-fit {
-  width: 260px !important;
+  text-align: left;
+  width: 300px;
 }
 .input .ms-drop {
+  font-size: 85%;
   left: -100px;
 }
-.ms-drop {
-  font-size: 85%;
-}
-.ms-drop li:not(.group) {
+.input .ms-drop li:not(.group) {
   text-indent: 20px;
+}
+.input .ms-parent {
+  width: 100%;
+}
+.input .ms-parent > button {
+  width: 100% !important;
 }
 #spinner {
   background: url("/common/images/loading.gif") no-repeat center/50%;
@@ -265,7 +255,7 @@ footer {
 }
 footer ul li {
   list-style: none;
-  display: inline-block !important;
+  display: inline-block;
   margin: 0 5px;
 }
 footer ul li a {
@@ -314,42 +304,16 @@ footer ul li a {
     padding: 5px;
     float: right;
   }
-  input[type="text"],
-  input[type="number"],
-  input[type="email"],
-  input[type="file"],
-  select,
-  button,
-  progress {
-    font-size: 1em;
-  }
   input[type="checkbox"] {
     width: 25px;
     height: 25px;
-  }
-  #refinep_div {
-    float: inherit;
   }
 }
 @media (max-width: 480px) {
   #content {
     width: 360px;
   }
-  .input {
-    width: 100%;
-  }
-  #refinep_div {
-    width: 50%;
-  }
   .division-logo {
     max-width: 330px;
-  }
-}
-@media (min-width: 481px) and (max-width: 1280px) {
-  .input {
-    width: 70%;
-  }
-  #refinep_div {
-    width: 20%;
   }
 }
