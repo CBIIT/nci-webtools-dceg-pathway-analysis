@@ -260,7 +260,59 @@ $(function(){
 });
 
 
-var population_labels = {'AFR':{'fullName':'African','subPopulations':{'YRI':'Yoruba in Ibadan, Nigera','LWK':'Luhya in Webuye, Kenya','GWD':'Gambian in Western Gambia','MSL':'Mende in Sierra Leone','ESN':'Esan in Nigera','ASW':'Americans of African Ancestry in SW USA','ACB':'African Carribbeans in Barbados'}},'AMR':{'fullName':'Ad Mixed American','subPopulations':{'MXL':'Mexican Ancestry from Los Angeles, USA','PUR':'Puerto Ricans from Puerto Rico','CLM':'Colombians from Medellin, Colombia','PEL':'Peruvians from Lima, Peru'}},'EAS':{'fullName':'East Asian','subPopulations':{'CHB':'Han Chinese in Bejing, China','JPT':'Japanese in Tokyo, Japan','CHS':'Southern Han Chinese','CDX':'Chinese Dai in Xishuangbanna, China','KHV':'Kinh in Ho Chi Minh City, Vietnam'}},'EUR':{'fullName':'European','subPopulations':{'CEU':'Utah Residents from North and West Europe','TSI':'Toscani in Italia','FIN':'Finnish in Finland','GBR':'British in England and Scotland','IBS':'Iberian population in Spain'}},'SAS':{'fullName':'South Asian','subPopulations':{'GIH':'Gujarati Indian from Houston, Texas','PJL':'Punjabi from Lahore, Pakistan','BEB':'Bengali from Bangladesh','STU':'Sri Lankan Tamil from the UK','ITU':'Indian Telugu from the UK'}}};
+var population_labels = {
+  'AFR': {
+    'fullName':'African',
+    'subPopulations':{
+      'YRI':'Yoruba in Ibadan, Nigera',
+      'LWK':'Luhya in Webuye, Kenya',
+      'GWD':'Gambian in Western Gambia',
+      'MSL':'Mende in Sierra Leone',
+      'ESN':'Esan in Nigera',
+      'ASW':'Americans of African Ancestry in SW USA',
+      'ACB':'African Carribbeans in Barbados'
+    }
+  },
+  'AMR': {
+    'fullName':'Ad Mixed American',
+    'subPopulations':{
+      'MXL':'Mexican Ancestry from Los Angeles, USA',
+      'PUR':'Puerto Ricans from Puerto Rico',
+      'CLM':'Colombians from Medellin, Colombia',
+      'PEL':'Peruvians from Lima, Peru'
+    }
+  },
+  'EAS':{
+    'fullName':'East Asian',
+    'subPopulations':{
+      'CHB':'Han Chinese in Bejing, China',
+      'JPT':'Japanese in Tokyo, Japan',
+      'CHS':'Southern Han Chinese',
+      'CDX':'Chinese Dai in Xishuangbanna, China',
+      'KHV':'Kinh in Ho Chi Minh City, Vietnam'
+    }
+  },
+  'EUR':{
+    'fullName':'European',
+    'subPopulations':{
+      'CEU':'Utah Residents from North and West Europe',
+      'TSI':'Toscani in Italia',
+      'FIN':'Finnish in Finland',
+      'GBR':'British in England and Scotland',
+      'IBS':'Iberian population in Spain'
+    }
+  },
+  'SAS':{
+    'fullName':'South Asian',
+    'subPopulations':{
+      'GIH':'Gujarati Indian from Houston, Texas',
+      'PJL':'Punjabi from Lahore, Pakistan',
+      'BEB':'Bengali from Bangladesh',
+      'STU':'Sri Lankan Tamil from the UK',
+      'ITU':'Indian Telugu from the UK'
+    }
+  }
+};
 
 function pre_request() {
  
@@ -364,8 +416,14 @@ function apply_options(element, items, combo){
       }
     };
   } else {
-    return function() {
-      $.each(items, function(key, item) {
+    return function(data) {
+      var populations = {};
+      data.forEach(function(item, i) {
+        populations[item.group] = populations[item.group] || (items[item.group]?{fullName:items[item.group].fullName,subPopulations:{}}:{fullName:item.group,subPopulations:{}});
+        populations[item.group].subPopulations[item.subPopulation] = items[item.group].subPopulations[item.subPopulation] || item.text;
+      });
+      population_labels = populations;
+      $.each(population_labels, function(key, item) {
         var option = $("<option></option>");
         $(option).val(key);
         $(option).text('(' + key + ') ' + item.fullName);
