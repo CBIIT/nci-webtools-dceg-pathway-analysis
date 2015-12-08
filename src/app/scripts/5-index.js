@@ -116,31 +116,25 @@ function apply_multiselect_options(element, group){
   element.html("");
   if(group.length > 0){
     $.each(population_labels[group].subPopulations, function (subCode, text) {
-      var subOption = $("<option />", { value: group + "|" + subCode, text: text });
-
-      element.append(subOption).multipleSelect('refresh');
-      element.multipleSelect("uncheckAll");
+      element.append($("<option />", { value: group + "|" + subCode, text: '(' + subCode + ') ' + text }));
     });
 
     // setting options for the multiselect control
     element.multipleSelect({
       name: population.id,
-      width: "100%",
+      width: 400,
       placeholder: "Select Sub Population(s)",
       selectAll: true,
-      multiple: true,
-      multipleWidth: 300,
       minimumCountSelected: 2,
       countSelected: false,
       onClick:function(view) {
         element.validate();
       }
     });
-    element.multipleSelect("refresh");
+    element.multipleSelect("refresh").multipleSelect("uncheckAll");
     $(population_labels[0]).show();
     element.parent().removeClass('hide');
-  }
-  else{
+  } else {
     element.parent().addClass('hide');
 
   }

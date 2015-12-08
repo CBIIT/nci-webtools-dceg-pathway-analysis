@@ -355,27 +355,23 @@ function apply_options(element, items, combo){
 
         source.push({label: item.text, value: item.code, option: option});
       });
-      if(data.length > 10)
+      if (data.length > 10) {
         element.select2({
+            dropdownParent: element.parent(),
             placeholder:"Type to filter or select from dropdown",
             allowClear: true
         });
+      }
     };
-  }
-  else {
+  } else {
     return function() {
       $.each(items, function(key, item) {
         var option = $("<option></option>");
         $(option).val(key);
-        $(option).text(item.fullName);
+        $(option).text('(' + key + ') ' + item.fullName);
         element.append(option);
         source.push({label: item.fullName, value: key, option: option});
       });
-      if(items.length > 10)
-        element.select2({
-            placeholder:"Type to filter or select from dropdown",
-            allowClear: true
-        });
     };
   }
 }
@@ -759,31 +755,25 @@ function apply_multiselect_options(element, group){
   element.html("");
   if(group.length > 0){
     $.each(population_labels[group].subPopulations, function (subCode, text) {
-      var subOption = $("<option />", { value: group + "|" + subCode, text: text });
-
-      element.append(subOption).multipleSelect('refresh');
-      element.multipleSelect("uncheckAll");
+      element.append($("<option />", { value: group + "|" + subCode, text: '(' + subCode + ') ' + text }));
     });
 
    
     element.multipleSelect({
       name: population.id,
-      width: "100%",
+      width: 400,
       placeholder: "Select Sub Population(s)",
       selectAll: true,
-      multiple: true,
-      multipleWidth: 300,
       minimumCountSelected: 2,
       countSelected: false,
       onClick:function(view) {
         element.validate();
       }
     });
-    element.multipleSelect("refresh");
+    element.multipleSelect("refresh").multipleSelect("uncheckAll");
     $(population_labels[0]).show();
     element.parent().removeClass('hide');
-  }
-  else{
+  } else {
     element.parent().addClass('hide');
 
   }

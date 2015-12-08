@@ -94,27 +94,23 @@ function apply_options(element, items, combo){
 
         source.push({label: item.text, value: item.code, option: option});
       });
-      if(data.length > 10)
+      if (data.length > 10) {
         element.select2({
+            dropdownParent: element.parent(),
             placeholder:"Type to filter or select from dropdown",
             allowClear: true
         });
+      }
     };
-  }
-  else {
+  } else {
     return function() {
       $.each(items, function(key, item) {
         var option = $("<option></option>");
         $(option).val(key);
-        $(option).text(item.fullName);
+        $(option).text('(' + key + ') ' + item.fullName);
         element.append(option);
         source.push({label: item.fullName, value: key, option: option});
       });
-      if(items.length > 10)
-        element.select2({
-            placeholder:"Type to filter or select from dropdown",
-            allowClear: true
-        });
     };
   }
 }

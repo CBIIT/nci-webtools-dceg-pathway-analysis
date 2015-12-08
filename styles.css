@@ -320,11 +320,15 @@ progress {
   display: inline-block;
 }
 .input {
+  position: relative;
   float: right;
   clear: right;
 }
 .input input.input-fit {
   width: 260px !important;
+}
+.input .ms-drop {
+  left: -100px;
 }
 .ms-drop {
   font-size: 85%;
