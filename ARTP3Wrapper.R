@@ -2,9 +2,8 @@ library(rjson)
 library(ARTP3)
 
 runARTP3 <- function(parameters) {
-  id.str <- toString(trunc(as.numeric(Sys.time()),0));
-  
   parameters <- fromJSON(parameters)
+  id.str <- parameters$idstr
   out.dir <- parameters$outdir
   studies <- parameters$studies
   # Turn Studies into ARTP3 Readable Form
@@ -70,10 +69,7 @@ runARTP3 <- function(parameters) {
   pvalue <- ret1$pathway.pvalue
   saveValue <- ret1
   
-  ## comments from Han: save the initial result once we have it
-  ## comments from Han: just in case the upcoming refining procedure is interrupted for some reasons
-  ## comments from Han: at least we can have something for the users, especially when it has taken a long time to get ret1
-  save(saveValue,file=file.path(out.dir,"1.Rdata"))
+  save(saveValue,file=file.path(out.dir,paste(id.str,".Rdata",sep="")))
   ## comments from Han: It would be great if we can check from the outside of runARTP3() to see if we have at least one 1.Rdata for this job (a unique job ID is then essential)
   ## comments from Han: If we have a 1.Rdata, then we can send something to the users no matter if there is an error during refining or not.
   ## comments from Han: If we do not have extra hours for this project, we can do that in the future. 
@@ -85,7 +81,7 @@ runARTP3 <- function(parameters) {
     saveValue <- ret2
     pvalue <- ret2$pathway.pvalue
   }
-  save(saveValue,file=file.path(out.dir,"1.Rdata"))
+  save(saveValue,file=file.path(out.dir,paste(id.str,".Rdata",sep="")))
   return(pvalue)
 }
 
