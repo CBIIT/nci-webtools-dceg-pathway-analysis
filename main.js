@@ -361,8 +361,7 @@ function sendForm(formData) {
       }
       return myXhr;
     },
-    dataType: "json",
-    timeout: 5000
+    dataType: "json"
   });
 }
 
