@@ -1,5 +1,8 @@
 $(function(){
     var errors_div = $("#errorDisplay");
+    $.validator.addMethod("boundedMax", function(value,element,params) {
+      return value < params;
+    });
     var validationElements = {
         study: {
             required: true
@@ -39,7 +42,8 @@ $(function(){
         },
         hwep:{
             required: true,
-            range: [0,1],
+            min: 0,
+            boundedMax: 1,
             scientific_notation_check: true
         },
         lambda: {
@@ -49,7 +53,8 @@ $(function(){
         miss_rate: {
             required: true,
             scientific_notation_check: true,
-            range: [0,1]
+            min: 0,
+            boundedMax: 1
         },
         gene: {
             required: true,
@@ -82,7 +87,8 @@ $(function(){
         },
         gene_percent: {
             required: true,
-            range: [0,1]
+            min: 0,
+            boundedMax: 1
         },
         email: {
             required: true,
@@ -117,7 +123,8 @@ $(function(){
         miss_rate: {
             required: "snp.miss.rate is required",
             scientific_notation_check: "The value you entered for snp.miss.rate is invalid. The value must be a floating number or in scientific notation.",
-            range: "The value you entered for snp.miss.rate is invalid. The value must be a floating number between 0 and 1."
+            min: "The value you entered for snp.miss.rate is invalid. The value must be a floating number greater than or equal to 0.",
+            boundedMax: "The value you entered for snp.miss.rate is invalid. The value must be a floating number less than 1."
         },
         maf: {
             required: "maf is required",//decimal"
@@ -126,7 +133,8 @@ $(function(){
         },
         hwep:{
             required: "HWE.p is required",
-            range: "The value you entered for HWE.p is invalid. The value must be a floating number between 0 and 1.",
+            min: "The value you entered for HWE.p is invalid. The value must be a floating number greater than or equal to 0.",
+            boundedMax: "The value you entered for HWE.p is invalid. The value must be a floating number less than 1.",
             scientific_notation_check: "The value you entered for HWE.p is invalid. The value must be a floating number or in scientific notation."
         },
         gene: {
@@ -145,6 +153,7 @@ $(function(){
         },
         snp_percent: {
             required: "inspect.snp.percent is required",//decimal"
+            range: "The value you entered for inspect.snp.percent is invalid. The value must be a floating number between 0 and 1."
         },
         gene_n: {
             required: "inspect.gene.n is required",
@@ -152,7 +161,8 @@ $(function(){
         },
         gene_percent: {
             required: "inspect.gene.percent is required",
-            range: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number between 0 and 1."
+            min: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number greater than or equal to 0.",
+            boundedMax: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number between less than 1."
         },
         email: {
             required: "An E-Mail address is required",
@@ -210,9 +220,7 @@ $(function(){
 
    
     jQuery.validator.addMethod('scientific_notation_check', function(value, el) {
-        if(Number(value))
-            return true;
-        return false;
+        return (typeof Number(value) === "number");
     });
 
     jQuery.validator.addMethod('comma_delim_numerical_check', function(valuesString, el) {
