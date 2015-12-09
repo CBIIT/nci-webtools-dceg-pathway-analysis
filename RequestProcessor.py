@@ -2,6 +2,7 @@ import json
 import os
 import rpy2.robjects as robjects
 import smtplib
+import time
 
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -41,15 +42,30 @@ class RequestProcessor:
     smtp.sendmail(config.getAsString(RequestProcessor.MAIL_ADMIN),recipients,packet.as_string())
 
   def consume(self, client, frame):
-    parameters = frame.body
+    starttime = str(time.time())
+    parameters = json.loads(frame.body)
+    timestamp = frame.headers['timestamp']
+    parameters['idstr'] = timestamp
+    jsonout = {'queuedTime':timestamp,'payload':parameters,'processStartTime': starttime}
+    with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+      json.dump(jsonout,outfile)
     try:
       # Run R-Script
-      artp3Result = json.loads(self.r_runARTP3(parameters)[0])
+      artp3Result = json.loads(self.r_runARTP3(json.dumps(parameters))[0])
     except Exception as e:
-      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),str(e)+"\n\n"+parameters)
+      jsonout["processStopTime"] = str(time.time())
+      jsonout["error"] = str(e)
+      jsonout["status"] = "error"
+      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+        json.dump(jsonout,outfile)
+      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),str(e)+"\n\n"+frame.body)
       return
+    jsonout["processStopTime"] = str(time.time())
     message = ""
     if "warnings" in artp3Result:
+      jsonout["warnings"] = artp3Result["warnings"]
+      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+        json.dump(jsonout,outfile)
       message += "\nWarnings:\n"
       if (isinstance(artp3Result["warnings"],list)):
         for warning in artp3Result["warnings"]:
@@ -57,13 +73,20 @@ class RequestProcessor:
       else:
         message += artp3Result["warnings"].strip() + "\n\n"
     if "error" in artp3Result:
-      message = "Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +parameters
+      jsonout["error"] = artp3Result["error"]
+      jsonout["status"] = "error"
+      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+        json.dump(jsonout,outfile)
+      message = "Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +frame.body
       print message
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),message)
       return
     # email results
-    parameters = json.loads(parameters)
-    files = [ os.path.join(parameters['outdir'],'1.Rdata') ]
+    files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]
+    jsonout["pvalue"] = str(artp3Result["pvalue"])
+    jsonout["status"] = "success"
+    with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+      json.dump(jsonout,outfile)
     message = "P-Value: " + str(artp3Result["pvalue"]) + "\n" + message
     print message
     self.composeMail(parameters['email'],message,files)
