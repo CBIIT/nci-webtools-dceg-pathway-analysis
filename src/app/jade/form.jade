@@ -82,7 +82,9 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
             label.termToDefine(data-term="gene_percent", for='gene_percent') inspect.gene.percent:
             .input
                 input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
-
+    fieldset
+      legend Results:
+      ul
         li
             label(for='email') E-mail (Results will be sent here):
             .input
