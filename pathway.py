@@ -92,7 +92,8 @@ class Pathway:
         parameters['pathway'] = os.path.join(app.config['PATHWAY_FOLDER'],parameters['database_pathway'])
       else:
         return Pathway.buildFailure("The pathway file seems to be missing.")
-      del parameters['database_pathway']
+      if "database_pathway" in parameters:
+        del parameters['database_pathway']
 
       if "selectAll" in parameters:
         del parameters['selectAll']
@@ -132,7 +133,7 @@ class Pathway:
       exc_type, exc_obj, exc_tb = sys.exc_info()
       fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
       print("EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
-      return Pathway.buildSuccess(e)
+      return Pathway.buildFailure(str(e))
 
   def __init__(self):
     pathwayConfig = PropertyUtil(r"config.ini")
