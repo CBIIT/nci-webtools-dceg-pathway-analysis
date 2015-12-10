@@ -98,7 +98,7 @@ $(function(){
 
     var validationMessages = {
         study: {
-            required: "You must upload atleast one study file",
+            required: "You must upload at least one study file",
             extension: "You uploaded an incorrect file type. Please upload only .study files."
         },
         file_pathway:{
@@ -114,7 +114,7 @@ $(function(){
         nperm:{
             required: "nperm is required",
             scientific_notation_check: "The value you entered for nperm is invalid. The value must be a floating number or in scientific notation.",
-            max: "The value for nperm must be less than " + Number(1e7)
+            max: "The value for nperm must be less than or equal to 1e7 (10,000,000)."
         },
         lambda: {
             required: "Lambda is required",
@@ -123,46 +123,46 @@ $(function(){
         miss_rate: {
             required: "snp.miss.rate is required",
             scientific_notation_check: "The value you entered for snp.miss.rate is invalid. The value must be a floating number or in scientific notation.",
-            min: "The value you entered for snp.miss.rate is invalid. The value must be a floating number greater than or equal to 0.",
-            boundedMax: "The value you entered for snp.miss.rate is invalid. The value must be a floating number less than 1."
+            min: "The value you entered for snp.miss.rate is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1.",
+            boundedMax: "The value you entered for snp.miss.rate is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1."
         },
         maf: {
             required: "maf is required",//decimal"
-            range: "The value you entered for maf is invalid. The value must be a floating number between 0 and 0.5.",
+            range: "The value you entered for maf is invalid. The value must be a floating number not less than 0 OR not greater than 0.5.",
             scientific_notation_check: "The value you entered for maf is invalid. The value must be a floating number or in scientific notation."
         },
         hwep:{
             required: "HWE.p is required",
-            min: "The value you entered for HWE.p is invalid. The value must be a floating number greater than or equal to 0.",
-            boundedMax: "The value you entered for HWE.p is invalid. The value must be a floating number less than 1.",
+            min: "The value you entered for HWE.p is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1.",
+            boundedMax: "The value you entered for HWE.p is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1.",
             scientific_notation_check: "The value you entered for HWE.p is invalid. The value must be a floating number or in scientific notation."
         },
         gene: {
             required: "Gene.R2 is required",
-            range: "The value you entered for Gene.R2 is invalid. The value must be a floating number between 0 and 1.",
+            range: "The value you entered for Gene.R2 is invalid. The value must be a floating number not less than 0 OR not greater than 1.",
             scientific_notation_check: "The value you entered for Gene.R2 is invalid. The value must be a floating number or in scientific notation."
         },
         chr: {
             required: "Chr.R2 is required",
-            range: "The value you entered for Chr.R2 is invalid. The value must be a floating number between 0 and 1.",
+            range: "The value you entered for Chr.R2 is invalid. The value must be a floating number not less than 0 OR not greater than 1.",
             scientific_notation_check: "The value you entered for Chr.R2 is invalid. The value must be a floating number or in scientific notation."
         },
         snp_n: {
             required: "inspect.snp.n is required",
-            min: "The value you entered for inspect.snp.n is invalid. The value must be a greater than or equal to 1."
+            min: "The value you entered for inspect.snp.n is invalid. The value must not be less than 1."
         },
         snp_percent: {
             required: "inspect.snp.percent is required",//decimal"
-            range: "The value you entered for inspect.snp.percent is invalid. The value must be a floating number between 0 and 1."
+            range: "The value you entered for inspect.snp.percent is invalid. The value must be a floating number not less than 0 OR not greater than 1."
         },
         gene_n: {
             required: "inspect.gene.n is required",
-            min: "The value you entered for inspect.gene.n is invalid. The value must be a greater than or equal to 1."
+            min: "The value you entered for inspect.gene.n is invalid. The value must not be less than 1."
         },
         gene_percent: {
             required: "inspect.gene.percent is required",
-            min: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number greater than or equal to 0.",
-            boundedMax: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number between less than 1."
+            min: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1.",
+            boundedMax: "The value you entered for inspect.gene.percent is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1."
         },
         email: {
             required: "An E-Mail address is required",
