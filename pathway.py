@@ -137,7 +137,6 @@ class Pathway:
     app.config['PATHWAY_FOLDER'] = pathwayConfig.getAsString(Pathway.PATHWAY_FOLDER)
     app.config['POPULATION_FOLDER'] = pathwayConfig.getAsString(Pathway.POPULATION_FOLDER)
     app.config['UPLOAD_FOLDER'] = pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER)
-    app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
     if not os.path.exists(pathwayConfig.getAsString(Pathway.OUT_FOLDER)):
       os.makedirs(pathwayConfig.getAsString(Pathway.OUT_FOLDER))
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
