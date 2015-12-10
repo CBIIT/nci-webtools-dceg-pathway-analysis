@@ -19,12 +19,6 @@ $(function(){
                 depends:function(element) {
                     return $("#file_pathway_option").is(":checked");
                 }
-            },
-            file_type_check: {
-                param: "pathway",
-                depends:function(element) {
-                    return $("#file_pathway_option").is(":checked");
-                }
             }
         },
         population: {
@@ -239,14 +233,6 @@ $(function(){
 
         return valid;
     }, jQuery.validator.format("One or more of the values in {0} is invalid. Value must be an integer or string of integers separated by commas"));
-
-    jQuery.validator.addMethod('file_type_check', function(elementValue, el, validExtension) {
-        var splitFilename = el.files[0].name.split(".");
-        var splitFilenameLength = splitFilename.length;
-        var fileExtension = splitFilename[splitFilenameLength - 1];
-
-        return fileExtension == validExtension || fileExtension == "txt" || fileExtension == "gz";
-    }, jQuery.validator.format("You must upload a valid (.{0} or .txt) file."));
 
     jQuery.validator.addMethod('multiselect_group_check', function(values, el) {
         var single_group_code = values[0].split("|")[0];
@@ -505,7 +491,6 @@ function addStudy() {
         if(this.type == "file") {
             $(this).rules("add", {
                 required: true,
-                file_type_check: "study",
                 messages: {
                     required: "The " + this.id + " field is required",
                 }

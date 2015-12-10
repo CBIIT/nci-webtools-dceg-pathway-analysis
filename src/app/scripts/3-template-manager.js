@@ -28,7 +28,6 @@ function addStudy() {
         if(this.type == "file") {
             $(this).rules("add", {
                 required: true,
-                file_type_check: "study",
                 messages: {
                     required: "The " + this.id + " field is required",
                 }

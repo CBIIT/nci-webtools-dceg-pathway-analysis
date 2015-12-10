@@ -65,12 +65,9 @@ class Pathway:
 
         studyFile = filelist[studyKey]
         if studyFile.filename:
-          if studyFile.filename.split('.')[-1] in app.config["ALLOWED_TYPES"]:
-            filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
-            studyObj['filename'] = filename
-            studyFile.save(filename)
-          else:
-            return Pathway.buildFailure("The file '" + studyFile.filename + "' is not the correct type. Expecting '.study' file.")
+          filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
+          studyObj['filename'] = filename
+          studyFile.save(filename)
         else:
           return Pathway.buildFailure("The file seems to be missing from Study #" + i + ".")
         studyList.append(studyObj)
@@ -80,12 +77,9 @@ class Pathway:
       if parameters['pathway_type'] == 'file_pathway':
         pathFile = filelist['file_pathway']
         if pathFile.filename:
-          if pathFile.filename.split('.')[-1] in app.config["ALLOWED_TYPES"]:
-            filename = os.path.join(app.config['UPLOAD_FOLDER'],ts + '.pathway')
-            parameters['pathway'] = filename
-            pathFile.save(filename)
-          else:
-            return Pathway.buildFailure("The file '" + pathFile.filename + "' is not the correct type. Expecting '.pathway' file.")
+          filename = os.path.join(app.config['UPLOAD_FOLDER'],ts + '.pathway')
+          parameters['pathway'] = filename
+          pathFile.save(filename)
         else:
           return Pathway.buildFailure("The pathway file seems to be missing.")
       elif parameters['pathway_type'] == 'database_pathway':
@@ -143,7 +137,6 @@ class Pathway:
     app.config['PATHWAY_FOLDER'] = pathwayConfig.getAsString(Pathway.PATHWAY_FOLDER)
     app.config['POPULATION_FOLDER'] = pathwayConfig.getAsString(Pathway.POPULATION_FOLDER)
     app.config['UPLOAD_FOLDER'] = pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER)
-    app.config["ALLOWED_TYPES"] = ['study','pathway','txt','gz']
     app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
     if not os.path.exists(pathwayConfig.getAsString(Pathway.OUT_FOLDER)):
       os.makedirs(pathwayConfig.getAsString(Pathway.OUT_FOLDER))
