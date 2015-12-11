@@ -62,7 +62,8 @@ runARTP3 <- function(parameters) {
                   only.setup = TRUE, 
                   save.setup = FALSE)
   # Run the analysis
-  setup <- pathway.summaryData(summary.files, pathway, reference, lambda, sample.size, options = options)
+  family <- 'gaussian'
+  setup <- pathway.summaryData(summary.files, pathway, family, reference, lambda, nsamples=sample.size, options = options)
   ret1 <- pathway.warm.start(setup)
   
   #ret1$setup <- NULL
