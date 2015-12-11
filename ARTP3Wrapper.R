@@ -66,7 +66,7 @@ runARTP3 <- function(parameters) {
   setup <- pathway.summaryData(summary.files, pathway, family, reference, lambda, nsamples=sample.size, options = options)
   ret1 <- pathway.warm.start(setup)
   
-  #ret1$setup <- NULL
+  ret1$setup <- setup
   pvalue <- ret1$pathway.pvalue
   saveValue <- ret1
   
