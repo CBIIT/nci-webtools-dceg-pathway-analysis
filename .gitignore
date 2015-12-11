@@ -1,7 +1,6 @@
 .Rhistory
 *.json
 *.pyc
-config.ini
 localserver.py
 *.study
 common/
