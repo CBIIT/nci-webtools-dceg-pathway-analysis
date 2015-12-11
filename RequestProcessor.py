@@ -39,7 +39,7 @@ class RequestProcessor:
         ))
     config = self.CONFIG
     smtp = smtplib.SMTP(config.getAsString(RequestProcessor.MAIL_HOST))
-    smtp.sendmail(config.getAsString(RequestProcessor.MAIL_ADMIN),recipients,packet.as_string())
+    smtp.sendmail("do.not.reply@nih.gov",recipients,packet.as_string())
 
   def consume(self, client, frame):
     starttime = str(time.time())
@@ -58,7 +58,7 @@ class RequestProcessor:
       jsonout["status"] = "error"
       with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
         json.dump(jsonout,outfile)
-      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),str(e)+"\n\n"+frame.body)
+      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),str(e)+"\n\n"+frame.body)
       return
     jsonout["processStopTime"] = str(time.time())
     message = ""
@@ -79,7 +79,7 @@ class RequestProcessor:
         json.dump(jsonout,outfile)
       message = "Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +frame.body
       print message
-      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN),message)
+      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),message)
       return
     # email results
     files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]
