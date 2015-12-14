@@ -73,7 +73,7 @@ class RequestProcessor:
         json.dump(jsonout,outfile)
       message = "Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +frame.body
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),message)
-      self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem.")
+      self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact <a mail:" + self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN) + ">administrator</a> \n\n" + message)
       return
     # email results
     files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]
