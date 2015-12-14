@@ -53,13 +53,7 @@ class RequestProcessor:
       # Run R-Script
       artp3Result = json.loads(self.r_runARTP3(json.dumps(parameters))[0])
     except Exception as e:
-      jsonout["processStopTime"] = str(time.time())
-      jsonout["error"] = str(e)
-      jsonout["status"] = "error"
-      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
-        json.dump(jsonout,outfile)
-      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),str(e)+"\n\n"+frame.body)
-      return
+      artp3Result["error"] = str(e)
     jsonout["processStopTime"] = str(time.time())
     message = ""
     if "warnings" in artp3Result:
@@ -78,8 +72,8 @@ class RequestProcessor:
       with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
         json.dump(jsonout,outfile)
       message = "Error: " + artp3Result["error"].strip() + "\n" + message + "\n\n" +frame.body
-      print message
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),message)
+      self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem.")
       return
     # email results
     files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]

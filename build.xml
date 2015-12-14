@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Pathway" default="replace" basedir=".">
+      <target name="replace" depends="mail_exist,adminEmails_exist,debugFlag_exist,port_exist,root_path_exist,queueURL_exist,queueName_exist">
+         <replace file="config.ini" token="@mailServer@" value="${mailServer}"/>
+	 <replace file="config.ini" token="@adminEmails@" value="${adminEmails}"/>
+	 <replace file="config.ini" token="@debugFlag@" value="${debugFlag}"/>
+	 <replace file="config.ini" token="@port@" value="${port}"/>
+	 <replace file="config.ini" token="@root_path@" value="${root_path}"/>
+	 <replace file="config.ini" token="@queueURL@" value="${queueURL}"/>
+	 <replace file="config.ini" token="@queueName@" value="${queueName}"/>
+      </target>
+      <target name="mail_exist" unless="mailServer">
+        <fail> Mail Server is not set, stop</fail>
+      </target>	
+      <target name="adminEmails_exist" unless="adminEmails">
+        <fail> Admin emails are not set, stop</fail>
+      </target>	
+      <target name="debugFlag_exist" unless="debugFlag">
+        <fail> Debug flag is not set, stop</fail>
+      </target>	
+      <target name="port_exist" unless="port">
+              <fail> Port is not set, stop</fail>
+      </target>
+      <target name="root_path_exist" unless="root_path">
+              <fail> Root Path is not set, stop</fail>
+      </target>
+      <target name="queueURL_exist" unless="queueURL">
+              <fail> Queue URL is not set, stop</fail>
+      </target>
+      <target name="queueName_exist" unless="debugFlag">
+              <fail> Queue Name is not set, stop</fail>
+      </target>
+</project>
