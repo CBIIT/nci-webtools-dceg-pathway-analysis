@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Pathway" default="replace" basedir=".">
-      <target name="replace" depends="mail_exist,adminEmails_exist,debugFlag_exist,port_exist,outputFolder_exist,pathwayFolder_exist,populationFolder_exist,uploadFolder_exist,plinkPatter_exist,queueURL_exist,queueName_exist">
+      <target name="replace" depends="mail_exist,adminEmails_exist,debugFlag_exist,port_exist,root_path_exist,queueURL_exist,queueName_exist">
          <replace file="config.ini" token="@mailServer@" value="${mailServer}"/>
 	 <replace file="config.ini" token="@adminEmails@" value="${adminEmails}"/>
 	 <replace file="config.ini" token="@debugFlag@" value="${debugFlag}"/>
@@ -25,20 +25,8 @@
       <target name="port_exist" unless="port">
               <fail> Port is not set, stop</fail>
       </target>
-      <target name="outputFolder_exist" unless="outputFolder">
-              <fail> Output folder is not set, stop</fail>
-      </target>
-      <target name="pathwayFolder_exist" unless="pathwayFolder">
-              <fail> Pathway Folder is not set, stop</fail>
-      </target>
-      <target name="populationFolder_exist" unless="populationFolder">
-              <fail> Population folder is not set, stop</fail>
-      </target>
-      <target name="uploadFolder_exist" unless="uploadFolder">
-              <fail> Upload file folder is not set, stop</fail>
-      </target>
-      <target name="plinkPatter_exist" unless="plinkPatter">
-              <fail> plink Patter is not set, stop</fail>
+      <target name="root_path_exist" unless="root_path">
+              <fail> Root Path is not set, stop</fail>
       </target>
       <target name="queueURL_exist" unless="queueURL">
               <fail> Queue URL is not set, stop</fail>
