@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="LDlink" default="replace" basedir=".">
+<project name="Pathway" default="replace" basedir=".">
       <target name="replace" depends="mail_exist,adminEmails_exist,debugFlag_exist,port_exist,outputFolder_exist,pathwayFolder_exist,populationFolder_exist,uploadFolder_exist,plinkPatter_exist,queueURL_exist,queueName_exist">
          <replace file="config.ini" token="@mailServer@" value="${mailServer}"/>
 	 <replace file="config.ini" token="@adminEmails@" value="${adminEmails}"/>
