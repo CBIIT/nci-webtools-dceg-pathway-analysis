@@ -139,7 +139,7 @@ class Pathway:
     app.config['POPULATION_FOLDER'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT), pathwayConfig.getAsString(Pathway.POPULATION_FOLDER))
     app.config['UPLOAD_FOLDER'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT), pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER))
     app.config['OUT_FOLDER'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT),pathwayConfig.getAsString(Pathway.OUT_FOLDER))
-    app.conifg['PLINK_PATTERN'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT),pathwayConfig.getAsString(Pathway.PLINK_PATTERN))
+    app.config['PLINK_PATTERN'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT),pathwayConfig.getAsString(Pathway.PLINK_PATTERN))
     if not os.path.exists(app.config['OUT_FOLDER']):
       os.makedirs(app.config['OUT_FOLDER'])
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
