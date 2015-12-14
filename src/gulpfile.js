@@ -84,7 +84,7 @@ gulp.task('js:copy', ['bower'], function(){
     gulp.src('app/scripts/**/*.json')
         .pipe(gulp.dest(parentDir));
 
-    gulp.src(['app/scripts/1-validators.js','app/scripts/2-service.js','app/scripts/3-template-manager.js','app/scripts/4-term-definitions.js','app/scripts/5-index.js'])
+    gulp.src(['app/scripts/validators.js','app/scripts/service.js','app/scripts/template-manager.js','app/scripts/term-definitions.js','app/scripts/index.js'])
         .pipe(stripComments())
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-stylish'))
