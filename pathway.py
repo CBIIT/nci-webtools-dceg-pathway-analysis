@@ -11,6 +11,7 @@ from stompest.sync import Stomp
 app = Flask(__name__, static_folder="", static_url_path="")
 
 class Pathway:
+  FOLDERROOT = 'pathway.folder.root'	
   CONFIG = 'pathway.config'
   DEBUG = 'pathway.debug'
   OUT_FOLDER = 'pathway.folder.out'
@@ -18,6 +19,7 @@ class Pathway:
   POPULATION_FOLDER = 'pathway.folder.population'
   PORT = 'pathway.port'
   UPLOAD_FOLDER = 'pathway.folder.upload'
+  PLINK_PATTERN = 'pathway.plink.pattern'
   QUEUE_CONFIG = 'queue.config'
   QUEUE_NAME = 'queue.name'
   QUEUE_URL = 'queue.url'
@@ -39,6 +41,7 @@ class Pathway:
   @app.route('/calculate', methods=['POST'])
   @app.route('/calculate/', methods=['POST'])
   def calculate():
+    pathwayConfig = app.config[Pathway.CONFIG]
     try:
       ts = str(time.time())
 
@@ -109,15 +112,14 @@ class Pathway:
         return Pathway.buildFailure("An invalid population was submitted.")
       del parameters['populations']
       for population in superpop:
-        parameters['plink'] = app.config[Pathway.CONFIG]['pathway.plink.pattern'].replace("$pop",population)
+        parameters['plink'] = app.config['PLINK_PATTERN'].replace("$pop",population)
       parameters['population'] = []
       for population in subpop:
         parameters['population'].append(population)
-      parameters['outdir'] = app.config[Pathway.CONFIG][Pathway.OUT_FOLDER]
+      parameters['outdir'] = app.config['OUT_FOLDER']
       parameters['refinep'] = parameters.get('refinep',"").lower() in ['true','t','1']
       parameters['gene_subset'] = parameters.get('gene_subset',"").lower() in ['true','t','1']
       
-      pathwayConfig = app.config[Pathway.CONFIG]
       client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
       client.connect()
       client.send(pathwayConfig.getAsString(Pathway.QUEUE_NAME), json.dumps(parameters))
@@ -133,12 +135,13 @@ class Pathway:
     pathwayConfig = PropertyUtil(r"config.ini")
     pathwayConfig[Pathway.QUEUE_CONFIG] = StompConfig(pathwayConfig.getAsString(Pathway.QUEUE_URL))
     app.config[Pathway.CONFIG] = pathwayConfig
-    app.config['COMMON_PATH'] = '../common/'
-    app.config['PATHWAY_FOLDER'] = pathwayConfig.getAsString(Pathway.PATHWAY_FOLDER)
-    app.config['POPULATION_FOLDER'] = pathwayConfig.getAsString(Pathway.POPULATION_FOLDER)
-    app.config['UPLOAD_FOLDER'] = pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER)
-    if not os.path.exists(pathwayConfig.getAsString(Pathway.OUT_FOLDER)):
-      os.makedirs(pathwayConfig.getAsString(Pathway.OUT_FOLDER))
+    app.config['PATHWAY_FOLDER'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT),pathwayConfig.getAsString(Pathway.PATHWAY_FOLDER))
+    app.config['POPULATION_FOLDER'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT), pathwayConfig.getAsString(Pathway.POPULATION_FOLDER))
+    app.config['UPLOAD_FOLDER'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT), pathwayConfig.getAsString(Pathway.UPLOAD_FOLDER))
+    app.config['OUT_FOLDER'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT),pathwayConfig.getAsString(Pathway.OUT_FOLDER))
+    app.conifg['PLINK_PATTERN'] = os.path.join(pathwayConfig.getAsString(Pathway.FOLDERROOT),pathwayConfig.getAsString(Pathway.PLINK_PATTERN))
+    if not os.path.exists(app.config['OUT_FOLDER']):
+      os.makedirs(app.config['OUT_FOLDER'])
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
       os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(host='0.0.0.0', port=pathwayConfig.getAsInt(Pathway.PORT), debug=pathwayConfig.getAsBoolean(Pathway.DEBUG))
