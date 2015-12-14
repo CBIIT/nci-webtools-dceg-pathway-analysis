@@ -5,11 +5,7 @@
 	 <replace file="config.ini" token="@adminEmails@" value="${adminEmails}"/>
 	 <replace file="config.ini" token="@debugFlag@" value="${debugFlag}"/>
 	 <replace file="config.ini" token="@port@" value="${port}"/>
-	 <replace file="config.ini" token="@outputFolder@" value="${outputFolder}"/>
-	 <replace file="config.ini" token="@pathwayFolder@" value="${pathwayFolder}"/>
-	 <replace file="config.ini" token="@populationFolder@" value="${populationFolder}"/>
-	 <replace file="config.ini" token="@uploadFolder@" value="${uploadFolder}"/>
-	 <replace file="config.ini" token="@plinkPatter@" value="${plinkPatter}"/>
+	 <replace file="config.ini" token="@root_path@" value="${root_path}"/>
 	 <replace file="config.ini" token="@queueURL@" value="${queueURL}"/>
 	 <replace file="config.ini" token="@queueName@" value="${queueName}"/>
       </target>
