@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="Pathway" default="replace" basedir=".">
-      <target name="replace" depends="mail_exist,adminEmails_exist,debugFlag_exist,port_exist,root_path_exist,queueURL_exist,queueName_exist">
+      <target name="replace" depends="mail_exist,adminEmails_exist,debugFlag_exist,port_exist,folder_root_exist,queueURL_exist,queueName_exist">
          <replace file="config.ini" token="@mailServer@" value="${mailServer}"/>
 	 <replace file="config.ini" token="@adminEmails@" value="${adminEmails}"/>
 	 <replace file="config.ini" token="@debugFlag@" value="${debugFlag}"/>
 	 <replace file="config.ini" token="@port@" value="${port}"/>
-	 <replace file="config.ini" token="@root_path@" value="${root_path}"/>
+	 <replace file="config.ini" token="@folder_root@" value="${folder_root}"/>
 	 <replace file="config.ini" token="@queueURL@" value="${queueURL}"/>
 	 <replace file="config.ini" token="@queueName@" value="${queueName}"/>
       </target>
@@ -21,8 +21,8 @@
       <target name="port_exist" unless="port">
               <fail> Port is not set, stop</fail>
       </target>
-      <target name="root_path_exist" unless="root_path">
-              <fail> Root Path is not set, stop</fail>
+      <target name="folder_root_exist" unless="folder_root">
+              <fail> Folder Root is not set, stop</fail>
       </target>
       <target name="queueURL_exist" unless="queueURL">
               <fail> Queue URL is not set, stop</fail>
