@@ -9,10 +9,11 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
         li
           label(for='database_pathway')
             input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-            label(for="database_pathway_option") Select from the server:
+            label(for="database_pathway_option") Select from
+                |&nbsp;
+                span#pop-list existing pathways:
           .input.ui-widget
-            select#database_pathway(name='database_pathway', placeholder="-- Select from existing pathways --")
-                option(value="")
+            input#database_pathway(name='database_pathway', placeholder="Search for Pathways")
         li
             label(for='file_pathway')
                 input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')

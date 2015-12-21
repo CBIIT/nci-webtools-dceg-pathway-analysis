@@ -11,7 +11,6 @@
     <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/js/select2.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js" type="application/javascript"></script>
@@ -30,6 +29,7 @@
       <div id="successBox"><span class="ui-icon ui-icon-circle-check"></span>
         <div id="message"></div>
       </div>
+      <div id="dialogElm"></div>
       <form name="pathForm" action="/pathwayRest/calculate/" method="POST" enctype="multipart/form-data">
         <fieldset>
           <legend data-term="study" class="termToDefine">Study Selection</legend>
@@ -42,12 +42,13 @@
             <li>
               <label for="database_pathway">
                 <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>
-                <label for="database_pathway_option">Select from the server:</label>
+                <label for="database_pathway_option">
+                  Select from
+                  &nbsp;<span id="pop-list">existing pathways:</span>
+                </label>
               </label>
               <div class="input ui-widget">
-                <select id="database_pathway" name="database_pathway" placeholder="-- Select from existing pathways --">
-                  <option value=""></option>
-                </select>
+                <input id="database_pathway" name="database_pathway" placeholder="Search for Pathways"/>
               </div>
             </li>
             <li>

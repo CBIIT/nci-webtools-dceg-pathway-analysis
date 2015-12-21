@@ -254,6 +254,8 @@ $(function(){
 });
 
 
+var pathways_list = [];
+
 var population_labels = {
     'AFR': {
         'fullName':'African',
@@ -393,35 +395,20 @@ function apply_options(element, items){
     var source = [];
     if (typeof items === 'undefined') {
         return function(data) {
+            $(element).attr("placeholder", "Search for Pathways (" + data.length + " available) ");
             data.forEach(function(item, i) {
                 var option = $("<option></option>");
-                $(option).val(item.code);
-                $(option).text(item.text);
-                element.append(option);
+                item.text = item.text.replace(/_/g," ");
 
-                source.push({id: i, text: item.text});
+                pathways_list.push(item.text);
+
+                source.push({ value: item.code, label: item.text });
             });
-            if (data.length > 10) {
-                element.select2({
-                    cache: true,
-                    placeholder: "Type to filter and select from dropdown",
-                    minimumInputLength : 2,
-                    data: source,
-                    dropdownParent: element.parent(),
-                    allowClear: true,
-                    processResults: function (data, params) {
-                        params.page = params.page || 1;
 
-                        return {
-                            results: data.items,
-                            pagination: {
-                                more: (params.page * 30) < data.total_count
-                            }
-                        };
-                    }
-
-                });
-            }
+            $(element).autocomplete({
+                source: source,
+                minLength: 0
+            });
         };
     } else {
         return function(data) {
@@ -471,9 +458,33 @@ $(function() {
         if (count <= 0) post_request();
     };
    
-    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).always(hold);
+    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).then(function(){
+        if(pathways_list.length > 0){
+            $("#pop-list").addClass("termToDefine");
+            $('#dialogElm').html(pathways_list.join("<br />"));
+
+            $('#dialogElm').dialog({
+                autoOpen: false,
+                position: { my: "left center", at: "left bottom", of: "#pop-list" },
+                title: "Existing Pathways",
+                width: 400,
+                maxWidth: 400,
+                height: 300,
+                maxHeight: 300
+            });
+
+            $(document).on("click", "#pop-list", function() {
+                $('#dialogElm').dialog("open");
+            });
+        }
+    }).always(hold);
     retrieve_populations().then(apply_options($(pathForm.super_population), population_labels), get_options_error("super population")).always(hold);
+
+
 });
+
+
+
 
 
 
