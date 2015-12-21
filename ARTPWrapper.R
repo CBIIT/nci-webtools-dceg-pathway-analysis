@@ -1,12 +1,12 @@
 library(rjson)
 library(ARTP2)
 
-runARTP2 <- function(parameters) {
+runARTP <- function(parameters) {
   parameters <- fromJSON(parameters)
   id.str <- parameters$idstr
   out.dir <- parameters$outdir
   studies <- parameters$studies
-  # Turn Studies into ARTP2 Readable Form
+  # Turn Studies into ARTP Readable Form
   summary.files <- c()
   lambda <- c()
   sample.size <- list()
@@ -71,7 +71,7 @@ runARTP2 <- function(parameters) {
   saveValue <- ret1
   
   save(saveValue,file=file.path(out.dir,paste(id.str,".Rdata",sep="")))
-  ## comments from Han: It would be great if we can check from the outside of runARTP2() to see if we have at least one 1.Rdata for this job (a unique job ID is then essential)
+  ## comments from Han: It would be great if we can check from the outside of runARTP() to see if we have at least one 1.Rdata for this job (a unique job ID is then essential)
   ## comments from Han: If we have a 1.Rdata, then we can send something to the users no matter if there is an error during refining or not.
   ## comments from Han: If we do not have extra hours for this project, we can do that in the future. 
   
@@ -86,16 +86,16 @@ runARTP2 <- function(parameters) {
   return(pvalue)
 }
 
-runARTP2FromConsole <- function(file) {
-  print(runARTP2(toJSON(fromJSON(file=file))))
+runARTPFromConsole <- function(file) {
+  print(runARTP(toJSON(fromJSON(file=file))))
 }
 
-runARTP2WithHandlers <- function(parameters) {
+runARTPWithHandlers <- function(parameters) {
   suppressWarnings(suppressMessages({
     returnValue <- list()
     returnValue$pvalue <- tryCatch(
       withCallingHandlers(
-        runARTP2(parameters),
+        runARTP(parameters),
         message=function(m) {
           print(m$message)
         },

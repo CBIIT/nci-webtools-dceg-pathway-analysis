@@ -51,38 +51,38 @@ class RequestProcessor:
       json.dump(jsonout,outfile)
     try:
       # Run R-Script
-      artp2Result = json.loads(self.r_runARTP2(json.dumps(parameters))[0])
+      artpResult = json.loads(self.r_runARTP(json.dumps(parameters))[0])
     except Exception as e:
-      artp2Result = {}
-      artp2Result["error"] = str(e)
+      artpResult = {}
+      artpResult["error"] = str(e)
     jsonout["processStopTime"] = str(time.time())
     message = ""
-    if "warnings" in artp2Result:
-      jsonout["warnings"] = artp2Result["warnings"]
+    if "warnings" in artpResult:
+      jsonout["warnings"] = artpResult["warnings"]
       with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
         json.dump(jsonout,outfile)
       message += "\nWarnings:\n"
-      if (isinstance(artp2Result["warnings"],list)):
-        for warning in artp2Result["warnings"]:
+      if (isinstance(artpResult["warnings"],list)):
+        for warning in artpResult["warnings"]:
           message += warning.strip() + "\n\n"
       else:
-        message += artp2Result["warnings"].strip() + "\n\n"
-    if "error" in artp2Result:
-      jsonout["error"] = artp2Result["error"]
+        message += artpResult["warnings"].strip() + "\n\n"
+    if "error" in artpResult:
+      jsonout["error"] = artpResult["error"]
       jsonout["status"] = "error"
       with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
         json.dump(jsonout,outfile)
-      message = "Error: " + artp2Result["error"].strip() + "\n" + message + "\n\n" +frame.body
+      message = "Error: " + artpResult["error"].strip() + "\n" + message + "\n\n" +frame.body
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),message)
       self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
       return
     # email results
     files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]
-    jsonout["pvalue"] = str(artp2Result["pvalue"])
+    jsonout["pvalue"] = str(artpResult["pvalue"])
     jsonout["status"] = "success"
     with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
       json.dump(jsonout,outfile)
-    message = "P-Value: " + str(artp2Result["pvalue"]) + "\n" + message
+    message = "P-Value: " + str(artpResult["pvalue"]) + "\n" + message
     print message
     self.composeMail(parameters['email'],message,files)
     # remove the already used files
@@ -108,8 +108,8 @@ class RequestProcessor:
     config = PropertyUtil(r"config.ini")
     config[RequestProcessor.CONFIG] = StompConfig(config.getAsString(RequestProcessor.URL))
     self.CONFIG = config
-    robjects.r('''source('ARTP2Wrapper.R')''')
-    self.r_runARTP2 = robjects.r['runARTP2WithHandlers']
+    robjects.r('''source('ARTPWrapper.R')''')
+    self.r_runARTP = robjects.r['runARTPWithHandlers']
 
 if __name__ == '__main__':
   RequestProcessor().run()
