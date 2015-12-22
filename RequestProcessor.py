@@ -54,9 +54,9 @@ class RequestProcessor:
     starttime = str(time.time())
     parameters = json.loads(frame.body)
     timestamp = frame.headers['timestamp']
-    parameters['idstr'] = timestamp
-    jsonout = {'queuedTime':timestamp,'payload':parameters,'processStartTime': starttime}
-    with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+    outfileString = os.path.join(parameters['outdir'],str(parameters['idstr'])+'.json')
+    jsonout = {'submittedTime': parameters['idstr'], 'queuedTime':timestamp,'payload':parameters,'processStartTime': starttime}
+    with open(outfileString,'w') as outfile:
       json.dump(jsonout,outfile)
     try:
       # Run R-Script
@@ -68,7 +68,7 @@ class RequestProcessor:
     message = ""
     if "warnings" in artpResult:
       jsonout["warnings"] = artpResult["warnings"]
-      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+      with open(outfileString,'w') as outfile:
         json.dump(jsonout,outfile)
       message += "\nWarnings:\n"
       if (isinstance(artpResult["warnings"],list)):
@@ -79,7 +79,7 @@ class RequestProcessor:
     if "error" in artpResult:
       jsonout["error"] = artpResult["error"]
       jsonout["status"] = "error"
-      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+      with open(outfileString,'w') as outfile:
         json.dump(jsonout,outfile)
       message = "Error: " + artpResult["error"].strip() + "\n" + message + "\n\n" +frame.body
       print message
@@ -87,11 +87,11 @@ class RequestProcessor:
       self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
       return
     # email results
-    files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]
+    files = [ os.path.join(parameters['outdir'],parameters['idstr']+'.Rdata') ]
     saveValue = artpResult["saveValue"]
     jsonout["saveValue"] = saveValue
     jsonout["status"] = "success"
-    with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+    with open(outfileString,'w') as outfile:
       json.dump(jsonout,outfile)
     message = ("Dear User,\n\n" +
               "We have analyzed your data using the ARTP2 package (version: " + saveValue['options']['version'] + "). " +

@@ -48,6 +48,7 @@ class Pathway:
       parameters = dict(request.form)
       for field in parameters:
         parameters[field] = parameters[field][0]
+      parameters['idstr'] = ts
       filelist = request.files
       studyList = []
 
@@ -119,6 +120,10 @@ class Pathway:
       parameters['outdir'] = app.config['OUT_FOLDER']
       parameters['refinep'] = parameters.get('refinep',"").lower() in ['true','t','1']
       parameters['gene_subset'] = parameters.get('gene_subset',"").lower() in ['true','t','1']
+      
+      jsonout = {"submittedTime": parameters['idstr'], "payload": parameters}
+      with open(os.path.join(app.config['OUT_FOLDER'],str(parameters['idstr'])+'.json'),'w') as outfile:
+        json.dump(jsonout,outfile)
       
       client = Stomp(pathwayConfig[Pathway.QUEUE_CONFIG])
       client.connect()
