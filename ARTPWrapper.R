@@ -67,7 +67,6 @@ runARTP <- function(parameters) {
   ret1 <- pathway.warm.start(setup)
   
   ret1$setup <- setup
-  pvalue <- ret1$pathway.pvalue
   saveValue <- ret1
   
   save(saveValue,file=file.path(out.dir,paste(id.str,".Rdata",sep="")))
@@ -80,10 +79,9 @@ runARTP <- function(parameters) {
     ret2$setup <- NULL
     
     saveValue <- ret2
-    pvalue <- ret2$pathway.pvalue
   }
   save(saveValue,file=file.path(out.dir,paste(id.str,".Rdata",sep="")))
-  return(pvalue)
+  return(saveValue)
 }
 
 runARTPFromConsole <- function(file) {
@@ -93,7 +91,7 @@ runARTPFromConsole <- function(file) {
 runARTPWithHandlers <- function(parameters) {
   suppressWarnings(suppressMessages({
     returnValue <- list()
-    returnValue$pvalue <- tryCatch(
+    returnValue$saveValue <- tryCatch(
       withCallingHandlers(
         runARTP(parameters),
         message=function(m) {

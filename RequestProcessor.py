@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import rpy2.robjects as robjects
 import smtplib
@@ -41,6 +42,14 @@ class RequestProcessor:
     smtp = smtplib.SMTP(config.getAsString(RequestProcessor.MAIL_HOST))
     smtp.sendmail("do.not.reply@nih.gov",recipients,packet.as_string())
 
+  def rLength(self, tested):
+    if tested is None:
+      return 0
+    if isinstance(tested,list) or isinstance(tested,set):
+      return len(tested)
+    else:
+      return 1
+
   def consume(self, client, frame):
     starttime = str(time.time())
     parameters = json.loads(frame.body)
@@ -73,16 +82,38 @@ class RequestProcessor:
       with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
         json.dump(jsonout,outfile)
       message = "Error: " + artpResult["error"].strip() + "\n" + message + "\n\n" +frame.body
+      print message
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),message)
       self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
       return
     # email results
     files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]
-    jsonout["pvalue"] = str(artpResult["pvalue"])
+    saveValue = artpResult["saveValue"]
+    jsonout["saveValue"] = saveValue
     jsonout["status"] = "success"
     with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
       json.dump(jsonout,outfile)
-    message = "P-Value: " + str(artpResult["pvalue"]) + "\n" + message
+    message = ("Dear User,\n\n" +
+              "We have analyzed your data using the ARTP2 package (version: " + saveValue['options']['version'] + "). " +
+              "The sARTP test returned a pathway p-value " + str(round(saveValue['pathway.pvalue'],1-int(math.floor(math.log10(saveValue['pathway.pvalue']))))) + ". The p-value was estimated by " + str(saveValue['options']['nperm']) + " resampling steps.\n\n" +
+              "Several gene/SNP filters were applied to the data based on specified options. " +
+              "There are " + str(self.rLength(saveValue['deleted.genes'].get('Gene',None))) + " genes and " + str(self.rLength(set(saveValue['deleted.snps'].get('SNP',None)))) + " SNPs that were excluded from the analysis. " +
+              "After that, " + str(self.rLength(saveValue['gene.pvalue']['Chr'])) + " unique genes and " + str(self.rLength(set(saveValue['pathway']['SNP']))) + " unique SNPs were used in testing. " +
+              "Some warning messages (if any) can be found at the end of this email.\n\n" +
+              "More detailed result of this pathway analysis is saved as an R list, saveValue, in the attached file. You can read it in R through function load(). For example, the pathway p-value is\n\n" +
+              "saveValue$pathway.pvalue\n\n" +
+              "and the gene-level p-values are saved in a data frame\n\n" +
+              "saveValue$gene.pvalue\n\n" +
+              "To understand the reason for each SNP/gene excluded from the analysis, check\n\n" +
+              "saveValue$deleted.snps\n\n" +
+              "and\n\n" +
+              "saveValue$deleted.genes\n\n" +
+              "A full list of genes and SNPs that were used in testing is saved in a data frame\n\n" +
+              "saveValue$pathway\n\n" +
+              "All the options are saved in \n\n" +
+              "saveValue$options\n\n" +
+              "For more information, please refer to the help document of function pathway.summaryData in R package ARTP2.\n\n" +
+              message)
     print message
     self.composeMail(parameters['email'],message,files)
     # remove the already used files
