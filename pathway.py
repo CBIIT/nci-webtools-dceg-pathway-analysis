@@ -11,16 +11,18 @@ from stompest.sync import Stomp
 app = Flask(__name__, static_folder="", static_url_path="")
 
 class Pathway:
-  FOLDERROOT = 'pathway.folder.root'	
+  #Flask parameter names
   CONFIG = 'pathway.config'
+  QUEUE_CONFIG = 'queue.config'
+  #config.ini parameter names
   DEBUG = 'pathway.debug'
+  PORT = 'pathway.port'
+  FOLDERROOT = 'pathway.folder.root'
   OUT_FOLDER = 'pathway.folder.out'
   PATHWAY_FOLDER = 'pathway.folder.pathway'
   POPULATION_FOLDER = 'pathway.folder.population'
-  PORT = 'pathway.port'
   UPLOAD_FOLDER = 'pathway.folder.upload'
   PLINK_PATTERN = 'pathway.plink.pattern'
-  QUEUE_CONFIG = 'queue.config'
   QUEUE_NAME = 'queue.name'
   QUEUE_URL = 'queue.url'
 
