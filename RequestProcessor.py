@@ -10,12 +10,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from PropertyUtil import PropertyUtil
 from stompest.async import Stomp
-from stompest.async.listener import SubscriptionListener
+from stompest.async.listener import DisconnectListener, SubscriptionListener
 from stompest.config import StompConfig
 from stompest.protocol import StompSpec
 from twisted.internet import reactor, defer
 
-class RequestProcessor:
+class RequestProcessor(DisconnectListener):
   CONFIG = 'queue.config'
   NAME = 'queue.name'
   URL = 'queue.url'
@@ -134,6 +134,11 @@ class RequestProcessor:
       'activemq.prefetchSize': '100',
     }
     client.subscribe(self.CONFIG[RequestProcessor.NAME], headers, listener=SubscriptionListener(self.consume))
+    client.add(listener=self)
+
+  def onConnectionLost(self,connect,reason):
+    time.sleep(300)
+    self.run()
 
   def __init__(self):
     config = PropertyUtil(r"config.ini")
