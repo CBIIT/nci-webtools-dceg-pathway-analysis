@@ -84,7 +84,7 @@ gulp.task('js:copy', ['bower'], function(){
     gulp.src('app/scripts/**/*.json')
         .pipe(gulp.dest(parentDir));
 
-    gulp.src(['app/scripts/**/*.js'])
+    gulp.src(['app/scripts/validators.js','app/scripts/service.js','app/scripts/template-manager.js','app/scripts/term-definitions.js','app/scripts/index.js'])
         .pipe(stripComments())
         .pipe(jshint())
         .pipe(jshint.reporter('jshint-stylish'))
@@ -98,7 +98,7 @@ gulp.task('css', ['bower'], function(){
     bower = gulp.src(mainBowerFiles()).pipe(gulpFilter(function(it){
         return /\.css$/.exec(it.path);
     }));
-    styl = gulp.src('app/stylus/**/*.styl').pipe(gulpFilter(function(it) {
+    styl = gulp.src(['app/stylus/**/styles.styl', 'app/stylus/**/mobile-styles.styl']).pipe(gulpFilter(function(it) {
         return !/\/_[^/]+\.styl$/.test(it.path);
     })).pipe(gulpStylus({
         use: [nib()],

@@ -32,7 +32,7 @@ function resetForm() {
   $('#refinep')[0].checked = false;
   $('#gene_subset')[0].checked = false;
   $('#database_pathway_option')[0].checked = true;
-  $('#database_pathway').val(0).trigger('change');
+  $('#database_pathway').val("").trigger('change');
   $('#super_population').val(0).trigger('change');
   $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
   $('#file_pathway').unwrap();
