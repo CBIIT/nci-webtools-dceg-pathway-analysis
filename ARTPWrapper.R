@@ -66,7 +66,8 @@ runARTP <- function(parameters) {
   setup <- pathway.summaryData(summary.files, pathway, family, reference, lambda, nsamples=sample.size, options = options)
   ret1 <- pathway.warm.start(setup)
   
-  ret1$setup <- setup
+  #ret1$setup <- setup
+  ret1$setup <- NULL # remove debugging information from returned object
   saveValue <- ret1
   
   save(saveValue,file=file.path(out.dir,paste(id.str,".Rdata",sep="")))
