@@ -137,7 +137,6 @@ class RequestProcessor(DisconnectListener):
     client.add(listener=self)
 
   def onConnectionLost(self,connect,reason):
-    time.sleep(300)
     self.run()
 
   def __init__(self):
