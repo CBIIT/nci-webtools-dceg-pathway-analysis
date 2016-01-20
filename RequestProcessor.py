@@ -141,7 +141,7 @@ class RequestProcessor(DisconnectListener):
 
   def __init__(self):
     config = PropertyUtil(r"config.ini")
-    config[RequestProcessor.CONFIG] = StompConfig(config.getAsString(RequestProcessor.URL))
+    config[RequestProcessor.CONFIG] = StompConfig("failover:("+config.getAsString(RequestProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     self.CONFIG = config
     robjects.r('''source('ARTPWrapper.R')''')
     self.r_runARTP = robjects.r['runARTPWithHandlers']
