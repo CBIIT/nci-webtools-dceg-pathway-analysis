@@ -558,9 +558,11 @@ function addStudy() {
                     addStudyResource(id.substr(13), i).appendTo(resourceList);
 
                     $("#sample_size_" + id.substr(13) + "_" + i).rules("add", {
+                        required: true,
                         digits: true,
                         messages: {
-                            digits: "The sample size value must be an integer",
+                            required: "The sample size value is required",
+                            digits: "The sample size value must be an integer"
                         }
                     });
                 }
@@ -592,6 +594,15 @@ function addStudy() {
                 resourceList.append(
                     addStudyResource(resource_tb.prop('id').substr(13), i)
                 );
+
+                $("#sample_size_" + resource_tb.prop('id').substr(13) + "_" + i).rules("add", {
+                    required: true,
+                    digits: true,
+                    messages: {
+                        required: "The sample size value is required",
+                        digits: "The sample size value must be an integer"
+                    }
+                });
             }
         }
     });
