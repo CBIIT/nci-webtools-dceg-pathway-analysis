@@ -1,4 +1,5 @@
 import json
+import math
 import os
 import rpy2.robjects as robjects
 import smtplib
@@ -9,12 +10,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from PropertyUtil import PropertyUtil
 from stompest.async import Stomp
-from stompest.async.listener import SubscriptionListener
+from stompest.async.listener import DisconnectListener, SubscriptionListener
 from stompest.config import StompConfig
 from stompest.protocol import StompSpec
 from twisted.internet import reactor, defer
 
-class RequestProcessor:
+class RequestProcessor(DisconnectListener):
   CONFIG = 'queue.config'
   NAME = 'queue.name'
   URL = 'queue.url'
@@ -41,48 +42,78 @@ class RequestProcessor:
     smtp = smtplib.SMTP(config.getAsString(RequestProcessor.MAIL_HOST))
     smtp.sendmail("do.not.reply@nih.gov",recipients,packet.as_string())
 
+  def rLength(self, tested):
+    if tested is None:
+      return 0
+    if isinstance(tested,list) or isinstance(tested,set):
+      return len(tested)
+    else:
+      return 1
+
   def consume(self, client, frame):
     starttime = str(time.time())
     parameters = json.loads(frame.body)
     timestamp = frame.headers['timestamp']
-    parameters['idstr'] = timestamp
-    jsonout = {'queuedTime':timestamp,'payload':parameters,'processStartTime': starttime}
-    with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+    outfileString = os.path.join(parameters['outdir'],str(parameters['idstr'])+'.json')
+    jsonout = {'submittedTime': parameters['idstr'], 'queuedTime':timestamp,'payload':parameters,'processStartTime': starttime}
+    with open(outfileString,'w') as outfile:
       json.dump(jsonout,outfile)
     try:
       # Run R-Script
-      artp2Result = json.loads(self.r_runARTP2(json.dumps(parameters))[0])
+      artpResult = json.loads(self.r_runARTP(json.dumps(parameters))[0])
     except Exception as e:
-      artp2Result = {}
-      artp2Result["error"] = str(e)
+      artpResult = {}
+      artpResult["error"] = str(e)
     jsonout["processStopTime"] = str(time.time())
     message = ""
-    if "warnings" in artp2Result:
-      jsonout["warnings"] = artp2Result["warnings"]
-      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+    if "warnings" in artpResult:
+      jsonout["warnings"] = artpResult["warnings"]
+      with open(outfileString,'w') as outfile:
         json.dump(jsonout,outfile)
       message += "\nWarnings:\n"
-      if (isinstance(artp2Result["warnings"],list)):
-        for warning in artp2Result["warnings"]:
+      if (isinstance(artpResult["warnings"],list)):
+        for warning in artpResult["warnings"]:
           message += warning.strip() + "\n\n"
       else:
-        message += artp2Result["warnings"].strip() + "\n\n"
-    if "error" in artp2Result:
-      jsonout["error"] = artp2Result["error"]
+        message += artpResult["warnings"].strip() + "\n\n"
+    if "error" in artpResult:
+      jsonout["error"] = artpResult["error"]
       jsonout["status"] = "error"
-      with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+      with open(outfileString,'w') as outfile:
         json.dump(jsonout,outfile)
-      message = "Error: " + artp2Result["error"].strip() + "\n" + message + "\n\n" +frame.body
+      message = "Error: " + artpResult["error"].strip() + "\n" + message + "\n\n" +frame.body
+      print message
       self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),message)
       self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
       return
     # email results
-    files = [ os.path.join(parameters['outdir'],str(timestamp)+'.Rdata') ]
-    jsonout["pvalue"] = str(artp2Result["pvalue"])
+    files = [ os.path.join(parameters['outdir'],parameters['idstr']+'.Rdata') ]
+    saveValue = artpResult["saveValue"]
+    jsonout["saveValue"] = saveValue
     jsonout["status"] = "success"
-    with open(os.path.join(parameters['outdir'],str(timestamp)+'.json'),'w') as outfile:
+    with open(outfileString,'w') as outfile:
       json.dump(jsonout,outfile)
-    message = "P-Value: " + str(artp2Result["pvalue"]) + "\n" + message
+    message = ("Dear User,\n\n" +
+              "We have analyzed your data using the ARTP2 package (version: " + saveValue['options']['version'] + "). " +
+              "The sARTP test returned a pathway p-value " + str(round(saveValue['pathway.pvalue'],1-int(math.floor(math.log10(saveValue['pathway.pvalue']))))) + ". The p-value was estimated by " + str(saveValue['options']['nperm']) + " resampling steps.\n\n" +
+              "Several gene/SNP filters were applied to the data based on specified options. " +
+              "There are " + str(self.rLength(saveValue['deleted.genes'].get('Gene',None))) + " genes and " + str(self.rLength(set(saveValue['deleted.snps'].get('SNP',None)))) + " SNPs that were excluded from the analysis. " +
+              "After that, " + str(self.rLength(saveValue['gene.pvalue']['Chr'])) + " unique genes and " + str(self.rLength(set(saveValue['pathway']['SNP']))) + " unique SNPs were used in testing. " +
+              "Some warning messages (if any) can be found at the end of this email.\n\n" +
+              "More detailed result of this pathway analysis is saved as an R list, saveValue, in the attached file. You can read it in R through function load(). For example, the pathway p-value is\n\n" +
+              "saveValue$pathway.pvalue\n\n" +
+              "and the gene-level p-values are saved in a data frame\n\n" +
+              "saveValue$gene.pvalue\n\n" +
+              "To understand the reason for each SNP/gene excluded from the analysis, check\n\n" +
+              "saveValue$deleted.snps\n\n" +
+              "and\n\n" +
+              "saveValue$deleted.genes\n\n" +
+              "A full list of genes and SNPs that were used in testing is saved in a data frame\n\n" +
+              "saveValue$pathway\n\n" +
+              "All the options are saved in \n\n" +
+              "saveValue$options\n\n" +
+              "For more information, please refer to the help document of function pathway.summaryData in R package ARTP2.\n\n" +
+              message)
     print message
     self.composeMail(parameters['email'],message,files)
     # remove the already used files
@@ -103,13 +134,17 @@ class RequestProcessor:
       'activemq.prefetchSize': '100',
     }
     client.subscribe(self.CONFIG[RequestProcessor.NAME], headers, listener=SubscriptionListener(self.consume))
+    client.add(listener=self)
+
+  def onConnectionLost(self,connect,reason):
+    self.run()
 
   def __init__(self):
     config = PropertyUtil(r"config.ini")
-    config[RequestProcessor.CONFIG] = StompConfig(config.getAsString(RequestProcessor.URL))
+    config[RequestProcessor.CONFIG] = StompConfig("failover:("+config.getAsString(RequestProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     self.CONFIG = config
-    robjects.r('''source('ARTP2Wrapper.R')''')
-    self.r_runARTP2 = robjects.r['runARTP2WithHandlers']
+    robjects.r('''source('ARTPWrapper.R')''')
+    self.r_runARTP = robjects.r['runARTPWithHandlers']
 
 if __name__ == '__main__':
   RequestProcessor().run()
