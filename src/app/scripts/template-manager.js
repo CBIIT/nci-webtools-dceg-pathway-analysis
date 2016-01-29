@@ -10,12 +10,12 @@ function addStudy() {
 
     studyTemplate.find(".studyTitle").append(studyIndex);
 
-    studyTemplate.find("label, input").each(function(i, el) {
-        if(this.tagName.toLowerCase() == "label") {
+    studyTemplate.find("label, input").each(function (i, el) {
+        if (this.tagName.toLowerCase() == "label") {
             var forAttr = $(el).attr("for") + "_" + studyIndex;
             $(el).attr("for", forAttr);
         }
-        if(this.tagName.toLowerCase() == "input") {
+        if (this.tagName.toLowerCase() == "input") {
             var newId = $(el).attr("id") + "_" + studyIndex;
             $(el).attr("id", newId).attr("name", newId);
         }
@@ -24,16 +24,15 @@ function addStudy() {
     // place new control before add button
     $("#studyEntry").append(studyTemplate);
 
-    studyTemplate.find("input, select").each(function(i, el) {
-        if(this.type == "file") {
+    studyTemplate.find("input, select").each(function (i, el) {
+        if (this.type == "file") {
             $(this).rules("add", {
                 required: true,
                 messages: {
                     required: "The " + this.id + " field is required",
                 }
             });
-        }
-        else {
+        } else {
             $(this).rules("add", {
                 required: true,
                 number: true,
@@ -48,32 +47,44 @@ function addStudy() {
     });
 
     // refresh accordion
-    var activeIndex = $("#studyEntry").accordion( "refresh" ).accordion({
+    var activeIndex = $("#studyEntry").accordion("refresh").accordion({
         active: studyCount
     }).accordion("option", "active");
 
-    studyTemplate.find("input[id*='num_resource']").on("change", function(e) {
+    studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
         var id = $(this).prop('id');
         var valid = false;
-        valid = $(this).validate().element('#'+id);
+        valid = $(this).validate().element('#' + id);
         if (valid) {
             var choice;
-            if(this.value > 20)
+            if (this.value > 20)
                 choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
             else
                 choice = true;
 
-            if(choice) {
+            if (choice) {
                 var resourceList = studyTemplate.find('ul.resource-list').empty();
-                for(var i = 1; i <= this.value; i++) {
+                for (var i = 1; i <= this.value; i++) {
                     // what they enter for num_resource should
                     // control the times addStudyResource is run
-                    addStudyResource(id.substr(13),i).appendTo(resourceList);
+                    addStudyResource(id.substr(13), i).appendTo(resourceList);
+
+                    $("#sample_size_" + id.substr(13) + "_" + i).rules("add", {
+                        digits: true,
+                        messages: {
+                            digits: "The sample size value must be an integer",
+                        }
+                    });
                 }
             }
         }
     });
-    studyTemplate.find(".addControl[title='resource']").button({ text: false, icons: {primary: "ui-icon-circle-plus" }}).on("click", function(e) {
+    studyTemplate.find(".addControl[title='resource']").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-circle-plus"
+        }
+    }).on("click", function (e) {
         e.preventDefault();
 
         var el = $(this);
@@ -85,20 +96,20 @@ function addStudy() {
 
         var resourceValue = resource_tb.val();
 
-        if(previousValid){
+        if (previousValid) {
             var resourceList = el.parent().next().empty();
-            for(var i = 1; i <= resourceValue; i++) {
+            for (var i = 1; i <= resourceValue; i++) {
                 // what they enter for num_resource should
                 // control the times addStudyResource is run
                 resourceList.append(
-                    addStudyResource(resource_tb.prop('id').substr(13),i)
+                    addStudyResource(resource_tb.prop('id').substr(13), i)
                 );
             }
         }
     });
 }
 
-function addStudyResource(study,ind) {
+function addStudyResource(study, ind) {
     var resource_element = $("#snippets").find(".studyResources").clone();
     var elementLabel = resource_element.find("label");
     var elementInput = resource_element.find("input");
@@ -117,7 +128,7 @@ function addStudyResource(study,ind) {
 
 function removeStudyResource(parentElement, ind) {
     // remove the rules
-    parentElement.find(".studyResources:nth(" + ind + ") input").each(function() {
+    parentElement.find(".studyResources:nth(" + ind + ") input").each(function () {
         $(this).rules("remove");
         $(this).remove();
     });
@@ -129,15 +140,15 @@ function createConfirmationBox(messageText) {
         buttons: [
             {
                 text: "Yes",
-                click: function() {
-                    $( this ).dialog( "close" );
+                click: function () {
+                    $(this).dialog("close");
                     return true;
                 }
             },
             {
                 text: "No",
-                click: function() {
-                    $( this ).dialog( "close" );
+                click: function () {
+                    $(this).dialog("close");
                     return false;
                 }
             }
@@ -147,19 +158,24 @@ function createConfirmationBox(messageText) {
     });
 }
 
-$(function(){
+$(function () {
     $(".addControl[title='study']")
-        .button({text: true, icons: {primary: "ui-icon-circle-plus"}})
-        .on("click", function(e){
+        .button({
+            text: true,
+            icons: {
+                primary: "ui-icon-circle-plus"
+            }
+        })
+        .on("click", function (e) {
             e.preventDefault();
 
             var previousValid = false;
-            $(pathForm).find(".studies input").each(function(i, el) {
+            $(pathForm).find(".studies input").each(function (i, el) {
                 previousValid = $(el).validate().element("#" + el.id);
                 return previousValid;
             });
 
-            if(previousValid)
+            if (previousValid)
                 addStudy();
         });
 });
