@@ -210,7 +210,7 @@ $(function () {
         rules: validationElements,
         messages: validationMessages,
         highlight: function (el, errorClass, validClass) {
-            if (el.id != "population" && el.name.indexOf("selectItempopulation") == -1)
+            if (el.id != "population" && el.name.indexOf("selectItempopulation") == -1 && el.name.indexOf("selectAllpopulation") == -1)
                 $(el).addClass(errorClass);
             else {
                 $("#population").next().find('.ms-choice').children()
@@ -218,7 +218,7 @@ $(function () {
             }
         },
         unhighlight: function (el, errorClass, validClass) {
-            if (el.id != "population" && el.name.indexOf("selectItempopulation") == -1){
+            if (el.id != "population" && el.name.indexOf("selectAllpopulation") == -1  && el.name.indexOf("selectAllpopulation") == -1){
                 $(el).removeClass(errorClass);
             }
             else {
