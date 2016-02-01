@@ -34,6 +34,13 @@ form
         height 35px
         margin 0px
         width 40px
+
+    .ms-parent
+        width 100%
+        > button
+          width 100% !important
+          height 35px
+
     input, select
         float left
         &.error
@@ -188,16 +195,12 @@ progress
     float right
     clear right
     text-align left
-    width 300px 
+    width 300px
     .ms-drop
         font-size 85%
         left -100px
         li:not(.group)
             text-indent 20px
-    .ms-parent
-        width 100%
-        > button
-          width 100% !important
 
 #spinner
     background url("/common/images/loading.gif") no-repeat center/50%

@@ -40,6 +40,13 @@ form a.ui-button {
   margin: 0px;
   width: 40px;
 }
+form .ms-parent {
+  width: 100%;
+}
+form .ms-parent > button {
+  width: 100% !important;
+  height: 35px;
+}
 form input,
 form select {
   float: left;
@@ -237,12 +244,6 @@ progress {
 }
 .input .ms-drop li:not(.group) {
   text-indent: 20px;
-}
-.input .ms-parent {
-  width: 100%;
-}
-.input .ms-parent > button {
-  width: 100% !important;
 }
 #spinner {
   background: url("/common/images/loading.gif") no-repeat center/50%;

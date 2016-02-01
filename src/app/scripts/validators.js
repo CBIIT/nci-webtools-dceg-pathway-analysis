@@ -1,40 +1,49 @@
-$(function(){
+$(function () {
     var errors_div = $("#errorDisplay");
-    $.validator.addMethod("boundedMax", function(value,element,params) {
-      return value < params;
+    $.validator.addMethod("boundedMax", function (value, element, params) {
+        return value < params;
     });
+
+    // custom validator for scientific notation
+    jQuery.validator.addMethod('scientific_notation_check', function (value, el) {
+        return (typeof Number(value) === "number");
+    });
+
     var validationElements = {
         study: {
             required: true
         },
         database_pathway: {
             required: {
-                depends:function(element) {
+                depends: function (element) {
                     return $("#database_pathway_option").is(":checked");
                 }
             }
         },
         file_pathway: {
             required: {
-                depends:function(element) {
+                depends: function (element) {
                     return $("#file_pathway_option").is(":checked");
                 }
             }
         },
+        super_population: {
+            required: true
+        },
         population: {
             required: {
-                depends: function(element) {
-                    return element.value.length === 0;
+                depends: function (element) {
+                    //                    return element.value.length === 0;
+                    return element.value.length === 0 && document.getElementById("super_population").value.length > 0;
                 }
-            },
-            multiselect_group_check:true
+            }
         },
-        nperm:{
+        nperm: {
             required: true,
             scientific_notation_check: true,
             max: Number(1e7)
         },
-        hwep:{
+        hwep: {
             required: true,
             min: 0,
             boundedMax: 1,
@@ -58,7 +67,7 @@ $(function(){
         maf: {
             required: true,
             scientific_notation_check: true,
-            range: [0,0.5]
+            range: [0, 0.5]
         },
         chr: {
             required: true,
@@ -95,17 +104,19 @@ $(function(){
             required: "You must upload at least one study file",
             extension: "You uploaded an incorrect file type. Please upload only .study files."
         },
-        file_pathway:{
+        file_pathway: {
             required: "You must upload a pathway file",
         },
-        database_pathway:{
+        database_pathway: {
             required: "You must select a pathway from the server",
         },
-        population:{
-            required: "You must select at least one population",
-            multiselect_group_check: "You selected populations from more than one super population group. Only populations from the same super population group can be selected at a time."
+        super_population: {
+            required: "You must select a super population",
         },
-        nperm:{
+        population: {
+            required: "You must select at least one sub population",
+        },
+        nperm: {
             required: "nperm is required",
             scientific_notation_check: "The value you entered for nperm is invalid. The value must be a floating number or in scientific notation.",
             max: "The value for nperm must be less than or equal to 1e7 (10,000,000)."
@@ -121,11 +132,11 @@ $(function(){
             boundedMax: "The value you entered for snp.miss.rate is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1."
         },
         maf: {
-            required: "maf is required",//decimal"
+            required: "maf is required", //decimal"
             range: "The value you entered for maf is invalid. The value must be a floating number not less than 0 OR not greater than 0.5.",
             scientific_notation_check: "The value you entered for maf is invalid. The value must be a floating number or in scientific notation."
         },
-        hwep:{
+        hwep: {
             required: "HWE.p is required",
             min: "The value you entered for HWE.p is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1.",
             boundedMax: "The value you entered for HWE.p is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1.",
@@ -146,7 +157,7 @@ $(function(){
             min: "The value you entered for inspect.snp.n is invalid. The value must not be less than 1."
         },
         snp_percent: {
-            required: "inspect.snp.percent is required",//decimal"
+            required: "inspect.snp.percent is required", //decimal"
             range: "The value you entered for inspect.snp.percent is invalid. The value must be a floating number not less than 0 OR not greater than 1."
         },
         gene_n: {
@@ -167,17 +178,17 @@ $(function(){
     // since there will be multiple validations eventually
     // there should be some default settings that all forms follow
     jQuery.validator.setDefaults({
-        ignore: ".ms-parent, .custom-combobox-input",
+        ignore: ".custom-combobox-input",
         focusInvalid: false,
         focusCleanup: true,
         ignoreTitle: true,
         errorElement: "li",
         errorLabelContainer: "#errorDisplay",
-        errorPlacement: function(error, element) {
+        errorPlacement: function (error, element) {
             errors_div.find("ul").append(error);
             $(element).addClass("error");
         },
-        showErrors: function(errorMap, errorList) {
+        showErrors: function (errorMap, errorList) {
             // 'this' refers to the form
             var errors = this.numberOfInvalids();
             if (errors > 0 && errorList.length > 0) {
@@ -195,60 +206,24 @@ $(function(){
 
     // specific validations only for pathForm
     $(pathForm).validate({
-        ignore: ".ms-parent *,.custom-combobox *",
+        ignore: ".custom-combobox *",
         rules: validationElements,
         messages: validationMessages,
-        highlight: function (el, errorClass,validClass) {
-            if(el.id != "population" && el.id != "database_pathway")
+        highlight: function (el, errorClass, validClass) {
+            if (el.id != "population" && el.name.indexOf("selectItempopulation") == -1)
                 $(el).addClass(errorClass);
-            else
-                $(el).next().find('.select2, .ms-choice').addClass(errorClass);
+            else {
+                $("#population").next().find('.ms-choice').children()
+                    .andSelf().addClass(errorClass);
+            }
         },
-        unhighlight: function (el, errorClass,validClass) {
-            if(el.id != "population" && el.id != "database_pathway")
+        unhighlight: function (el, errorClass, validClass) {
+            if (el.id != "population" && el.name.indexOf("selectItempopulation") == -1){
                 $(el).removeClass(errorClass);
-            else
-                $(el).next().find('.select2').children().andSelf().find('.error').removeClass(errorClass);
-        }
-    });
-
-    // custom validator for scientific notation
-    jQuery.validator.addMethod('scientific_notation_check', function(value, el) {
-        return (typeof Number(value) === "number");
-    });
-
-    jQuery.validator.addMethod('comma_delim_numerical_check', function(valuesString, el) {
-        var valid = false;
-        var separated = valuesString.split(",");
-
-        separated.forEach(function(value, ind){
-            if(!Number(value)){
-                valid = false;
             }
             else {
-                valid = true;
+                $("#population").next().find('.ms-choice').children().andSelf().removeClass(errorClass);
             }
-            return valid;
-        });
-
-        return valid;
-    }, jQuery.validator.format("One or more of the values in {0} is invalid. Value must be an integer or string of integers separated by commas"));
-
-    jQuery.validator.addMethod('multiselect_group_check', function(values, el) {
-        var single_group_code = values[0].split("|")[0];
-        var valid = false;
-        $.each(values,function(index, selectionValue) {
-            var this_code = selectionValue.split("|")[0];
-            valid = ( this_code == single_group_code ? true : false);
-
-            if(valid){
-                $(el).find('.error').removeClass('error');
-                $('.ms-parent').find('.error').removeClass('error');
-            }
-
-            return valid;
-        });
-        return valid;
+        }
     });
-
 });

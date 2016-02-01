@@ -26,12 +26,12 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
             li
                 label(for="super_population") Super Population:
                 .input
-                    select#super_population(required='')
+                    select#super_population(name="super_population",required='')
                       option(value='') -- Select a super population --
             li
                 label(for="population") Sub Population:
                 .input.hide
-                    select#population(required='', multiple)
+                    select#population(name="population",required='', multiple)
     fieldset
       legend Set the following options:
       ul
