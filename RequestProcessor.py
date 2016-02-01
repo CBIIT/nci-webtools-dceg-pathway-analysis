@@ -4,6 +4,7 @@ import os
 import rpy2.robjects as robjects
 import smtplib
 import time
+import logging
 
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -141,11 +142,12 @@ class RequestProcessor(DisconnectListener):
 
   def __init__(self):
     config = PropertyUtil(r"config.ini")
-    config[RequestProcessor.CONFIG] = StompConfig("failover:("+config.getAsString(RequestProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
+    config[RequestProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(RequestProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     self.CONFIG = config
     robjects.r('''source('ARTPWrapper.R')''')
     self.r_runARTP = robjects.r['runARTPWithHandlers']
 
 if __name__ == '__main__':
+  logging.basicConfig(level=logging.INFO)
   RequestProcessor().run()
   reactor.run()
