@@ -5,13 +5,15 @@ function checkedStateToValue(e) {
 function resetForm() {
   $(pathForm).find(".studies").each(function(i, el) {
     if(i !== 0) {
-      $(this).detach();
+      $(this).remove();
     } else {
       $('#lambda_1').val("1.0");
-      $('#num_resource_1,#study_1').val("");
+      $('#study_1').val("");
       $('#study_1').wrap("<form>").closest("form").get(0).reset();
       $('#study_1').unwrap();
-      $(pathForm).find(".studyResources").detach();
+      $('#num_resource_1').val("1");
+      $(pathForm).find(".studyResources:not(:first)").remove();
+      $(pathForm).find(".studyResources input").val("");
     }
   });
 

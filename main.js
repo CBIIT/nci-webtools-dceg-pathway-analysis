@@ -473,41 +473,62 @@ function addStudy() {
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
+    var firstResource = addStudyResource(studyIndex,1);
+    studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
     studyTemplate.find(".studyTitle").append(studyIndex);
 
-    studyTemplate.find("label, input").each(function (i, el) {
-        if (this.tagName.toLowerCase() == "label") {
-            var forAttr = $(el).attr("for") + "_" + studyIndex;
-            $(el).attr("for", forAttr);
-        }
-        if (this.tagName.toLowerCase() == "input") {
-            var newId = $(el).attr("id") + "_" + studyIndex;
-            $(el).attr("id", newId).attr("name", newId);
-        }
-    });
+    var studyLabel = studyTemplate.find('[for="study"]');
+    studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
+    var studyId = studyTemplate.find("#study");
+    studyId.attr("name",studyId.attr("id")+"_"+studyIndex).attr("id",studyId.attr("id")+"_"+studyIndex);
+
+    var lambdaLabel = studyTemplate.find('[for="lambda"]');
+    lambdaLabel.attr("for",lambdaLabel.attr("for")+"_"+studyIndex);
+    var lambdaId = studyTemplate.find("#lambda");
+    lambdaId.attr("name",lambdaId.attr("id")+"_"+studyIndex).attr("id",lambdaId.attr("id")+"_"+studyIndex);
+
+    var numLabel = studyTemplate.find('[for="num_resource"]');
+    numLabel.attr("for",numLabel.attr("for")+"_"+studyIndex);
+    var numId = studyTemplate.find("#num_resource");
+    numId.attr("name",numId.attr("id")+"_"+studyIndex).attr("id",numId.attr("id")+"_"+studyIndex);
 
    
     $("#studyEntry").append(studyTemplate);
+    firstResource.find('input').rules("add", {
+        required: true,
+        digits: true,
+        messages: {
+            required: "The sample size value is required",
+            digits: "The sample size value must be an integer"
+        }
+    });
 
-    studyTemplate.find("input, select").each(function (i, el) {
-        if (this.type == "file") {
-            $(this).rules("add", {
-                required: true,
-                messages: {
-                    required: "The " + this.id + " field is required",
-                }
-            });
-        } else {
-            $(this).rules("add", {
-                required: true,
-                number: true,
-                min: 1,
-                messages: {
-                    required: "The " + this.id + " field is required",
-                    number: "The " + this.id + " value must be a number",
-                    min: "The " + this.id + " value must be greater than or equal to 1"
-                }
-            });
+    studyId.rules("add", {
+        required: true,
+        messages: {
+            required: "The " + studyId.attr('id') + " field is required",
+        }
+    });
+
+    lambdaId.rules("add", {
+        required: true,
+        number: true,
+        min: 1,
+        messages: {
+            required: "The " + lambdaId.attr('id') + " field is required",
+            number: "The " + lambdaId.attr('id') + " value must be a number",
+            min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
+        }
+    });
+    
+    numId.rules("add", {
+        required: true,
+        number: true,
+        min: 1,
+        messages: {
+            required: "The " + numId.attr('id') + " field is required",
+            number: "The " + numId.attr('id') + " value must be a number",
+            min: "The " + numId.attr('id') + " value must be greater than or equal to 1"
         }
     });
 
@@ -528,13 +549,18 @@ function addStudy() {
                 choice = true;
 
             if (choice) {
-                var resourceList = studyTemplate.find('ul.resource-list').empty();
-                for (var i = 1; i <= this.value; i++) {
+                var resourceList = studyTemplate.find('ul.resource-list');
+                resourceList.children('.studyResources:nth('+(this.value-1)+') ~ .studyResources').remove();
+                resourceList.find('input').each(function(i,el) {
+                  el.value = '';
+                });
+                for (var i = resourceList.children().length+1; i <= this.value; i++) {
                    
                    
-                    addStudyResource(id.substr(13), i).appendTo(resourceList);
+                    var studyResource = addStudyResource(id.substr(13), i);
+                    resourceList.append(studyResource);
 
-                    $("#sample_size_" + id.substr(13) + "_" + i).rules("add", {
+                    studyResource.find('input').rules("add", {
                         required: true,
                         digits: true,
                         messages: {
@@ -546,51 +572,14 @@ function addStudy() {
             }
         }
     });
-    studyTemplate.find(".addControl[title='resource']").button({
-        text: false,
-        icons: {
-            primary: "ui-icon-circle-plus"
-        }
-    }).on("click", function (e) {
-        e.preventDefault();
-
-        var el = $(this);
-        var previousValid = false;
-        var resource_tb = $(this).prev();
-        var validator = resource_tb.validate();
-
-        previousValid = validator.element("#" + resource_tb.prop('id'));
-
-        var resourceValue = resource_tb.val();
-
-        if (previousValid) {
-            var resourceList = el.parent().next().empty();
-            for (var i = 1; i <= resourceValue; i++) {
-               
-               
-                resourceList.append(
-                    addStudyResource(resource_tb.prop('id').substr(13), i)
-                );
-
-                $("#sample_size_" + resource_tb.prop('id').substr(13) + "_" + i).rules("add", {
-                    required: true,
-                    digits: true,
-                    messages: {
-                        required: "The sample size value is required",
-                        digits: "The sample size value must be an integer"
-                    }
-                });
-            }
-        }
-    });
 }
 
 function addStudyResource(study, ind) {
-    var resource_element = $("#snippets").find(".studyResources").clone();
+    var resource_element = $("#snippets").children(".studyResources").clone();
     var elementLabel = resource_element.find("label");
     var elementInput = resource_element.find("input");
 
-    var LabelFor = elementLabel.attr("for") + "_" + ind;
+    var LabelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
     var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
 
     var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
@@ -600,14 +589,6 @@ function addStudyResource(study, ind) {
     elementInput.attr("id", inputId).attr("name", inputId);
 
     return resource_element;
-}
-
-function removeStudyResource(parentElement, ind) {
-   
-    parentElement.find(".studyResources:nth(" + ind + ") input").each(function () {
-        $(this).rules("remove");
-        $(this).remove();
-    });
 }
 
 function createConfirmationBox(messageText) {
@@ -731,13 +712,15 @@ function checkedStateToValue(e) {
 function resetForm() {
   $(pathForm).find(".studies").each(function(i, el) {
     if(i !== 0) {
-      $(this).detach();
+      $(this).remove();
     } else {
       $('#lambda_1').val("1.0");
-      $('#num_resource_1,#study_1').val("");
+      $('#study_1').val("");
       $('#study_1').wrap("<form>").closest("form").get(0).reset();
       $('#study_1').unwrap();
-      $(pathForm).find(".studyResources").detach();
+      $('#num_resource_1').val("1");
+      $(pathForm).find(".studyResources:not(:first)").remove();
+      $(pathForm).find(".studyResources input").val("");
     }
   });
 
