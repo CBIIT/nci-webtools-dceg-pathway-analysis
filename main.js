@@ -365,6 +365,8 @@ function submission_result(response) {
             $( "#successBox" ).fadeOut().hide();
             $( "#successBox #message" ).html("");
         }, 10000);
+    } else {
+      submission_error({"responseText": JSON.stringify(response)},200);
     }
 }
 

@@ -95,7 +95,7 @@ class RequestProcessor(DisconnectListener):
     with open(outfileString,'w') as outfile:
       json.dump(jsonout,outfile)
     message = ("Dear User,\n\n" +
-              "We have analyzed your data using the ARTP2 package (version: " + saveValue['options']['version'] + "). " +
+              "We have analyzed your data using the ARTP2 package (version: " + ".".join([str(x) for x in saveValue['options']['version'][0]]) + "). " +
               "The sARTP test returned a pathway p-value " + str(round(saveValue['pathway.pvalue'],1-int(math.floor(math.log10(saveValue['pathway.pvalue']))))) + ". The p-value was estimated by " + str(saveValue['options']['nperm']) + " resampling steps.\n\n" +
               "Several gene/SNP filters were applied to the data based on specified options. " +
               "There are " + str(self.rLength(saveValue['deleted.genes'].get('Gene',None))) + " genes and " + str(self.rLength(set(saveValue['deleted.snps'].get('SNP',None)))) + " SNPs that were excluded from the analysis. " +
