@@ -63,8 +63,8 @@ runARTP <- function(parameters) {
                   save.setup = FALSE)
   # Run the analysis
   family <- 'gaussian'
-  setup <- pathway.summaryData(summary.files, pathway, family, reference, lambda, nsamples=sample.size, options = options)
-  ret1 <- pathway.warm.start(setup)
+  setup <- sARTP(summary.files, pathway, family, reference, lambda, nsamples=sample.size, options = options)
+  ret1 <- warm.start(setup)
   
   #ret1$setup <- setup
   ret1$setup <- NULL # remove debugging information from returned object
@@ -76,7 +76,7 @@ runARTP <- function(parameters) {
   ## comments from Han: If we do not have extra hours for this project, we can do that in the future. 
   
   if (as.logical(parameters$refinep) && ret1$options$nperm <= 1e7 && !ret1$accurate && ret1$test.timing/3600 * 10 < 72) {
-    ret2 <- pathway.warm.start(setup, nperm = ret1$options$nperm * 10)
+    ret2 <- warm.start(setup, nperm = ret1$options$nperm * 10)
     ret2$setup <- NULL
     
     saveValue <- ret2
