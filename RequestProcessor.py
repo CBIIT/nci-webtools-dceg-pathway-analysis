@@ -113,7 +113,7 @@ class RequestProcessor(DisconnectListener):
               "saveValue$pathway\n\n" +
               "All the options are saved in \n\n" +
               "saveValue$options\n\n" +
-              "For more information, please refer to the help document of function pathway.summaryData in R package ARTP2.\n\n" +
+              "For more information, please refer to the help document of function sARTP in R package ARTP2.\n\n" +
               message)
     print message
     self.composeMail(parameters['email'],message,files)
