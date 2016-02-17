@@ -124,7 +124,7 @@ header hr {
   background-image: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: linear-gradient(to right, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
 }
-#subHeading {
+.subHeading {
   font-size: medium;
   border: 3px ridge rgba(0,66,118,0.47);
   text-align: center;
@@ -133,10 +133,10 @@ header hr {
   background-color: #789;
   color: #fff;
 }
-#subHeading a {
+.subHeading a {
   color: #fff;
 }
-#subHeading p {
+.subHeading p {
   padding: 0px 20px;
   text-align: left;
 }
