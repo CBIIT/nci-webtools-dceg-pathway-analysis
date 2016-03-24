@@ -43,23 +43,18 @@
           <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
           <ul>
             <li>
-              <label for="database_pathway">
-                <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>
-                <label for="database_pathway_option">
-                  Select from
-                  &nbsp;<span id="pop-list">existing pathways:</span>
-                </label>
-              </label>
+              <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>
+              <label for="database_pathway_option">Select from&nbsp;<span id="pop-list">existing pathways:</span></label>
               <div class="input ui-widget">
-                <input id="database_pathway" name="database_pathway" placeholder="Search for Pathways"/>
+                <label for="database_pathway">Search</label>
+                <input id="database_pathway" name="database_pathway"/>
               </div>
             </li>
             <li>
-              <label for="file_pathway">
-                <input id="file_pathway_option" type="radio" name="pathway_type" value="file_pathway"/>
-                <label for="file_pathway_option">Upload from the client:</label>
-              </label>
+              <input id="file_pathway_option" type="radio" name="pathway_type" value="file_pathway"/>
+              <label for="file_pathway_option">Upload from the client:</label>
               <div class="input">
+                <label for="file_pathway">Upload</label>
                 <input id="file_pathway" type="file" name="file_pathway"/>
               </div>
             </li>

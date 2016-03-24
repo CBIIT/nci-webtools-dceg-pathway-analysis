@@ -7,18 +7,17 @@ form(name='pathForm', action='/pathwayRest/calculate/', method='POST', enctype='
       legend.termToDefine(data-term="file_pathway") Select or upload the pathway file:
       ul
         li
-          label(for='database_pathway')
             input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-            label(for="database_pathway_option") Select from
-                |&nbsp;
+            label(for="database_pathway_option") Select from&nbsp;
                 span#pop-list existing pathways:
-          .input.ui-widget
-            input#database_pathway(name='database_pathway', placeholder="Search for Pathways")
+            .input.ui-widget
+                label(for='database_pathway') Search
+                input#database_pathway(name='database_pathway')
         li
-            label(for='file_pathway')
-                input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
-                label(for="file_pathway_option") Upload from the client:
+            input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
+            label(for="file_pathway_option") Upload from the client:
             .input
+                label(for='file_pathway') Upload
                 input#file_pathway(type='file', name='file_pathway')
     fieldset
         legend.termToDefine(data-term="population") Select the population:

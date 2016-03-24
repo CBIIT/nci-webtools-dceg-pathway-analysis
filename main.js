@@ -374,7 +374,7 @@ function apply_options(element, items){
     var source = [];
     if (typeof items === 'undefined') {
         return function(data) {
-            $(element).attr("placeholder", "Search for Pathways (" + data.length + " available) ");
+            $(element).attr("placeholder", data.length + " existing pathways");
             data.forEach(function(item, i) {
                 var option = $("<option></option>");
                 item.text = item.text.replace(/_/g," ");
