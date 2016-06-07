@@ -11,12 +11,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from PropertyUtil import PropertyUtil
 from stompest.async import Stomp
-from stompest.async.listener import DisconnectListener, SubscriptionListener
+from stompest.async.listener import SubscriptionListener
 from stompest.config import StompConfig
 from stompest.protocol import StompSpec
 from twisted.internet import reactor, defer
 
-class RequestProcessor(DisconnectListener):
+class RequestProcessor(SubscriptionListener):
   CONFIG = 'queue.config'
   NAME = 'queue.name'
   URL = 'queue.url'
@@ -134,13 +134,14 @@ class RequestProcessor(DisconnectListener):
       # the maximal number of messages the broker will let you work on at the same time
       'activemq.prefetchSize': '100',
     }
-    client.subscribe(self.CONFIG[RequestProcessor.NAME], headers, listener=SubscriptionListener(self.consume))
-    client.add(listener=self)
-
-  def onConnectionLost(self,connect,reason):
+    client.subscribe(self.CONFIG[RequestProcessor.NAME], headers, listener=self)
+  
+  def onConnectionLost(self,connection,reason):
+    super(RequestProcessor,self).onConnectionLost(connection,reason)
     self.run()
 
   def __init__(self):
+    super(RequestProcessor,self).__init__(self.consume)
     config = PropertyUtil(r"config.ini")
     config[RequestProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(RequestProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     self.CONFIG = config
