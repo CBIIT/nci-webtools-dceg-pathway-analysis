@@ -6,16 +6,13 @@
 #			--queueURL tcp://queue:9999 --queueName /queue/
 
 # Create hash for parameters
-declare -A parameters=( ["mailServer"]=""  ["adminEmails"]="" ["debugFlag"]="" ["port"]="" ["folderRoot"]="" ["queueURL"]="" ["queueName"]="" )
+declare -A parameters=( [mailServer]= [adminEmails]= [debugFlag]= [port]= [folderRoot]= [queueURL]= [queueName]= )
 valid=true
 
-while true; do 
-	case "$1" in
-		--mailServer | --adminEmails | --debugFlag | --port | --folderRoot | --queueURL | --queueName )
-			parameters[${1:2}]="$2"
-			shift 2 ;;
-	*) break ;;
-	esac
+# assign arguments to parameters
+while true; do
+	# if parameter matches --*, then assign its value to the corresponding key
+	[[ $1 == --* ]] && parameters[${1:2}]="$2"; shift 2 || break
 done
 
 # display any error messages
