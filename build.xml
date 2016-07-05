@@ -21,7 +21,7 @@
       <target name="port_exist" unless="port">
               <fail> Port is not set, stop</fail>
       </target>
-      <target name="folder_root_exist" unless="folder_root">
+      <target name="folder_root_exist" unless="folderRoot">
               <fail> Folder Root is not set, stop</fail>
       </target>
       <target name="queueURL_exist" unless="queueURL">
