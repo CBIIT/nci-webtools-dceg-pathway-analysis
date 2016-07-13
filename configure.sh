@@ -24,7 +24,7 @@ done
 if [ $valid = true ]; then
 
 	for key in "${!parameters[@]}"; do
-		sed -e "s|\@${key}@|${parameters[$key]}|" config.ini > config.tmp && mv config.tmp config.ini
+		sed -i "s|\@${key}@|${parameters[$key]}|g" config.ini
 	done
 
 	echo -e "\e[92mPathway configured successfully\e[39m"
