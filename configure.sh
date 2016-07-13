@@ -6,7 +6,7 @@
 #		--queueURL tcp://queue:9999 --queueName /queue/
 
 # create hash for parameters
-declare -A parameters=( [mailServer]= [adminEmails]= [debugFlag]= [port]= [folderRoot]= [queueURL]= [queueName]= )
+declare -A parameters=( [mailServer]= [adminEmails]= [debugFlag]= [folderRoot]= [queueURL]= [queueName]= )
 valid=true
 
 # assign arguments to parameters
