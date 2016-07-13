@@ -146,9 +146,15 @@ class RequestProcessor(SubscriptionListener):
     config[RequestProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(RequestProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     self.CONFIG = config
     robjects.r('''source('ARTPWrapper.R')''')
+
     self.r_runARTP = robjects.r['runARTPWithHandlers']
 
-if __name__ == '__main__':
+
+def main():
   logging.basicConfig(level=logging.INFO)
   RequestProcessor().run()
   reactor.run()
+
+
+if __name__ == '__main__':
+  main()
