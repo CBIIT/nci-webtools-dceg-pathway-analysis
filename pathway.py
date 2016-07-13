@@ -154,7 +154,6 @@ def main():
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
   OptionGenerator()
-  threading.Thread(target = RequestProcessor.main).start()
 
 main()
 
