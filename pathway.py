@@ -26,14 +26,12 @@ PLINK_PATTERN = 'pathway.plink.pattern'
 QUEUE_NAME = 'queue.name'
 QUEUE_URL = 'queue.url'
 
-@staticmethod
 def buildFailure(message):
   response = jsonify(message=message, success=False)
   response.mimetype = 'application/json'
   response.status_code = 400
   return response
 
-@staticmethod
 def buildSuccess(message):
   response = jsonify(message=message, success=True)
   response.mimetype = 'application/json'
