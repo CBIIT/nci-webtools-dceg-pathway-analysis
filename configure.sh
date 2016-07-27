@@ -43,5 +43,5 @@ else
 	echo -e "\e[39m	--port\e[92m 0-65535"
 	echo -e "\e[39m	--folderRoot\e[92m /folder/root"
 	echo -e "\e[39m	--queueURL\e[92m tcp://queue/url"
-	echo -e "\e[39m	--queueName\e[92m /queue/name "
+	echo -e "\e[39m	--queueName\e[92m /queue/name \e[39m"
 fi
