@@ -5,7 +5,7 @@
 	 <replace file="config.ini" token="@adminEmails@" value="${adminEmails}"/>
 	 <replace file="config.ini" token="@debugFlag@" value="${debugFlag}"/>
 	 <replace file="config.ini" token="@port@" value="${port}"/>
-	 <replace file="config.ini" token="@folder_root@" value="${folder_root}"/>
+	 <replace file="config.ini" token="@folderRoot@" value="${folderRoot}"/>
 	 <replace file="config.ini" token="@queueURL@" value="${queueURL}"/>
 	 <replace file="config.ini" token="@queueName@" value="${queueName}"/>
       </target>
@@ -21,7 +21,7 @@
       <target name="port_exist" unless="port">
               <fail> Port is not set, stop</fail>
       </target>
-      <target name="folder_root_exist" unless="folder_root">
+      <target name="folder_root_exist" unless="folderRoot">
               <fail> Folder Root is not set, stop</fail>
       </target>
       <target name="queueURL_exist" unless="queueURL">
