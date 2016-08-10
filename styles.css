@@ -264,6 +264,12 @@ progress {
 .hide {
   display: none;
 }
+.notice {
+  border: 3px solid #a9a9a9;
+  background: #d3d3d3;
+  padding: 10px;
+  margin: 5px auto;
+}
 footer {
   padding: 2% 0;
   clear: both;
