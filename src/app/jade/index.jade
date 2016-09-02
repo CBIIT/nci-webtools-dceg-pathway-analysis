@@ -1,49 +1,89 @@
+doctype html
 html(lang="en")
     head
-      title Pathway Tool
-      meta(name="viewport", content="width=device-width, initial-scale=1.0")
-      meta(http-equiv="X-UA-Compatible", content="IE=edge")
       meta(http-equiv="Pragma", content="no-cache")
+      meta(http-equiv='X-UA-Compatible', content='IE=edge')
+      meta(http-equiv='Content-Type', content='text/html; charset=utf-8')
+      meta(name='viewport', content='width=device-width, initial-scale=1.0')
+      title Pathway Analysis Tool
+      link(href='https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css', rel='stylesheet', type='text/css')
+      link(href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css', rel='stylesheet', type='text/css')
       link(href='https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css', rel='stylesheet', type='text/css')
       link(href='https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css', rel='stylesheet', type='text/css')
-      link(href='https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css', rel='stylesheet', type='text/css')
+      link(href='https://fonts.googleapis.com/css?family=Noto+Sans', rel='stylesheet', type='text/css')
       link(href='/common/css/style.css', rel='stylesheet', type='text/css')
       link(href='styles.css', rel='stylesheet', type='text/css')
       script(src='https://code.jquery.com/jquery-2.1.4.min.js', type='application/javascript')
+      script(src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js', type='application/javascript')
+      script(type='text/javascript', src='https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js')
       script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js', type='application/javascript')
       script(src='https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js', type='application/javascript')
       script(src='https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js', type='application/javascript')
       script(src='https://code.jquery.com/ui/1.11.4/jquery-ui.min.js', type='application/javascript')
       script(src='/common/js/popover-functions.js', type='application/javascript')
       script(src='main.js', type='application/javascript')
-    body
-      include templates/header
-      #content
-        .subHeading
-          p ARTP2 (Adaptive Rank Truncated Product - Version 2) is an R package of biological pathway association analysis or pathway meta-analysis for genome-wide association studies (GWAS). It also provides tools for gene-level association test as a special case. ARTP2 is an enhanced version of two previously released packages ARTP and AdaJoint.
-          p
-            span This online application was developed to assist epidemiological researchers for testing the association between complex disease/trait outcome and predefined pathways when only SNP-level summary statistics from one or multiple GWAS were available. We provide reference panel data incorporated from the 
-            a(href="http://www.1000genomes.org/") 1000 Genomes Project
-            span  to facilitate the studies on various populations. We also support over 4,700 pathways predefined by the 
-            a(href="http://software.broadinstitute.org/gsea/msigdb/collections.jsp") BROAD Institute
-            span .
-        #errorDisplay.box-error
-        #successBox
-          span.ui-icon.ui-icon-circle-check
-          #message
-        #dialogElm
-        include form
-        .subHeading
-          p If you publish results that use ARTP2, please cite:
-          p Zhang H, Wheeler W, Hyland LP, Yang Y, Shi J, Chatterjee N, Yu K. A powerful procedure for pathway-based meta-analysis using summary statistics identifies multiple pathways associated with type II diabetes.
-          p Yu K, Li Q, Bergen AW, Pfeiffer RM, Rosenberg PS, Caporaso N, Kraft P, Chatterjee N. (2009) Pathway analysis by adaptive combination of P-values. Genet Epidemiol 33(8): 700 - 709
-          p Zhang H, Shi J, Liang F, Wheeler W, Stolzenberg-Solomon R, Yu K. (2014) A fast multilocus test with adaptive SNP selection for large-scale genetic association studies. European Journal of Human Genetics, 22, 696 - 702
-      
-        .notice
-            | Site is currently under section 508 review. This site is undergoing remediation for compliance with section 508.
-            | In the interim, should you require any accessibility assistance with any content, please contact us at 
-            a(href="mailto:NCIPathwayAnalysisToolWebSupport@mail.nih.gov?subject=Pathway Tool 508") NCIPathwayAnalysisToolWebSupport@mail.nih.gov
-            | . Thank you!
-      include templates/footer
-      include templates/snippets
-
+  body
+    a#skip.sr-only(href='#main') Go to Content
+    include templates/header
+    #page-head
+        h1 Pathway Analysis Tool
+    nav.navbar.navbar-default
+        button.navbar-toggle(type='button', data-toggle='collapse', data-target='#main-nav')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+        #main-nav.navbar-collapse.collapse
+            ul.nav.navbar-nav
+                li.active(role='presentation')
+                    a(href='#tab-home', data-toggle='tab') Home
+                li(role='presentation')
+                    a#toolTabId(href='#tab-tool', data-toggle='tab') Tool
+                li(role='presentation')
+                    a#helpTabId(href='#tab-help', data-toggle='tab') Help
+    #main.tab-content.grey-border
+      section#tab-home.tab-pane.active
+        h2.section-title Home
+        .section-content
+            .col-xs-12.col-sm-8
+                p
+                    | ARTP2 (Adaptive Rank Truncated Product - Version 2) is an R package of biological pathway association analysis or pathway meta-analysis for genome-wide association studies (GWAS). 
+                    | It also provides tools for gene-level association test as a special case. ARTP2 is an enhanced version of two previously released packages ARTP and AdaJoint.
+                p
+                    span 
+                        | This online application was developed to assist epidemiological researchers for testing the association between complex disease/trait outcome and predefined pathways 
+                        | when only SNP-level summary statistics from one or multiple GWAS were available. We provide reference panel data incorporated from the 
+                    a(href="http://www.1000genomes.org/") 1000 Genomes Project
+                    span  to facilitate the studies on various populations. We also support over 4,700 pathways predefined by the 
+                    a(href="http://software.broadinstitute.org/gsea/msigdb/collections.jsp") BROAD Institute
+                    | .
+                em
+                    b Note: use the link (
+                    a(href="http://biorxiv.org/content/early/2016/02/24/041244") http://biorxiv.org/content/early/2016/02/24/041244
+                    | ) and rename the paper to "A Powerful Procedure for Pathway-based Meta-Analysis Using Summary Statistics Identities 
+                    |  43 Pathways Associated with Type II Diabetes in European Populations"
+      section#tab-tool.tab-pane
+        h2.section-title Tool
+        .section-content
+            .main-panel
+                #errorDisplay.alert.alert-warning.box-error
+                .alert.alert-success#successBox
+                  span.ui-icon.ui-icon-circle-check
+                  #message
+                #dialogElm
+                include form
+      section#tab-help.tab-pane
+        h2.section-title Help
+        .section-content
+          .side-panel.col-xs-12.col-sm-5
+            .well.well-sm
+              h3 Table of Contents
+              ul
+                li
+                  a(href='#') TBD
+          .main-panel.col-xs-12.col-sm-7
+            | Content TBD......
+    include templates/footer
+    #loader
+        img(alt='Loading.....please wait', src='/common/images/loading.gif')
+include templates/snippets

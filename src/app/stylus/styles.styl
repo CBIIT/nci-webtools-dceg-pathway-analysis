@@ -1,32 +1,21 @@
 @import 'nib'
 
-html
-    background linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,.4) 19%, rgba(255,255,255,0.2) 100%)
-
+            
+body
+  font-size 10pt
+  line-height 1.1
+  font-family 'Noto Sans', Arial, sans-serif
+  
 .division-logo
     max-width 600px
     margin-left 3%
 
-body
-    background white
-    padding-bottom 1%
-    font-size 1em
-    margin 0 auto
-    width 100%
-    float right
-    box-shadow -9px 17px 31px -4px rgba(0,0,0,0.75)
 
 .ui-autocomplete
     overflow-x hidden
     overflow-y auto
     max-width 300px
     max-height 250px
-
-.ui-widget
-    font-size inherit
-
-p
-    padding 20px 24px
 
 form
     background white
@@ -59,6 +48,8 @@ form
             width 100%
         li
             list-style none
+            &.studyResources .family:not(.show)
+                display none
     .custom-combobox
         position relative
         display inline-block
@@ -79,24 +70,8 @@ form
     width 100%
     margin 0px auto
     max-width 800px
-
-#mainTitle
-    text-align center
-    clear both
-    font-size x-large
-header
-    padding 2% 0
-    margin-top 0
-    hr
-        width 100%
-        float right
-        margin 0
-        border 0
-        height 13px
-        background-image linear-gradient(to right, rgba(0, 0, 0, 0) 8%, #BB0E3D, rgba(0, 0, 0, 0) 100%);
-
+    
 .subHeading
-    font-size medium
     border 3px ridge rgba(0, 66, 118, 0.47)
     text-align center
     padding 1%
@@ -114,7 +89,6 @@ header
     margin 10px auto
     clear both
     text-align center
-    font-size .9em
     li
         list-style none
         margin  0 auto
@@ -124,7 +98,6 @@ header
             color inherit
 
 #successBox
-    font-size 1.1em
     border 2px solid darkgreen
     background rgba(12, 193, 12, 0.27)
     margin 1% auto
@@ -132,30 +105,30 @@ header
     span
         width 20px
         float left
-
-ol li
-    margin 2% auto
-ul
-    display block
-    padding-left 16px
-
-li
-    position relative
-    padding 4px 0px
-    clear both
-
-label
-    display block
-    float left
-
-fieldset
-    margin 2% auto
-    padding 1em
-    border 0.1em groove
-
+//
+//ol li
+//    margin 2% auto
+//ul
+//    display block
+//    padding-left 16px
+//
+//li
+//    position relative
+//    padding 4px 0px
+//    clear both
+//
+//label
+//    display block
+//    float left
+//
+//fieldset
+//    margin 2% auto
+//    padding 1em
+//    border 0.1em groove
+//
 legend
-    font-size 1em
     font-weight bold
+    font-size inherit
 
 progress
     display block
@@ -166,10 +139,17 @@ progress
     width 16px
     height 16px
     margin-left 5px
+    
+.studies ul li
+    float none
+    margin 12px 0
+    
 .studyResources
     float right
-    label
-        padding 0 5px
+    .input
+        margin 15px 0
+    .input :odd
+        background blue
 #refinep
     input[type="checkbox"]
         display inline-block
@@ -180,9 +160,6 @@ progress
     border 2px solid maroon
     background rgba(255, 115, 115, 0.5)
 
-.spacer
-    content "|"
-    display inline-block
 .addControl
     text-align center
     height 30px
@@ -202,18 +179,11 @@ progress
     text-align left
     width 300px
     .ms-drop
-        font-size 85%
         left -100px
         li:not(.group)
             text-indent 20px
 
-#spinner
-    background url("/common/images/loading.gif") no-repeat center/50%
-    height 100px
-    width 100px
-    clear both
-    margin 0 auto
-    display none
+            
 
 #snippets,.hide
     display none
@@ -223,15 +193,101 @@ progress
     background lightgrey
     padding 10px
     margin 5px auto
+
+.tab-pane
+  min-height 500px
+
+#loader
+  background-color rgba(0, 0, 0, 0.5)
+  background-position center
+  position fixed
+  top 0
+  left 0
+  height 100%
+  width 100%
+  img
+    position inherit
+    top 50%
+    left 50%
+    border-radius 10px
+    background #fff
+  &:not(.show)
+    display none
     
-footer
-    padding 2% 0
-    clear both
-    text-align center
-    font-size small
-    ul li
-        list-style none
-        display inline-block
-        margin 0 5px
-        a
-            color black
+#page-head, .section-title
+  margin 0 auto
+  padding 10px 
+  font-weight bold
+  
+#page-head
+  color #FFF
+  background linear-gradient(to right, #BB0E3D 50%, transparent 100%)
+  h1
+    font-size 1.3em
+    margin 0
+
+header
+  margin 0
+  img
+    height 90px
+    width 550px
+//
+//nav
+//  &.navbar
+//    &.navbar-default
+//      padding 5px 0
+//
+.tab-content
+    margin 0 10px
+
+section
+  line-height 1.5
+
+.section-title
+  background #123E57
+  color white
+h2
+    font-size 1.1em
+
+.section-content
+  padding 10px
+
+.subcontent
+  min-height 300px
+
+.main-panel,
+.side-panel
+  min-height 500px
+
+input.error:before,
+select.error:before
+  content "*"
+  color red
+  font-weight bold
+  vertical-align middle
+  float left
+  padding 0 10px
+
+input.error,
+select.error
+  border 2px solid #fc7878
+  background rgba(255, 0, 0, 0.25)
+
+.footer
+    margin 15px auto
+    line-height 1.5
+    font-weight bold
+    ul li:after
+        content "|"
+        padding 0 10px
+
+@media (max-width: 980px)
+  header
+    img
+      max-width 360px
+
+@media (max-width: 768px)
+    #main-panel, #side-panel
+        min-height auto
+
+

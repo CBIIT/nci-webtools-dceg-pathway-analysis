@@ -475,24 +475,24 @@ function addStudy() {
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
-    var firstResource = addStudyResource(studyIndex,1);
+    var firstResource = addStudyResource(studyIndex, 1);
     studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
     studyTemplate.find(".studyTitle").append(studyIndex);
 
     var studyLabel = studyTemplate.find('[for="study"]');
-    studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
+    studyLabel.attr("for", studyLabel.attr("for") + "_" + studyIndex);
     var studyId = studyTemplate.find("#study");
-    studyId.attr("name",studyId.attr("id")+"_"+studyIndex).attr("id",studyId.attr("id")+"_"+studyIndex);
+    studyId.attr("name", studyId.attr("id") + "_" + studyIndex).attr("id", studyId.attr("id") + "_" + studyIndex);
 
     var lambdaLabel = studyTemplate.find('[for="lambda"]');
-    lambdaLabel.attr("for",lambdaLabel.attr("for")+"_"+studyIndex);
+    lambdaLabel.attr("for", lambdaLabel.attr("for") + "_" + studyIndex);
     var lambdaId = studyTemplate.find("#lambda");
-    lambdaId.attr("name",lambdaId.attr("id")+"_"+studyIndex).attr("id",lambdaId.attr("id")+"_"+studyIndex);
+    lambdaId.attr("name", lambdaId.attr("id") + "_" + studyIndex).attr("id", lambdaId.attr("id") + "_" + studyIndex);
 
     var numLabel = studyTemplate.find('[for="num_resource"]');
-    numLabel.attr("for",numLabel.attr("for")+"_"+studyIndex);
+    numLabel.attr("for", numLabel.attr("for") + "_" + studyIndex);
     var numId = studyTemplate.find("#num_resource");
-    numId.attr("name",numId.attr("id")+"_"+studyIndex).attr("id",numId.attr("id")+"_"+studyIndex);
+    numId.attr("name", numId.attr("id") + "_" + studyIndex).attr("id", numId.attr("id") + "_" + studyIndex);
 
    
     $("#studyEntry").append(studyTemplate);
@@ -522,7 +522,7 @@ function addStudy() {
             min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
         }
     });
-    
+
     numId.rules("add", {
         required: true,
         number: true,
@@ -552,17 +552,17 @@ function addStudy() {
 
             if (choice) {
                 var resourceList = studyTemplate.find('ul.resource-list');
-                resourceList.children('.studyResources:nth('+(this.value-1)+') ~ .studyResources').remove();
-                resourceList.find('input').each(function(i,el) {
-                  el.value = '';
+                resourceList.children('.studyResources:nth(' + (this.value - 1) + ') ~ .studyResources').remove();
+                resourceList.find('input').each(function (i, el) {
+                    el.value = '';
                 });
-                for (var i = resourceList.children().length+1; i <= this.value; i++) {
+                for (var i = resourceList.children().length + 1; i <= this.value; i++) {
                    
                    
                     var studyResource = addStudyResource(id.substr(13), i);
                     resourceList.append(studyResource);
 
-                    studyResource.find('input').rules("add", {
+                    studyResource.find('input#sample_size_' + id.substr(13) +'_'+ i).rules("add", {
                         required: true,
                         digits: true,
                         messages: {
@@ -570,25 +570,54 @@ function addStudy() {
                             digits: "The sample size value must be an integer"
                         }
                     });
+
+                   
+
+
+
+
+
+
+
+
+
+
+
+
                 }
             }
         }
+    });
+    
+    studyTemplate.find("input[name='family']").on('change', function(e){
+        var value = $(e.target).val();
+        if(value == 'bionomial')
+            $(".family").addClass("show");
+        else
+            $(".family").removeClass("show");
     });
 }
 
 function addStudyResource(study, ind) {
     var resource_element = $("#snippets").children(".studyResources").clone();
-    var elementLabel = resource_element.find("label");
-    var elementInput = resource_element.find("input");
 
-    var LabelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
-    var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
+    var eLabels = resource_element.find("label");
+    var eInputs = resource_element.find("input");
 
-    var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
+    for (var controlId = 0; controlId < eInputs.length; controlId++) {
+       
+        var elementLabel = $(eLabels[controlId]);
+        var elementInput = $(eInputs[controlId]);
 
-    elementLabel.attr("for", LabelFor);
-    elementLabel.text(labelText);
-    elementInput.attr("id", inputId).attr("name", inputId);
+        var labelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
+        var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
+
+        var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
+
+        elementLabel.attr("for", labelFor);
+        elementLabel.text(labelText);
+        elementInput.attr("id", inputId).attr("name", inputId);
+    }
 
     return resource_element;
 }
@@ -638,7 +667,6 @@ $(function () {
                 addStudy();
         });
 });
-
 var terms = {
     "study":{
         fullName:"",
@@ -703,188 +731,192 @@ var terms = {
 };
 
 $(function() {
+    
     $.extend($_Glossary, terms);
     $(document).on("click", ".termToDefine", termDisplay);
 });
-
 function checkedStateToValue(e) {
-  return $(this).val(this.checked);
+    return $(this).val(this.checked);
 }
 
 function resetForm() {
-  $(pathForm).find(".studies").each(function(i, el) {
-    if(i !== 0) {
-      $(this).remove();
-    } else {
-      $('#lambda_1').val("1.0");
-      $('#study_1').val("");
-      $('#study_1').wrap("<form>").closest("form").get(0).reset();
-      $('#study_1').unwrap();
-      $('#num_resource_1').val("1");
-      $(pathForm).find(".studyResources:not(:first)").remove();
-      $(pathForm).find(".studyResources input").val("");
-    }
-  });
+    $(pathForm).find(".studies").each(function (i, el) {
+        if (i !== 0) {
+            $(this).remove();
+        } else {
+            $('#lambda_1').val("1.0");
+            $('#study_1').val("");
+            $('#study_1').wrap("<form>").closest("form").get(0).reset();
+            $('#study_1').unwrap();
+            $('#num_resource_1').val("1");
+            $(pathForm).find(".studyResources:not(:first)").remove();
+            $(pathForm).find(".studyResources input").val("");
+        }
+    });
 
-  $('#database_pathway_option').attr("checked", "checked");
-  $('#nperm').val((1e5).toExponential());
-  $('#miss_rate').val(0.05);
-  $('#maf').val(0.05);
-  $('#hwep').val((1e-5).toExponential());
-  $('#gene').val(0.95);
-  $('#chr').val(0.95);
-  $('#snp_n').val(5);
-  $('#snp_percent').val(0);
-  $('#gene_n').val(10);
-  $('#gene_percent').val(0.05);
-  $('#email').val("");
-  $(".custom-combobox input").val("");
-  $('#population').html("");
-  $('#refinep')[0].checked = false;
-  $('#gene_subset')[0].checked = false;
-  $('#database_pathway_option')[0].checked = true;
-  $('#database_pathway').val("").trigger('change');
-  $('#super_population').val(0).trigger('change');
-  $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
-  $('#file_pathway').unwrap();
+    $('#database_pathway_option').attr("checked", "checked");
+    $('#nperm').val((1e5).toExponential());
+    $('#miss_rate').val(0.05);
+    $('#maf').val(0.05);
+    $('#hwep').val((1e-5).toExponential());
+    $('#gene').val(0.95);
+    $('#chr').val(0.95);
+    $('#snp_n').val(5);
+    $('#snp_percent').val(0);
+    $('#gene_n').val(10);
+    $('#gene_percent').val(0.05);
+    $('#email').val("");
+    $(".custom-combobox input").val("");
+    $('#population').html("");
+    $('#refinep')[0].checked = false;
+    $('#gene_subset')[0].checked = false;
+    $('#database_pathway_option')[0].checked = true;
+    $('#database_pathway').val("").trigger('change');
+    $('#super_population').val(0).trigger('change');
+    $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
+    $('#file_pathway').unwrap();
 
-  $(pathForm).validate().resetForm();
-  $('#population').parent().addClass('hide');
-  $(pathForm).find("button,input,select,div,span").removeClass("error");
+    $(pathForm).validate().resetForm();
+    $('#population').parent().addClass('hide');
+    $(pathForm).find("button,input,select,div,span").removeClass("error");
 }
 
 function clickCalculate(e) {
-  e.preventDefault();
-  $(pathForm).validate();
-  var proceed = $(pathForm).valid();
+    e.preventDefault();
+    $(pathForm).validate();
+    var proceed = $(pathForm).valid();
 
-  if (proceed) {
-    $(pathForm).find('.error').each(function( ind,el) {
-      $(el).removeClass('error');
-    });
-    $("#calculate").hide();
-    $("progress").show();
+    if (proceed) {
+        $(pathForm).find('.error').each(function (ind, el) {
+            $(el).removeClass('error');
+        });
+        $("#calculate").hide();
+        $("progress").show();
 
-    var formData = new FormData(pathForm);
-    var numStudies = 0;
+        var formData = new FormData(pathForm);
+        var numStudies = 0;
 
-    $.each(pathForm, function(ind, el) {
-      if( $(el).is("hidden") &&
-      el.id.indexOf("population") > -1 &&
-      el.name.indexOf("population") > -1 &&
-      el.id.indexOf("database_pathway") > -1) { return true;}
+        $.each(pathForm, function (ind, el) {
+            if ($(el).is("hidden") &&
+                el.id.indexOf("population") > -1 &&
+                el.name.indexOf("population") > -1 &&
+                el.id.indexOf("database_pathway") > -1) {
+                return true;
+            }
 
-     
-      if(el.id.indexOf("study") > -1) numStudies++;
+           
+            if (el.id.indexOf("study") > -1) numStudies++;
 
-     
-      if(el.type == "checkbox"){
-        if(el.checked && el.id)
-        formData.append(el.id, el.checked);
-      }
-    });
+           
+            if (el.type == "checkbox") {
+                if (el.checked && el.id)
+                    formData.append(el.id, el.checked);
+            }
+        });
 
-    formData.append('populations', $('#population').val());
-    formData.append('num_studies', numStudies);
+        formData.append('populations', $('#population').val());
+        formData.append('num_studies', numStudies);
 
-    sendForm(formData).then(submission_result, submission_error)
-    .always(post_request);
-  }
-  else {
-    document.querySelector("#errorDisplay").scrollIntoView(true);
-  }
+        sendForm(formData).then(submission_result, submission_error)
+            .always(post_request);
+    } else {
+        document.querySelector("#errorDisplay").scrollIntoView(true);
+    }
 }
 
 function retrieveMultiselects(selectedItems) {
-  var valuesContainer = {};
+    var valuesContainer = {};
 
-  $.each(selectedItems, function(i, item) {
-    var groupCode = $('#population').find("option[value='" + item + "']")
-    .parent().attr("label");
+    $.each(selectedItems, function (i, item) {
+        var groupCode = $('#population').find("option[value='" + item + "']")
+            .parent().attr("label");
 
-   
-   
-    if(!valuesContainer[groupCode])
-    valuesContainer[groupCode] = [item];
-    else
-    valuesContainer[groupCode].push(item);
-  });
-
-  return valuesContainer;
-}
-
-function displayErrors(el, messagesArray){
-  $(el).empty();
-
-  messagesArray.forEach(function(message, index){
-    $(el).append(message + "<br />");
-  });
-
-  $(el).show();
-  document.querySelector(el).scrollIntoView(true);
-}
-
-function apply_multiselect_options(element, group){
-  element.html("");
-  if(group.length > 0){
-    $.each(population_labels[group].subPopulations, function (subCode, text) {
-      element.append($("<option />", { value: group + "|" + subCode, text: '(' + subCode + ') ' + text }));
+       
+       
+        if (!valuesContainer[groupCode])
+            valuesContainer[groupCode] = [item];
+        else
+            valuesContainer[groupCode].push(item);
     });
 
-   
-    element.multipleSelect({
-      name: element.prop('id'),
-      width: 400,
-      placeholder: "Select Sub Population(s)",
-      selectAll: true,
-      minimumCountSelected: 2,
-      countSelected: false,
-      onClick:function(view) {
-        element.validate();
-      }
-    });
-    element.multipleSelect("refresh").multipleSelect("uncheckAll");
-    element.parent().removeClass('hide');
-  } else {
-    element.parent().addClass('hide');
+    return valuesContainer;
+}
 
-  }
+function displayErrors(el, messagesArray) {
+    $(el).empty();
+
+    messagesArray.forEach(function (message, index) {
+        $(el).append(message + "<br />");
+    });
+
+    $(el).show();
+    document.querySelector(el).scrollIntoView(true);
+}
+
+function apply_multiselect_options(element, group) {
+    element.html("");
+    if (group.length > 0) {
+        $.each(population_labels[group].subPopulations, function (subCode, text) {
+            element.append($("<option />", {
+                value: group + "|" + subCode,
+                text: '(' + subCode + ') ' + text
+            }));
+        });
+
+       
+        element.multipleSelect({
+            name: element.prop('id'),
+            width: 400,
+            placeholder: "Select Sub Population(s)",
+            selectAll: true,
+            minimumCountSelected: 2,
+            countSelected: false,
+            onClick: function (view) {
+                element.validate();
+            }
+        });
+        element.multipleSelect("refresh").multipleSelect("uncheckAll");
+        element.parent().removeClass('hide');
+    } else {
+        element.parent().addClass('hide');
+
+    }
 }
 
 function changeRadioSelection() {
-  $("#database_pathway, #file_pathway").valid();
-  $("input[name='pathway_type'][value='" + this.name + "']")
-  .prop("checked", true);
+    $("#database_pathway, #file_pathway").valid();
+    $("input[name='pathway_type'][value='" + this.name + "']")
+        .prop("checked", true);
 }
 
-$(function() {
-  $(pathForm).on('keyup keypress', function(e) {
+$(function () {
+    $(pathForm).on('keyup keypress', function (e) {
+       
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $("#calculate").on("click", clickCalculate);
+    $("#reset").on("click", resetForm);
+    $("#errorDisplay, #successBox,progress").hide();
+    $("#studyEntry").accordion({
+        collapsible: true,
+        heightStyle: "content",
+        header: ".studyTitle"
+    });
+
    
-    var code = e.keyCode || e.which;
-    if (code == 13) {
-      e.preventDefault();
-      return false;
-    }
-  });
+    $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 
-  $("#calculate").on("click", clickCalculate);
-  $("#reset").on("click", resetForm);
-  $("#errorDisplay, #successBox,progress").hide();
-  $("#studyEntry").accordion({
-    collapsible: true,
-    heightStyle: "content",
-    header: ".studyTitle"
-  });
+    $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
 
- 
-  $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
+    $("select#super_population").on('change', function () {
+        apply_multiselect_options($('#population'), this.value);
+    });
 
-  $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
-
-  $("select#super_population").on('change', function() {
-    apply_multiselect_options($('#population'), this.value);
-  });
-
-  $("#studyEntry").accordion("option", "active", 0);
-  addStudy();// add first element by default, function declaration in template-manager
+    $("#studyEntry").accordion("option", "active", 0);
+    addStudy();
 });
