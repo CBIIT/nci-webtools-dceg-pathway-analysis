@@ -16,6 +16,10 @@ body
     overflow-y auto
     max-width 300px
     max-height 250px
+    
+.ui-widget
+    font-family inherit
+    font-size inherit
 
 form
     background white
@@ -30,13 +34,17 @@ form
           width 100% !important
           height 35px
 
-    input, select
-        float left
+    input, select    
         &.error
-            border 1px solid red
-            background rgba(225, 0, 0, 0.24)
+            border 1px solid #920000
+            background #f2dede
             &:before
                 content "*"
+                color red
+                font-weight bold
+                vertical-align middle
+                float left
+                padding 0 10px
         &:not([type='radio']):not([type='checkbox'])
             height 35px
             width 100%
@@ -85,17 +93,13 @@ form
         text-align left
 
 #errorDisplay,#successBox
-    padding 1%
-    margin 10px auto
     clear both
     text-align center
     li
         list-style none
         margin  0 auto
         &.error
-            width inherit
             float none
-            color inherit
 
 #successBox
     border 2px solid darkgreen
@@ -105,30 +109,15 @@ form
     span
         width 20px
         float left
-//
-//ol li
-//    margin 2% auto
-//ul
-//    display block
-//    padding-left 16px
-//
-//li
-//    position relative
-//    padding 4px 0px
-//    clear both
-//
-//label
-//    display block
-//    float left
-//
-//fieldset
-//    margin 2% auto
-//    padding 1em
-//    border 0.1em groove
-//
+        
+fieldset
+    margin 10px auto
+
 legend
     font-weight bold
     font-size inherit
+    padding 10px
+    border 1px solid #eeeeee
 
 progress
     display block
@@ -146,19 +135,12 @@ progress
     
 .studyResources
     float right
-    .input
-        margin 15px 0
-    .input :odd
-        background blue
+    
 #refinep
     input[type="checkbox"]
         display inline-block
     label
         display inline-block
-
-.box-error
-    border 2px solid maroon
-    background rgba(255, 115, 115, 0.5)
 
 .addControl
     text-align center
@@ -166,7 +148,7 @@ progress
     margin 2% 0
 
 .buttonGroup
-    margin 0 auto
+    margin 15px auto
     text-align center
     button
         width 300px
@@ -176,8 +158,6 @@ progress
     position relative
     float right
     clear right
-    text-align left
-    width 300px
     .ms-drop
         left -100px
         li:not(.group)
@@ -231,12 +211,7 @@ header
   img
     height 90px
     width 550px
-//
-//nav
-//  &.navbar
-//    &.navbar-default
-//      padding 5px 0
-//
+
 .tab-content
     margin 0 10px
 
@@ -258,20 +233,6 @@ h2
 .main-panel,
 .side-panel
   min-height 500px
-
-input.error:before,
-select.error:before
-  content "*"
-  color red
-  font-weight bold
-  vertical-align middle
-  float left
-  padding 0 10px
-
-input.error,
-select.error
-  border 2px solid #fc7878
-  background rgba(255, 0, 0, 0.25)
 
 .footer
     margin 15px auto

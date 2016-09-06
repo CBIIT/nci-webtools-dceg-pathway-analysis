@@ -13,6 +13,10 @@ body {
   max-width: 300px;
   max-height: 250px;
 }
+.ui-widget {
+  font-family: inherit;
+  font-size: inherit;
+}
 form {
   background: #fff;
 }
@@ -29,18 +33,19 @@ form .ms-parent > button {
   width: 100% !important;
   height: 35px;
 }
-form input,
-form select {
-  float: left;
-}
 form input.error,
 form select.error {
-  border: 1px solid #f00;
-  background: rgba(225,0,0,0.24);
+  border: 1px solid #920000;
+  background: #f2dede;
 }
 form input.error:before,
 form select.error:before {
   content: "*";
+  color: #f00;
+  font-weight: bold;
+  vertical-align: middle;
+  float: left;
+  padding: 0 10px;
 }
 form input:not([type='radio']):not([type='checkbox']),
 form select:not([type='radio']):not([type='checkbox']) {
@@ -105,8 +110,6 @@ form .warning {
 }
 #errorDisplay,
 #successBox {
-  padding: 1%;
-  margin: 10px auto;
   clear: both;
   text-align: center;
 }
@@ -117,9 +120,7 @@ form .warning {
 }
 #errorDisplay li.error,
 #successBox li.error {
-  width: inherit;
   float: none;
-  color: inherit;
 }
 #successBox {
   border: 2px solid #006400;
@@ -131,9 +132,14 @@ form .warning {
   width: 20px;
   float: left;
 }
+fieldset {
+  margin: 10px auto;
+}
 legend {
   font-weight: bold;
   font-size: inherit;
+  padding: 10px;
+  border: 1px solid #eee;
 }
 progress {
   display: block;
@@ -152,21 +158,11 @@ progress {
 .studyResources {
   float: right;
 }
-.studyResources .input {
-  margin: 15px 0;
-}
-.studyResources .input :odd {
-  background: #00f;
-}
 #refinep input[type="checkbox"] {
   display: inline-block;
 }
 #refinep label {
   display: inline-block;
-}
-.box-error {
-  border: 2px solid #800000;
-  background: rgba(255,115,115,0.5);
 }
 .addControl {
   text-align: center;
@@ -174,7 +170,7 @@ progress {
   margin: 2% 0;
 }
 .buttonGroup {
-  margin: 0 auto;
+  margin: 15px auto;
   text-align: center;
 }
 .buttonGroup button {
@@ -185,8 +181,6 @@ progress {
   position: relative;
   float: right;
   clear: right;
-  text-align: left;
-  width: 300px;
 }
 .input .ms-drop {
   left: -100px;
@@ -275,20 +269,6 @@ h2 {
 .side-panel {
   min-height: 500px;
 }
-input.error:before,
-select.error:before {
-  content: "*";
-  color: #f00;
-  font-weight: bold;
-  vertical-align: middle;
-  float: left;
-  padding: 0 10px;
-}
-input.error,
-select.error {
-  border: 2px solid #fc7878;
-  background: rgba(255,0,0,0.25);
-}
 .footer {
   margin: 15px auto;
   line-height: 1.5;
@@ -334,8 +314,12 @@ select.error {
   }
   footer ul li {
     display: block;
-    margin: 0;
+    margin: 10px auto;
     width: 100%;
+  }
+  .footer ul li:after {
+    content: initial;
+    padding: 0;
   }
   .tooltip {
     -webkit-background-size: 90%;

@@ -16,14 +16,11 @@
                     | Gaussian
         li
             label(for='study') Browse and select study file:
-            .input
-                input#study(type='file', name='study',  required='')
+            input#study(type='file', name='study',  required='')
         li
             label.termToDefine(data-term="lambda", for="lambda") Lambda (&lambda;):
-            .input
-                input#lambda(type="text", name="lambda",value="1.0", required='')
+            input#lambda(type="text", name="lambda",value="1.0", required='')
         li
             label(for="num_resource") Number of data resources in this study:
-            .input
-                input#num_resource(type="text", name="num_resource", value="1", required='')
+            input#num_resource(type="text", name="num_resource", value="1", required='')
             ul.resource-list

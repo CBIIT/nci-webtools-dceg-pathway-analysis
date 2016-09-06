@@ -29,13 +29,16 @@ function addStudy() {
 
     // place new control before add button
     $("#studyEntry").append(studyTemplate);
-    firstResource.find('input').rules("add", {
-        required: true,
-        digits: true,
-        messages: {
-            required: "The sample size value is required",
-            digits: "The sample size value must be an integer"
-        }
+
+    $.each(firstResource.find('input'), function (ind, ctrl) {
+        $(ctrl).rules("add", {
+            required: true,
+            digits: true,
+            messages: {
+                required: "The " + ctrl.labels[0].innerText + " is required",
+                digits: "The " + ctrl.labels[0].innerText + " must be an integer"
+            }
+        });
     });
 
     studyId.rules("add", {
@@ -91,11 +94,11 @@ function addStudy() {
                 });
                 for (var i = resourceList.children().length + 1; i <= this.value; i++) {
                     // what they enter for num_resource should
-                    // control the times addStudyResource is run
+                    // control the number of times addStudyResource is run
                     var studyResource = addStudyResource(id.substr(13), i);
                     resourceList.append(studyResource);
 
-                    studyResource.find('input#sample_size_' + id.substr(13) +'_'+ i).rules("add", {
+                    studyResource.find('input#sample_size_' + id.substr(13) + '_' + i).rules("add", {
                         required: true,
                         digits: true,
                         messages: {
@@ -105,31 +108,39 @@ function addStudy() {
                     });
 
                     //add rules for case and control
-//                    studyResource.find('input#sample_case_' + id.substr(13) + '_' + i).rules("add", {
-//                        required: true,
-//                        messages: {
-//                            required: "The sample size case value is required"
-//                        }
-//                    });
-//
-//                    studyResource.find('input#sample_control_' + id.substr(13) + '_' + i).rules("add", {
-//                        required: true,
-//                        messages: {
-//                            required: "The sample size control value is required"
-//                        }
-//                    });
+                    studyResource.find('input#sample_case_' + id.substr(13) + '_' + i).rules("add", {
+                        required: {
+                            depends: checkFamilyValue
+                        },
+                        messages: {
+                            required: "The sample size case value for Resource #" + i + " is required"
+                        }
+                    });
+
+                    studyResource.find('input#sample_control_' + id.substr(13) + '_' + i).rules("add", {
+                        required: {
+                            depends: checkFamilyValue
+                        },
+                        messages: {
+                            required: "The sample size control value for Resource #" + i + " is required"
+                        }
+                    });
                 }
             }
         }
     });
-    
-    studyTemplate.find("input[name='family']").on('change', function(e){
+
+    studyTemplate.find("input[name='family']").on('change', function (e) {
         var value = $(e.target).val();
-        if(value == 'bionomial')
+        if (value == 'bionomial')
             $(".family").addClass("show");
         else
             $(".family").removeClass("show");
     });
+}
+
+function checkFamilyValue() {
+    return $("input[name='family']").val() == 'bionomial';
 }
 
 function addStudyResource(study, ind) {
