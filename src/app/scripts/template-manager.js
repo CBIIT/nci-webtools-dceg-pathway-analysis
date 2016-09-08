@@ -30,7 +30,8 @@ function addStudy() {
     // place new control before add button
     $("#studyEntry").append(studyTemplate);
 
-    $.each(firstResource.find('input'), function (ind, ctrl) {
+    $.each(firstResource.find('input'), function (ind) {
+        var ctrl = firstResource.find('input')[ind];
         $(ctrl).rules("add", {
             required: true,
             digits: true,
@@ -76,9 +77,11 @@ function addStudy() {
     }).accordion("option", "active");
 
     studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
-        var id = $(this).prop('id');
+        var elemId = $(this).prop('id');
+        var id = elemId.substr(13);
+
         var valid = false;
-        valid = $(this).validate().element('#' + id);
+        valid = $(this).validate().element('#' + elemId);
         if (valid) {
             var choice;
             if (this.value > 20)
@@ -88,27 +91,27 @@ function addStudy() {
 
             if (choice) {
                 var resourceList = studyTemplate.find('ul.resource-list');
+                
+                removeValidators(resourceList.find('input'));
                 resourceList.children('.studyResources:nth(' + (this.value - 1) + ') ~ .studyResources').remove();
-                resourceList.find('input').each(function (i, el) {
-                    el.value = '';
-                });
+
                 for (var i = resourceList.children().length + 1; i <= this.value; i++) {
                     // what they enter for num_resource should
                     // control the number of times addStudyResource is run
-                    var studyResource = addStudyResource(id.substr(13), i);
+                    var studyResource = addStudyResource(id, i);
                     resourceList.append(studyResource);
 
-                    studyResource.find('input#sample_size_' + id.substr(13) + '_' + i).rules("add", {
+                    studyResource.find('input#sample_size_' + id + '_' + i).rules("add", {
                         required: true,
                         digits: true,
                         messages: {
-                            required: "The sample size value is required",
-                            digits: "The sample size value must be an integer"
+                            required: "The sample size value for Resource #" + i + " is required",
+                            digits: "The sample size value for Resource #" + i + " must be an integer"
                         }
                     });
 
                     //add rules for case and control
-                    studyResource.find('input#sample_case_' + id.substr(13) + '_' + i).rules("add", {
+                    studyResource.find('input#sample_case_' + id + '_' + i).rules("add", {
                         required: {
                             depends: checkFamilyValue
                         },
@@ -117,7 +120,7 @@ function addStudy() {
                         }
                     });
 
-                    studyResource.find('input#sample_control_' + id.substr(13) + '_' + i).rules("add", {
+                    studyResource.find('input#sample_control_' + id + '_' + i).rules("add", {
                         required: {
                             depends: checkFamilyValue
                         },
@@ -139,8 +142,15 @@ function addStudy() {
     });
 }
 
-function checkFamilyValue() {
-    return $("input[name='family']").val() == 'bionomial';
+function removeValidators(inputs){
+    $.each(inputs,function(ind, el){
+        el.value = "";
+        $(el).rules("remove");
+    });
+}
+
+function checkFamilyValue(ctrl) {
+    return $(ctrl.form).find("input[name='family']:checked").val() == 'bionomial';
 }
 
 function addStudyResource(study, ind) {
@@ -149,18 +159,18 @@ function addStudyResource(study, ind) {
     var eLabels = resource_element.find("label");
     var eInputs = resource_element.find("input");
 
+    resource_element.find('.resourceNum').text("Resource #" + ind);
+
     for (var controlId = 0; controlId < eInputs.length; controlId++) {
         // sample resources, cases and controls
         var elementLabel = $(eLabels[controlId]);
         var elementInput = $(eInputs[controlId]);
 
         var labelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
-        var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
 
         var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
 
         elementLabel.attr("for", labelFor);
-        elementLabel.text(labelText);
         elementInput.attr("id", inputId).attr("name", inputId);
     }
 
@@ -192,14 +202,7 @@ function createConfirmationBox(messageText) {
 }
 
 $(function () {
-    $(".addControl[title='study']")
-        .button({
-            text: true,
-            icons: {
-                primary: "ui-icon-circle-plus"
-            }
-        })
-        .on("click", function (e) {
+    $("button.addControl").on("click", function (e) {
             e.preventDefault();
 
             var previousValid = false;

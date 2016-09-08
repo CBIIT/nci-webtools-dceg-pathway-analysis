@@ -13,6 +13,9 @@ $(function () {
         study: {
             required: true
         },
+        family: {
+            required: true
+        },
         database_pathway: {
             required: {
                 depends: function (element) {
@@ -33,7 +36,6 @@ $(function () {
         population: {
             required: {
                 depends: function (element) {
-                   
                     return element.value.length === 0 && document.getElementById("super_population").value.length > 0;
                 }
             }
@@ -103,6 +105,9 @@ $(function () {
         study: {
             required: "You must upload at least one study file",
             extension: "You uploaded an incorrect file type. Please upload only .study files."
+        },
+        family: {
+            required: "You must select a family",
         },
         file_pathway: {
             required: "You must upload a pathway file",
@@ -220,16 +225,14 @@ $(function () {
         },
         unhighlight: function (el, errorClass, validClass) {
             if (el.id != "population" && el.name != "selectItempopulation" &&
-                el.name != "selectAllpopulation"){
+                el.name != "selectAllpopulation") {
                 $(el).removeClass(errorClass);
-            }
-            else {
+            } else {
                 $("#population").next().find('.ms-choice').children().andSelf().removeClass(errorClass);
             }
         }
     });
 });
-
 
 var pathways_list = [];
 
@@ -457,30 +460,25 @@ $(function () {
     retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).then(function () {
         if (pathways_list.length > 0) {
 
+            $('#dialogElm').html(pathways_list.join("<br />"));
 
+            $('#dialogElm').dialog({
+                autoOpen: false,
+                position: {
+                    my: "left center",
+                    at: "left bottom",
+                    of: "#pop-list"
+                },
+                title: "Existing Pathways",
+                width: 400,
+                maxWidth: 400,
+                height: 300,
+                maxHeight: 300
+            });
 
-
-
-
-                        $('#dialogElm').html(pathways_list.join("<br />"));
-            
-                        $('#dialogElm').dialog({
-                            autoOpen: false,
-                            position: {
-                                my: "left center",
-                                at: "left bottom",
-                                of: "#pop-list"
-                            },
-                            title: "Existing Pathways",
-                            width: 400,
-                            maxWidth: 400,
-                            height: 300,
-                            maxHeight: 300
-                        });
-
-                        $(document).on("click", "#pop-list", function () {
-                            $('#dialogElm').dialog("open");
-                        });
+            $(document).on("click", "#pop-list", function () {
+                $('#dialogElm').dialog("open");
+            });
         }
     }).always(hold);
     retrieve_populations().then(apply_options($(pathForm.super_population), population_labels), get_options_error("super population")).always(hold);
@@ -519,7 +517,8 @@ function addStudy() {
    
     $("#studyEntry").append(studyTemplate);
 
-    $.each(firstResource.find('input'), function (ind, ctrl) {
+    $.each(firstResource.find('input'), function (ind) {
+        var ctrl = firstResource.find('input')[ind];
         $(ctrl).rules("add", {
             required: true,
             digits: true,
@@ -565,9 +564,11 @@ function addStudy() {
     }).accordion("option", "active");
 
     studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
-        var id = $(this).prop('id');
+        var elemId = $(this).prop('id');
+        var id = elemId.substr(13);
+
         var valid = false;
-        valid = $(this).validate().element('#' + id);
+        valid = $(this).validate().element('#' + elemId);
         if (valid) {
             var choice;
             if (this.value > 20)
@@ -577,27 +578,27 @@ function addStudy() {
 
             if (choice) {
                 var resourceList = studyTemplate.find('ul.resource-list');
+                
+                removeValidators(resourceList.find('input'));
                 resourceList.children('.studyResources:nth(' + (this.value - 1) + ') ~ .studyResources').remove();
-                resourceList.find('input').each(function (i, el) {
-                    el.value = '';
-                });
+
                 for (var i = resourceList.children().length + 1; i <= this.value; i++) {
                    
                    
-                    var studyResource = addStudyResource(id.substr(13), i);
+                    var studyResource = addStudyResource(id, i);
                     resourceList.append(studyResource);
 
-                    studyResource.find('input#sample_size_' + id.substr(13) + '_' + i).rules("add", {
+                    studyResource.find('input#sample_size_' + id + '_' + i).rules("add", {
                         required: true,
                         digits: true,
                         messages: {
-                            required: "The sample size value is required",
-                            digits: "The sample size value must be an integer"
+                            required: "The sample size value for Resource #" + i + " is required",
+                            digits: "The sample size value for Resource #" + i + " must be an integer"
                         }
                     });
 
                    
-                    studyResource.find('input#sample_case_' + id.substr(13) + '_' + i).rules("add", {
+                    studyResource.find('input#sample_case_' + id + '_' + i).rules("add", {
                         required: {
                             depends: checkFamilyValue
                         },
@@ -606,7 +607,7 @@ function addStudy() {
                         }
                     });
 
-                    studyResource.find('input#sample_control_' + id.substr(13) + '_' + i).rules("add", {
+                    studyResource.find('input#sample_control_' + id + '_' + i).rules("add", {
                         required: {
                             depends: checkFamilyValue
                         },
@@ -628,8 +629,15 @@ function addStudy() {
     });
 }
 
-function checkFamilyValue() {
-    return $("input[name='family']").val() == 'bionomial';
+function removeValidators(inputs){
+    $.each(inputs,function(ind, el){
+        el.value = "";
+        $(el).rules("remove");
+    });
+}
+
+function checkFamilyValue(ctrl) {
+    return $(ctrl.form).find("input[name='family']:checked").val() == 'bionomial';
 }
 
 function addStudyResource(study, ind) {
@@ -638,18 +646,18 @@ function addStudyResource(study, ind) {
     var eLabels = resource_element.find("label");
     var eInputs = resource_element.find("input");
 
+    resource_element.find('.resourceNum').text("Resource #" + ind);
+
     for (var controlId = 0; controlId < eInputs.length; controlId++) {
        
         var elementLabel = $(eLabels[controlId]);
         var elementInput = $(eInputs[controlId]);
 
         var labelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
-        var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
 
         var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
 
         elementLabel.attr("for", labelFor);
-        elementLabel.text(labelText);
         elementInput.attr("id", inputId).attr("name", inputId);
     }
 
@@ -681,14 +689,7 @@ function createConfirmationBox(messageText) {
 }
 
 $(function () {
-    $(".addControl[title='study']")
-        .button({
-            text: true,
-            icons: {
-                primary: "ui-icon-circle-plus"
-            }
-        })
-        .on("click", function (e) {
+    $("button.addControl").on("click", function (e) {
             e.preventDefault();
 
             var previousValid = false;

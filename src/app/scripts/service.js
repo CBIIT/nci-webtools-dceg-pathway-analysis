@@ -225,31 +225,25 @@ $(function () {
     retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).then(function () {
         if (pathways_list.length > 0) {
 
-//            $_Glossary.pathways = {
-//                "fullName": "Existing Pathways",
-//                "definition": pathways_list.join("\n")
-//            };
-//
-//            $("#pop-list").addClass("termToDefine").attr("data-term", "pathways");
-                        $('#dialogElm').html(pathways_list.join("<br />"));
-            
-                        $('#dialogElm').dialog({
-                            autoOpen: false,
-                            position: {
-                                my: "left center",
-                                at: "left bottom",
-                                of: "#pop-list"
-                            },
-                            title: "Existing Pathways",
-                            width: 400,
-                            maxWidth: 400,
-                            height: 300,
-                            maxHeight: 300
-                        });
+            $('#dialogElm').html(pathways_list.join("<br />"));
 
-                        $(document).on("click", "#pop-list", function () {
-                            $('#dialogElm').dialog("open");
-                        });
+            $('#dialogElm').dialog({
+                autoOpen: false,
+                position: {
+                    my: "left center",
+                    at: "left bottom",
+                    of: "#pop-list"
+                },
+                title: "Existing Pathways",
+                width: 400,
+                maxWidth: 400,
+                height: 300,
+                maxHeight: 300
+            });
+
+            $(document).on("click", "#pop-list", function () {
+                $('#dialogElm').dialog("open");
+            });
         }
     }).always(hold);
     retrieve_populations().then(apply_options($(pathForm.super_population), population_labels), get_options_error("super population")).always(hold);

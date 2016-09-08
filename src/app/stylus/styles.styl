@@ -33,7 +33,8 @@ form
         > button
           width 100% !important
           height 35px
-
+    .radio label
+        font-weight bold
     input, select    
         &.error
             border 1px solid #920000
@@ -54,10 +55,18 @@ form
         &#select2-database_pathway-results
             float left
             width 100%
+        &.resource-list
+            padding 0
+            margin 10px auto
         li
             list-style none
-            &.studyResources .family:not(.show)
-                display none
+            &.studyResources
+                .resourceNum
+                    text-align center
+                    padding 10px
+                    font-weight bold
+                .family:not(.show)
+                    display none
     .custom-combobox
         position relative
         display inline-block
@@ -136,11 +145,11 @@ progress
 .studyResources
     float right
     
-#refinep
-    input[type="checkbox"]
-        display inline-block
-    label
-        display inline-block
+//#refinep
+//    input[type="checkbox"]
+//        display inline-block
+//    label
+//        display inline-block
 
 .addControl
     text-align center

@@ -33,6 +33,9 @@ form .ms-parent > button {
   width: 100% !important;
   height: 35px;
 }
+form .radio label {
+  font-weight: bold;
+}
 form input.error,
 form select.error {
   border: 1px solid #920000;
@@ -60,8 +63,17 @@ form ul#select2-database_pathway-results {
   float: left;
   width: 100%;
 }
+form ul.resource-list {
+  padding: 0;
+  margin: 10px auto;
+}
 form ul li {
   list-style: none;
+}
+form ul li.studyResources .resourceNum {
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
 }
 form ul li.studyResources .family:not(.show) {
   display: none;
@@ -158,12 +170,6 @@ progress {
 .studyResources {
   float: right;
 }
-#refinep input[type="checkbox"] {
-  display: inline-block;
-}
-#refinep label {
-  display: inline-block;
-}
 .addControl {
   text-align: center;
   height: 30px;
@@ -214,7 +220,6 @@ progress {
   position: inherit;
   top: 50%;
   left: 50%;
-  -webkit-border-radius: 10px;
   border-radius: 10px;
   background: #fff;
 }

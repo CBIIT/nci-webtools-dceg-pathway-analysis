@@ -67,7 +67,9 @@
             <fieldset>
               <legend data-term="study" class="termToDefine">Study Selection</legend>
               <div id="studyEntry"></div>
-              <button title="study" class="addControl">Add Study</button>
+              <button title="study" class="addControl">
+                <div class="glyphicon glyphicon-plus"></div>Add Study
+              </button>
             </fieldset>
             <fieldset>
               <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
@@ -274,24 +276,21 @@
   </div>
   <li class="studyResources">
     <div class="well well-sm">
-      <label for="sample_size">Sample Size For Resource</label>
-      <input id="sample_size" type="number" name="sample_size" min="1" value="" placeholder="sample size">
-      <div class="family">
-        <div class="row">
-          <div class="col-xs-6">
-            <label for="sample_case">Sample Size Case</label>
-          </div>
-          <div class="col-xs-6">
-            <label for="sample_control">Sample Size Control</label>
-          </div>
+      <div class="row">
+        <div class="col-xs-12 col-sm-2">
+          <div class="resourceNum"></div>
         </div>
-        <div class="row">
-          <div class="col-xs-6">
-            <input id="sample_case" type="number" name="sample_case" placeholder="case">
-          </div>
-          <div class="col-xs-6">
-            <input id="sample_control" type="number" name="sample_control" placeholder="control">
-          </div>
+        <div class="col-xs-12 col-sm-3">
+          <label for="sample_size">Sample Size</label>
+          <input id="sample_size" type="number" name="sample_size" min="1" value="" placeholder="sample size">
+        </div>
+        <div class="family col-xs-12 col-sm-3">
+          <label for="sample_case">Sample Size of Case</label>
+          <input id="sample_case" type="number" name="sample_case" placeholder="case">
+        </div>
+        <div class="family col-xs-12 col-sm-3">
+          <label for="sample_control">Sample Size of Control</label>
+          <input id="sample_control" type="number" name="sample_control" placeholder="control">
         </div>
       </div>
     </div>
