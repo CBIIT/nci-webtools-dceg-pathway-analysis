@@ -57,7 +57,7 @@ var population_labels = {
 
 function pre_request() {
     // display spinner
-    $("#spinner").show();
+    $("#spinner").addClass('show');
 
     // disable controls
     $(pathForm).find(":input").prop("disabled", true);
@@ -66,8 +66,8 @@ function pre_request() {
 
 function post_request() {
     // hide progressbar and spinner
-    $("button#calculate").show();
-    $("progress, #spinner").hide();
+    $("button#calculate").addClass('show');
+    $("progress, #spinner").removeClass('show');
 
     // enable controls
     $('button.ui-button').button("enable");
@@ -128,13 +128,13 @@ function submission_result(response) {
         resetForm();
 
         // display confirmation message
-        $("#successBox #message").text(response.message);
-        $("#successBox").show();
-        document.querySelector("#successBox").scrollIntoView(true);
+        $("#messageBox").html("<span class='glyphicon glyphicon-ok'></span><div id='message'>" + response.message + "</div>");
+        $("#messageBox").addClass('show');
+        document.querySelector("#messageBox").scrollIntoView(true);
 
         setTimeout(function () {
-            $("#successBox").fadeOut().hide();
-            $("#successBox #message").html("");
+            $("#messageBox").fadeOut().removeClass('show');
+            $("#messageBox #message").html("");
         }, 10000);
     } else {
         submission_error({
@@ -204,13 +204,13 @@ function submission_error(request, statusText, error) {
         } else {
             errorMessage = "The request failed with the following message: <br/> " + JSON.parse(request.responseText).message;
         }
-        displayErrors("#errorDisplay", [errorMessage]);
+        displayErrors("#messageBox", [errorMessage]);
     }
 }
 
 function get_options_error(option_type) {
     return function (request, statusText, error) {
-        displayErrors("#errorDisplay", ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+        displayErrors("#messageBox", ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
     };
 }
 

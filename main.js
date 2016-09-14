@@ -1,5 +1,5 @@
 $(function () {
-    var errors_div = $("#errorDisplay");
+    var errors_div = $("#messageBox");
     $.validator.addMethod("boundedMax", function (value, element, params) {
         return value < params;
     });
@@ -188,7 +188,7 @@ $(function () {
         focusCleanup: true,
         ignoreTitle: true,
         errorElement: "li",
-        errorLabelContainer: "#errorDisplay",
+        errorLabelContainer: "#messageBox",
         errorPlacement: function (error, element) {
             errors_div.find("ul").append(error);
             $(element).addClass("error");
@@ -201,10 +201,10 @@ $(function () {
                 errors_div.html("<b>There " + grammar + ", see details below: </b>");
                 this.defaultShowErrors();
 
-                errors_div.show();
+                errors_div.addClass('alert-danger show');
             } else {
                 $(pathForm).find('input,select').removeClass('error');
-                errors_div.hide().empty();
+                errors_div.removeClass('alert-danger show').empty();
             }
         }
     });
@@ -292,7 +292,7 @@ var population_labels = {
 
 function pre_request() {
    
-    $("#spinner").show();
+    $("#spinner").addClass('show');
 
    
     $(pathForm).find(":input").prop("disabled", true);
@@ -301,8 +301,8 @@ function pre_request() {
 
 function post_request() {
    
-    $("button#calculate").show();
-    $("progress, #spinner").hide();
+    $("button#calculate").addClass('show');
+    $("progress, #spinner").removeClass('show');
 
    
     $('button.ui-button').button("enable");
@@ -363,13 +363,13 @@ function submission_result(response) {
         resetForm();
 
        
-        $("#successBox #message").text(response.message);
-        $("#successBox").show();
-        document.querySelector("#successBox").scrollIntoView(true);
+        $("#messageBox").html("<span class='glyphicon glyphicon-ok'></span><div id='message'>" + response.message + "</div>");
+        $("#messageBox").addClass('show');
+        document.querySelector("#messageBox").scrollIntoView(true);
 
         setTimeout(function () {
-            $("#successBox").fadeOut().hide();
-            $("#successBox #message").html("");
+            $("#messageBox").fadeOut().removeClass('show');
+            $("#messageBox #message").html("");
         }, 10000);
     } else {
         submission_error({
@@ -439,13 +439,13 @@ function submission_error(request, statusText, error) {
         } else {
             errorMessage = "The request failed with the following message: <br/> " + JSON.parse(request.responseText).message;
         }
-        displayErrors("#errorDisplay", [errorMessage]);
+        displayErrors("#messageBox", [errorMessage]);
     }
 }
 
 function get_options_error(option_type) {
     return function (request, statusText, error) {
-        displayErrors("#errorDisplay", ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+        displayErrors("#messageBox", ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
     };
 }
 
@@ -495,9 +495,15 @@ function addStudy() {
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
+    studyTemplate.html(function (ind, htmlString) {
+       
+        return htmlString.replace("-1", "-" + studyIndex);
+    });
+
     var firstResource = addStudyResource(studyIndex, 1);
     studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
     studyTemplate.find(".studyTitle").append(studyIndex);
+
 
     var studyLabel = studyTemplate.find('[for="study"]');
     studyLabel.attr("for", studyLabel.attr("for") + "_" + studyIndex);
@@ -523,8 +529,8 @@ function addStudy() {
             required: true,
             digits: true,
             messages: {
-                required: "The " + ctrl.labels[0].innerText + " is required",
-                digits: "The " + ctrl.labels[0].innerText + " must be an integer"
+                required: "The " + $(ctrl).attr('aria-label') + " is required",
+                digits: "The " + $(ctrl).attr('aria-label') + " must be an integer"
             }
         });
     });
@@ -532,7 +538,7 @@ function addStudy() {
     studyId.rules("add", {
         required: true,
         messages: {
-            required: "The " + studyId.attr('id') + " field is required",
+            required: "A file is required for " + studyId.attr('id'),
         }
     });
 
@@ -541,7 +547,7 @@ function addStudy() {
         number: true,
         min: 1,
         messages: {
-            required: "The " + lambdaId.attr('id') + " field is required",
+            required: "A value is required for " + lambdaId.attr('id'),
             number: "The " + lambdaId.attr('id') + " value must be a number",
             min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
         }
@@ -578,16 +584,15 @@ function addStudy() {
 
             if (choice) {
                 var resourceList = studyTemplate.find('ul.resource-list');
-                
+
                 removeValidators(resourceList.find('input'));
-                resourceList.children('.studyResources:nth(' + (this.value - 1) + ') ~ .studyResources').remove();
+                resourceList.children('.studyResources').remove();
 
                 for (var i = resourceList.children().length + 1; i <= this.value; i++) {
                    
                    
                     var studyResource = addStudyResource(id, i);
-                    resourceList.append(studyResource);
-
+                    studyResource.append(studyResource);
                     studyResource.find('input#sample_size_' + id + '_' + i).rules("add", {
                         required: true,
                         digits: true,
@@ -598,19 +603,15 @@ function addStudy() {
                     });
 
                    
-                    studyResource.find('input#sample_case_' + id + '_' + i).rules("add", {
-                        required: {
-                            depends: checkFamilyValue
-                        },
+                    $('form input#sample_case_' + resourceId + '_' + i).rules("add", {
+                        required: false,
                         messages: {
                             required: "The sample size case value for Resource #" + i + " is required"
                         }
                     });
 
-                    studyResource.find('input#sample_control_' + id + '_' + i).rules("add", {
-                        required: {
-                            depends: checkFamilyValue
-                        },
+                    $('form input#sample_control_' + resourceId + '_' + i).rules("add", {
+                        required: false,
                         messages: {
                             required: "The sample size control value for Resource #" + i + " is required"
                         }
@@ -622,22 +623,26 @@ function addStudy() {
 
     studyTemplate.find("input[name='family']").on('change', function (e) {
         var value = $(e.target).val();
-        if (value == 'bionomial')
-            $(".family").addClass("show");
+        var req = (value == 'bionomial') ? true : false;
+
+        $.each($(pathForm).find(".family input"), function (i, input) {
+            $(input).rules("add", {
+                required: req
+            });
+        });
+
+        if (req)
+            $(pathForm).find(".family").addClass("show");
         else
-            $(".family").removeClass("show");
+            $(pathForm).find(".family").removeClass("show");
     });
 }
 
-function removeValidators(inputs){
-    $.each(inputs,function(ind, el){
+function removeValidators(inputs) {
+    $.each(inputs, function (ind, el) {
         el.value = "";
         $(el).rules("remove");
     });
-}
-
-function checkFamilyValue(ctrl) {
-    return $(ctrl.form).find("input[name='family']:checked").val() == 'bionomial';
 }
 
 function addStudyResource(study, ind) {
@@ -690,17 +695,19 @@ function createConfirmationBox(messageText) {
 
 $(function () {
     $("button.addControl").on("click", function (e) {
-            e.preventDefault();
+        e.preventDefault();
 
-            var previousValid = false;
-            $(pathForm).find(".studies input").each(function (i, el) {
-                previousValid = $(el).validate().element("#" + el.id);
-                return previousValid;
-            });
+        var previousValid = false;
+        $(pathForm).find(".studies input").each(function (i, el) {
+            if (el.id.length > 0)
+                return $(el).validate().element("#" + el.id);
 
-            if (previousValid)
-                addStudy();
+            return $(el).validate().valid();
         });
+
+        if (previousValid)
+            addStudy();
+    });
 });
 var terms = {
     "study":{
@@ -766,10 +773,10 @@ var terms = {
 };
 
 $(function() {
-    
     $.extend($_Glossary, terms);
     $(document).on("click", ".termToDefine", termDisplay);
 });
+
 function checkedStateToValue(e) {
     return $(this).val(this.checked);
 }
@@ -811,9 +818,11 @@ function resetForm() {
     $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
     $('#file_pathway').unwrap();
 
-    $(pathForm).validate().resetForm();
     $('#population').parent().addClass('hide');
     $(pathForm).find("button,input,select,div,span").removeClass("error");
+    $(pathForm).validate().resetForm();
+    $("#messageBox").removeClass("alert-danger show");
+    
 }
 
 function clickCalculate(e) {
@@ -825,8 +834,8 @@ function clickCalculate(e) {
         $(pathForm).find('.error').each(function (ind, el) {
             $(el).removeClass('error');
         });
-        $("#calculate").hide();
-        $("progress").show();
+        $("#calculate").removeClass('show');
+        $("progress").addClass('show');
 
         var formData = new FormData(pathForm);
         var numStudies = 0;
@@ -855,7 +864,7 @@ function clickCalculate(e) {
         sendForm(formData).then(submission_result, submission_error)
             .always(post_request);
     } else {
-        document.querySelector("#errorDisplay").scrollIntoView(true);
+        document.querySelector("#messageBox").scrollIntoView(true);
     }
 }
 
@@ -883,9 +892,14 @@ function displayErrors(el, messagesArray) {
     messagesArray.forEach(function (message, index) {
         $(el).append(message + "<br />");
     });
-
-    $(el).show();
-    document.querySelector(el).scrollIntoView(true);
+    
+    if(messagesArray.length > 0) {
+        $(el).addClass("alert-danger show");
+        document.querySelector(el).scrollIntoView(true);
+    }
+    else {
+        $(el).removeClass("alert-danger show");
+    }
 }
 
 function apply_multiselect_options(element, group) {
@@ -936,7 +950,6 @@ $(function () {
 
     $("#calculate").on("click", clickCalculate);
     $("#reset").on("click", resetForm);
-    $("#errorDisplay, #successBox,progress").hide();
     $("#studyEntry").accordion({
         collapsible: true,
         heightStyle: "content",

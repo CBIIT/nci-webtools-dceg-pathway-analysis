@@ -1,14 +1,13 @@
 @media (max-width 990px)
+    body
+        background none
+        font-size 13pt
     .tooltip
         display none
-
-@media (min-width 481px) and (max-width 810px)
     #content
-        max-width 810px
+        max-width 100%
         margin 0px
         padding 0px 5px
-        
-@media (max-width 990px)
     .ui-accordion .ui-accordion-content
         padding .5em
     footer
@@ -17,11 +16,8 @@
             display none
         ul li
             display block
-            margin 10px auto
+            margin 10px 0
             width 100%
-    .footer ul li:after
-        content initial
-        padding 0
     .tooltip
         background-size 90%
         width 25px
@@ -31,10 +27,14 @@
     input[type="checkbox"]
         width 25px
         height 25px
-
+    .input
+        float left
+        input
+        &:not([type='radio']), 
+        &:not([type='checkbox']), 
+        select
+            width 80%
 
 @media (max-width 480px)
-    #content
-        width 360px
     .division-logo
-        max-width 330px
+        width 340px

@@ -1,5 +1,5 @@
 $(function () {
-    var errors_div = $("#errorDisplay");
+    var errors_div = $("#messageBox");
     $.validator.addMethod("boundedMax", function (value, element, params) {
         return value < params;
     });
@@ -188,7 +188,7 @@ $(function () {
         focusCleanup: true,
         ignoreTitle: true,
         errorElement: "li",
-        errorLabelContainer: "#errorDisplay",
+        errorLabelContainer: "#messageBox",
         errorPlacement: function (error, element) {
             errors_div.find("ul").append(error);
             $(element).addClass("error");
@@ -201,10 +201,10 @@ $(function () {
                 errors_div.html("<b>There " + grammar + ", see details below: </b>");
                 this.defaultShowErrors();
 
-                errors_div.show();
+                errors_div.addClass('alert-danger show');
             } else {
                 $(pathForm).find('input,select').removeClass('error');
-                errors_div.hide().empty();
+                errors_div.removeClass('alert-danger show').empty();
             }
         }
     });

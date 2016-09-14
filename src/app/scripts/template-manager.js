@@ -8,9 +8,15 @@ function addStudy() {
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
+    studyTemplate.html(function (ind, htmlString) {
+        // replacing all occurances with new study index
+        return htmlString.replace("-1", "-" + studyIndex);
+    });
+
     var firstResource = addStudyResource(studyIndex, 1);
     studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
     studyTemplate.find(".studyTitle").append(studyIndex);
+
 
     var studyLabel = studyTemplate.find('[for="study"]');
     studyLabel.attr("for", studyLabel.attr("for") + "_" + studyIndex);
@@ -36,8 +42,8 @@ function addStudy() {
             required: true,
             digits: true,
             messages: {
-                required: "The " + ctrl.labels[0].innerText + " is required",
-                digits: "The " + ctrl.labels[0].innerText + " must be an integer"
+                required: "The " + $(ctrl).attr('aria-label') + " is required",
+                digits: "The " + $(ctrl).attr('aria-label') + " must be an integer"
             }
         });
     });
@@ -45,7 +51,7 @@ function addStudy() {
     studyId.rules("add", {
         required: true,
         messages: {
-            required: "The " + studyId.attr('id') + " field is required",
+            required: "A file is required for " + studyId.attr('id'),
         }
     });
 
@@ -54,7 +60,7 @@ function addStudy() {
         number: true,
         min: 1,
         messages: {
-            required: "The " + lambdaId.attr('id') + " field is required",
+            required: "A value is required for " + lambdaId.attr('id'),
             number: "The " + lambdaId.attr('id') + " value must be a number",
             min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
         }
@@ -91,16 +97,15 @@ function addStudy() {
 
             if (choice) {
                 var resourceList = studyTemplate.find('ul.resource-list');
-                
+
                 removeValidators(resourceList.find('input'));
-                resourceList.children('.studyResources:nth(' + (this.value - 1) + ') ~ .studyResources').remove();
+                resourceList.children('.studyResources').remove();
 
                 for (var i = resourceList.children().length + 1; i <= this.value; i++) {
                     // what they enter for num_resource should
                     // control the number of times addStudyResource is run
                     var studyResource = addStudyResource(id, i);
-                    resourceList.append(studyResource);
-
+                    studyResource.append(studyResource);
                     studyResource.find('input#sample_size_' + id + '_' + i).rules("add", {
                         required: true,
                         digits: true,
@@ -111,19 +116,15 @@ function addStudy() {
                     });
 
                     //add rules for case and control
-                    studyResource.find('input#sample_case_' + id + '_' + i).rules("add", {
-                        required: {
-                            depends: checkFamilyValue
-                        },
+                    $('form input#sample_case_' + resourceId + '_' + i).rules("add", {
+                        required: false,
                         messages: {
                             required: "The sample size case value for Resource #" + i + " is required"
                         }
                     });
 
-                    studyResource.find('input#sample_control_' + id + '_' + i).rules("add", {
-                        required: {
-                            depends: checkFamilyValue
-                        },
+                    $('form input#sample_control_' + resourceId + '_' + i).rules("add", {
+                        required: false,
                         messages: {
                             required: "The sample size control value for Resource #" + i + " is required"
                         }
@@ -135,22 +136,26 @@ function addStudy() {
 
     studyTemplate.find("input[name='family']").on('change', function (e) {
         var value = $(e.target).val();
-        if (value == 'bionomial')
-            $(".family").addClass("show");
+        var req = (value == 'bionomial') ? true : false;
+
+        $.each($(pathForm).find(".family input"), function (i, input) {
+            $(input).rules("add", {
+                required: req
+            });
+        });
+
+        if (req)
+            $(pathForm).find(".family").addClass("show");
         else
-            $(".family").removeClass("show");
+            $(pathForm).find(".family").removeClass("show");
     });
 }
 
-function removeValidators(inputs){
-    $.each(inputs,function(ind, el){
+function removeValidators(inputs) {
+    $.each(inputs, function (ind, el) {
         el.value = "";
         $(el).rules("remove");
     });
-}
-
-function checkFamilyValue(ctrl) {
-    return $(ctrl.form).find("input[name='family']:checked").val() == 'bionomial';
 }
 
 function addStudyResource(study, ind) {
@@ -203,15 +208,17 @@ function createConfirmationBox(messageText) {
 
 $(function () {
     $("button.addControl").on("click", function (e) {
-            e.preventDefault();
+        e.preventDefault();
 
-            var previousValid = false;
-            $(pathForm).find(".studies input").each(function (i, el) {
-                previousValid = $(el).validate().element("#" + el.id);
-                return previousValid;
-            });
+        var previousValid = false;
+        $(pathForm).find(".studies input").each(function (i, el) {
+            if (el.id.length > 0)
+                return $(el).validate().element("#" + el.id);
 
-            if (previousValid)
-                addStudy();
+            return $(el).validate().valid();
         });
+
+        if (previousValid)
+            addStudy();
+    });
 });

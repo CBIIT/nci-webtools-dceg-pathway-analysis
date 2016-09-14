@@ -62,7 +62,6 @@ var terms = {
 };
 
 $(function() {
-    
     $.extend($_Glossary, terms);
     $(document).on("click", ".termToDefine", termDisplay);
 });

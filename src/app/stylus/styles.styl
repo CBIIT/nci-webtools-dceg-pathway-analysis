@@ -1,28 +1,48 @@
 @import 'nib'
 
-            
-body
-  font-size 10pt
-  line-height 1.1
-  font-family 'Noto Sans', Arial, sans-serif
-  
+html
+    font-size 11pt
+    
 .division-logo
     max-width 600px
     margin-left 3%
 
-
+body
+    background linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,.4) 19%, rgba(255,255,255,0.2) 100%)
+    
+a
+    text-decoration underline
+    
+#content
+    width 93%
+    float right
+    background white
+    
+.tab-content
+    min-height 900px
+    
 .ui-autocomplete
     overflow-x hidden
     overflow-y auto
     max-width 300px
     max-height 250px
-    
+
 .ui-widget
-    font-family inherit
     font-size inherit
 
+.nav-tabs
+    margin-bottom 1%
 form
     background white
+    ol li
+        margin 2% auto
+    ul
+        display block
+        padding-left 16px
+    li
+        position relative
+        padding 4px 0px
+        clear both
     button.ui-button-icon-only, a.ui-button
         height 35px
         margin 0px
@@ -33,19 +53,14 @@ form
         > button
           width 100% !important
           height 35px
-    .radio label
-        font-weight bold
-    input, select    
+
+    input, select
+        float left
         &.error
-            border 1px solid #920000
-            background #f2dede
+            border 1px solid red
+            background rgba(225, 0, 0, 0.24)
             &:before
                 content "*"
-                color red
-                font-weight bold
-                vertical-align middle
-                float left
-                padding 0 10px
         &:not([type='radio']):not([type='checkbox'])
             height 35px
             width 100%
@@ -57,7 +72,6 @@ form
             width 100%
         &.resource-list
             padding 0
-            margin 10px auto
         li
             list-style none
             &.studyResources
@@ -65,30 +79,32 @@ form
                     text-align center
                     padding 10px
                     font-weight bold
-                .family:not(.show)
-                    display none
-    .custom-combobox
-        position relative
-        display inline-block
-        a
-            height 33px
-            vertical-align bottom
-    .error
-        &.ms-choice, &.custom-combobox-input
-            border 1px solid red
-            background rgba(225, 0, 0, 0.24)
+
     .warning
       background gold
       border 5px solid goldenrod
       padding 5px
-#content
-    box-sizing border-box
-    display block
+      
+.family, #calculate, #messageBox, #spinner, progress
+    &:not(.show)
+        display none
+        
+#mainTitle
+    text-align center
+    clear both
+    font-size x-large
+header hr
     width 100%
-    margin 0px auto
-    max-width 800px
-    
+    float right
+    margin 0
+    border 0
+    height 13px
+    background-image linear-gradient(to right, rgba(0, 0, 0, 0) 8%, #BB0E3D, rgba(0, 0, 0, 0) 100%);
+#page-head
+    h1
+        text-align center
 .subHeading
+    font-size medium
     border 3px ridge rgba(0, 66, 118, 0.47)
     text-align center
     padding 1%
@@ -101,16 +117,22 @@ form
         padding 0px 20px
         text-align left
 
-#errorDisplay,#successBox
+#messageBox
+    padding 1%
+    margin 10px auto
     clear both
     text-align center
+    font-size .9em
     li
         list-style none
         margin  0 auto
         &.error
+            width inherit
             float none
+            color inherit
 
 #successBox
+    font-size 1.1em
     border 2px solid darkgreen
     background rgba(12, 193, 12, 0.27)
     margin 1% auto
@@ -118,15 +140,21 @@ form
     span
         width 20px
         float left
-        
+
+label
+    display block
+    float left
+
 fieldset
-    margin 10px auto
+    margin 2% auto
+    padding 1em
+    border 0.1em groove
 
 legend
-    font-weight bold
+    padding 5px
+    border 1px solid
     font-size inherit
-    padding 10px
-    border 1px solid #eeeeee
+    font-weight bold
 
 progress
     display block
@@ -137,42 +165,53 @@ progress
     width 16px
     height 16px
     margin-left 5px
-    
-.studies ul li
-    float none
-    margin 12px 0
-    
 .studyResources
-    float right
-    
-//#refinep
-//    input[type="checkbox"]
-//        display inline-block
-//    label
-//        display inline-block
+    label
+        padding 0 5px
+#refinep
+    input[type="checkbox"]
+        display inline-block
+    label
+        display inline-block
 
+.box-error
+    border 2px solid maroon
+    background rgba(255, 115, 115, 0.5)
+
+.spacer
+    content "|"
+    display inline-block
 .addControl
     text-align center
     height 30px
     margin 2% 0
 
 .buttonGroup
-    margin 15px auto
+    margin 10px auto
     text-align center
-    button
+    button, button.show
         width 300px
-        display inline-block
+        display inline-block !important
 
 .input
     position relative
     float right
     clear right
+    text-align left
+    width 300px
     .ms-drop
+        font-size 85%
         left -100px
         li:not(.group)
             text-indent 20px
 
-            
+#spinner
+    background url("/common/images/loading.gif") no-repeat center/50%
+    height 100px
+    width 100px
+    clear both
+    margin 0 auto
+    display none
 
 #snippets,.hide
     display none
@@ -182,82 +221,15 @@ progress
     background lightgrey
     padding 10px
     margin 5px auto
-
-.tab-pane
-  min-height 500px
-
-#loader
-  background-color rgba(0, 0, 0, 0.5)
-  background-position center
-  position fixed
-  top 0
-  left 0
-  height 100%
-  width 100%
-  img
-    position inherit
-    top 50%
-    left 50%
-    border-radius 10px
-    background #fff
-  &:not(.show)
-    display none
     
-#page-head, .section-title
-  margin 0 auto
-  padding 10px 
-  font-weight bold
-  
-#page-head
-  color #FFF
-  background linear-gradient(to right, #BB0E3D 50%, transparent 100%)
-  h1
-    font-size 1.3em
-    margin 0
-
-header
-  margin 0
-  img
-    height 90px
-    width 550px
-
-.tab-content
-    margin 0 10px
-
-section
-  line-height 1.5
-
-.section-title
-  background #123E57
-  color white
-h2
-    font-size 1.1em
-
-.section-content
-  padding 10px
-
-.subcontent
-  min-height 300px
-
-.main-panel,
-.side-panel
-  min-height 500px
-
-.footer
-    margin 15px auto
-    line-height 1.5
-    font-weight bold
-    ul li:after
-        content "|"
-        padding 0 10px
-
-@media (max-width: 980px)
-  header
-    img
-      max-width 360px
-
-@media (max-width: 768px)
-    #main-panel, #side-panel
-        min-height auto
-
-
+footer
+    padding 2% 0
+    clear both
+    text-align center
+    font-size small
+    ul li
+        list-style none
+        display inline-block
+        margin 0 5px
+        a
+            color black

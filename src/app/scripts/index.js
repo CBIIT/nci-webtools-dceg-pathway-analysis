@@ -39,9 +39,11 @@ function resetForm() {
     $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
     $('#file_pathway').unwrap();
 
-    $(pathForm).validate().resetForm();
     $('#population').parent().addClass('hide');
     $(pathForm).find("button,input,select,div,span").removeClass("error");
+    $(pathForm).validate().resetForm();
+    $("#messageBox").removeClass("alert-danger show");
+    
 }
 
 function clickCalculate(e) {
@@ -53,8 +55,8 @@ function clickCalculate(e) {
         $(pathForm).find('.error').each(function (ind, el) {
             $(el).removeClass('error');
         });
-        $("#calculate").hide();
-        $("progress").show();
+        $("#calculate").removeClass('show');
+        $("progress").addClass('show');
 
         var formData = new FormData(pathForm);
         var numStudies = 0;
@@ -83,7 +85,7 @@ function clickCalculate(e) {
         sendForm(formData).then(submission_result, submission_error)
             .always(post_request);
     } else {
-        document.querySelector("#errorDisplay").scrollIntoView(true);
+        document.querySelector("#messageBox").scrollIntoView(true);
     }
 }
 
@@ -111,9 +113,14 @@ function displayErrors(el, messagesArray) {
     messagesArray.forEach(function (message, index) {
         $(el).append(message + "<br />");
     });
-
-    $(el).show();
-    document.querySelector(el).scrollIntoView(true);
+    
+    if(messagesArray.length > 0) {
+        $(el).addClass("alert-danger show");
+        document.querySelector(el).scrollIntoView(true);
+    }
+    else {
+        $(el).removeClass("alert-danger show");
+    }
 }
 
 function apply_multiselect_options(element, group) {
@@ -164,7 +171,6 @@ $(function () {
 
     $("#calculate").on("click", clickCalculate);
     $("#reset").on("click", resetForm);
-    $("#errorDisplay, #successBox,progress").hide();
     $("#studyEntry").accordion({
         collapsible: true,
         heightStyle: "content",
