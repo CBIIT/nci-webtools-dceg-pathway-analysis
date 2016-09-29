@@ -109,7 +109,9 @@ form .warning {
 #calculate:not(.show),
 #messageBox:not(.show),
 #spinner:not(.show),
-progress:not(.show) {
+progress:not(.show),
+#sub_pop:not(.show),
+button#removeControl:not(.show) {
   display: none;
 }
 #mainTitle {
@@ -199,6 +201,9 @@ progress {
   width: 16px;
   height: 16px;
   margin-left: 5px;
+}
+#studyEntry {
+  margin: 10px auto;
 }
 .studyResources label {
   padding: 0 5px;

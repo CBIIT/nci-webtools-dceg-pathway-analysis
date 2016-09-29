@@ -58,7 +58,7 @@
             <fieldset>
               <legend data-term="study" class="termToDefine">Study Selection</legend>
               <div id="studyEntry"></div>
-              <button title="study" class="addControl">Add Study</button>
+              <button id="addControl" title="study"><span class="glyphicon glyphicon-plus"></span>Add Study</button>
             </fieldset>
             <fieldset>
               <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
@@ -90,9 +90,9 @@
                     </select>
                   </div>
                 </li>
-                <li>
+                <li id="sub_pop">
                   <label for="population">Sub Population:</label>
-                  <div class="input hide">
+                  <div class="input">
                     <select id="population" name="population" required="" multiple></select>
                   </div>
                 </li>

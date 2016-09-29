@@ -222,14 +222,22 @@ $(function () {
                 $("#population").next().find('.ms-choice').children()
                     .andSelf().addClass(errorClass);
             }
+
+            if( $(el).parents(".studies").length > 0 ) {
+                var studyIndex = $(el).parents(".studies").index();
+                $("#studyEntry").accordion("refresh").accordion({
+                    active: studyIndex
+                }).accordion("option", "active");
+            }
         },
         unhighlight: function (el, errorClass, validClass) {
-            if (el.id != "population" && el.name != "selectItempopulation" &&
-                el.name != "selectAllpopulation") {
+            if ((el.id != "population") && (el.name != "selectItempopulation") &&
+                (el.name != "selectAllpopulation")) {
                 $(el).removeClass(errorClass);
             } else {
                 $("#population").next().find('.ms-choice').children().andSelf().removeClass(errorClass);
             }
+            
         }
     });
 });

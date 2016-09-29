@@ -5,7 +5,9 @@ section#tab-tool.tab-pane
             fieldset
                 legend.termToDefine(data-term="study") Study Selection
                 #studyEntry
-                button.addControl(title="study") Add Study
+                button#addControl(title="study")
+                    span.glyphicon.glyphicon-plus
+                    | Add Study
             fieldset
               legend.termToDefine(data-term="file_pathway") Select or upload the pathway file:
               ul
@@ -28,9 +30,9 @@ section#tab-tool.tab-pane
                         .input
                             select#super_population(name="super_population",required='')
                               option(value='') -- Select a super population --
-                    li
+                    li#sub_pop
                         label(for="population") Sub Population:
-                        .input.hide
+                        .input
                             select#population(name="population",required='', multiple)
             fieldset
               legend Set the following options:

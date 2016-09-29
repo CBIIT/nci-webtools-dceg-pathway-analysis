@@ -39,7 +39,7 @@ function resetForm() {
     $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
     $('#file_pathway').unwrap();
 
-    $('#population').parent().addClass('hide');
+    $('#sub_pop').removeClass('show');
     $(pathForm).find("button,input,select,div,span").removeClass("error");
     $(pathForm).validate().resetForm();
     $("#messageBox").removeClass("alert-danger show");
@@ -146,9 +146,9 @@ function apply_multiselect_options(element, group) {
             }
         });
         element.multipleSelect("refresh").multipleSelect("uncheckAll");
-        element.parent().removeClass('hide');
+        $("#sub_pop").addClass('show');
     } else {
-        element.parent().addClass('hide');
+        $("#sub_pop").removeClass('show');
 
     }
 }
