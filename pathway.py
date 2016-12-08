@@ -38,6 +38,14 @@ def buildSuccess(message):
   response.status_code = 200
   return response
 
+@app.route('/integrity', methods=["POST"])
+@app.route('/integrity/', methods=["POST"])
+def integrity():
+  if len(request.files) > 0:
+    return buildSuccess("Files uploaded! " + str(request.files))
+  else:
+    return buildFailure("No files uploaded")
+
 @app.route('/calculate', methods=['POST'])
 @app.route('/calculate/', methods=['POST'])
 def calculate():

@@ -1,246 +1,387 @@
-
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Pathway Tool</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-    <meta http-equiv="Pragma" content="no-cache"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet" type="text/css"/>
-    <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css"/>
-    <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
-    <link href="styles.css" rel="stylesheet" type="text/css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Pragma" content="no-cache">
+    <link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/css/jquery.fileupload-ui.min.css" rel="stylesheet" type="text/css">
+    <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/common/css/style.css" rel="stylesheet" type="text/css">
+    <link href="styles.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/jquery.validate.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js" type="application/javascript"></script>
-    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.iframe-transport.min.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload.min.js" type="application/javascript"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="/common/js/popover-functions.js" type="application/javascript"></script>
     <script src="main.js" type="application/javascript"></script>
   </head>
-  <body>
-    <header><a href="http://dceg.cancer.gov/" target="_blank"><img src="/common/images/DCEG-logo.svg" alt="Division of Cancer Epidemiology &amp; Genetics" class="division-logo"/></a>
-      <hr/>
-    </header>
-    <h1 id="mainTitle">Pathway Analysis Tool</h1>
-    <div id="content">
-      <div class="subHeading">
-        <p>ARTP2 (Adaptive Rank Truncated Product - Version 2) is an R package of biological pathway association analysis or pathway meta-analysis for genome-wide association studies (GWAS). It also provides tools for gene-level association test as a special case. ARTP2 is an enhanced version of two previously released packages ARTP and AdaJoint.</p>
-        <p><span>This online application was developed to assist epidemiological researchers for testing the association between complex disease/trait outcome and predefined pathways when only SNP-level summary statistics from one or multiple GWAS were available. We provide reference panel data incorporated from the </span><a href="http://www.1000genomes.org/">1000 Genomes Project</a><span> to facilitate the studies on various populations. We also support over 4,700 pathways predefined by the </span><a href="http://software.broadinstitute.org/gsea/msigdb/collections.jsp">BROAD Institute</a><span>.</span></p>
-      </div>
-      <div id="errorDisplay" class="box-error"></div>
-      <div id="successBox"><span class="ui-icon ui-icon-circle-check"></span>
-        <div id="message"></div>
-      </div>
-      <div id="dialogElm"></div>
-      <form name="pathForm" action="calculate/" method="POST" enctype="multipart/form-data">
-        <fieldset>
-          <legend data-term="study" class="termToDefine">Study Selection</legend>
-          <div id="studyEntry"></div>
-          <button title="study" class="addControl">Add Study</button>
-        </fieldset>
-        <fieldset>
-          <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
-          <ul>
-            <li>
-              <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>
-              <label for="database_pathway_option">Select from&nbsp;<span id="pop-list">existing pathways:</span></label>
-              <div class="input ui-widget">
-                <label for="database_pathway">Search</label>
-                <input id="database_pathway" name="database_pathway"/>
-              </div>
-            </li>
-            <li>
-              <input id="file_pathway_option" type="radio" name="pathway_type" value="file_pathway"/>
-              <label for="file_pathway_option">Upload from the client:</label>
-              <div class="input">
-                <label for="file_pathway">Upload</label>
-                <input id="file_pathway" type="file" name="file_pathway"/>
-              </div>
-            </li>
-          </ul>
-        </fieldset>
-        <fieldset>
-          <legend data-term="population" class="termToDefine">Select the population:</legend>
-          <ul>
-            <li>
-              <label for="super_population">Super Population:</label>
-              <div class="input">
-                <select id="super_population" name="super_population" required="">
-                  <option value="">-- Select a super population --</option>
-                </select>
-              </div>
-            </li>
-            <li>
-              <label for="population">Sub Population:</label>
-              <div class="input hide">
-                <select id="population" name="population" required="" multiple="multiple"></select>
-              </div>
-            </li>
-          </ul>
-        </fieldset>
-        <fieldset>
-          <legend>Set the following options:</legend>
-          <ul>
-            <li>
-              <label data-term="nperm" for="nperm" class="termToDefine">nperm:</label>
-              <div class="input">
-                <input id="nperm" type="text" name="nperm" value="1e+5"/>
-              </div>
-            </li>
-            <li>
-              <div id="refinep_div" class="input">
-                <input id="refinep" type="checkbox" name="refinep"/>
-                <label for="refinep">Refine p-Value</label>
-              </div>
-            </li>
-            <li>
-              <label data-term="miss_rate" for="miss_rate" class="termToDefine">snp.miss.rate:</label>
-              <div class="input">
-                <input id="miss_rate" type="number" name="miss_rate" value="0.05" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="maf" for="maf" class="termToDefine">maf:</label>
-              <div class="input">
-                <input id="maf" type="number" name="maf" value="0.05" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="hwep" for="hwep" class="termToDefine">HWE.p:</label>
-              <div class="input">
-                <input id="hwep" type="text" name="hwep" value="1e-5" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="gene" for="gene" class="termToDefine">Gene.R2:</label>
-              <div class="input">
-                <input id="gene" type="number" name="gene" value="0.95" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="chr" for="chr" class="termToDefine">Chr.R2:</label>
-              <div class="input">
-                <input id="chr" type="number" name="chr" value="0.95" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="gene_subset" for="gene_subset" class="termToDefine">rm.gene.subset:</label>
-              <div class="input">
-                <input id="gene_subset" type="checkbox" name="gene_subset"/>
-              </div>
-            </li>
-            <li>
-              <label data-term="snp_n" for="snp_n" class="termToDefine">inspect.snp.n:</label>
-              <div class="input">
-                <input id="snp_n" type="number" name="snp_n" value="5" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="snp_percent" for="snp_percent" class="termToDefine">inspect.snp.percent:</label>
-              <div class="input">
-                <input id="snp_percent" type="number" name="snp_percent" value="0" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="gene_n" for="gene_n" class="termToDefine">inspect.gene.n:</label>
-              <div class="input">
-                <input id="gene_n" type="number" name="gene_n" value="10" required=""/>
-              </div>
-            </li>
-            <li>
-              <label data-term="gene_percent" for="gene_percent" class="termToDefine">inspect.gene.percent:</label>
-              <div class="input">
-                <input id="gene_percent" type="number" name="gene_percent" step=".01" value="0.05" required=""/>
-              </div>
-            </li>
-          </ul>
-        </fieldset>
-        <fieldset>
-          <legend>Results:</legend>
-          <ul>
-            <li>
-              <label for="email">E-mail (Results will be sent here):</label>
-              <div class="input">
-                <input id="email" type="email" name="email" required=""/>
-              </div>
-            </li>
-          </ul>
-        </fieldset>
-        <div class="buttonGroup">
-          <button id="calculate" type="button">Calculate</button>
-          <button id="reset" type="button">Reset</button>
-          <progress value="0"></progress>
+  <body><a id="skip" href="#main" class="sr-only">Go to Content</a>
+    <div id="content" class="container">
+      <header><a href="http://dceg.cancer.gov/" target="_blank"><img src="/common/images/DCEG-logo.svg" alt="Division of Cancer Epidemiology &amp; Genetics" class="division-logo"></a></header>
+      <div class="container-fluid">           
+        <div class="row">
+          <div id="page-head">
+            <h1>Pathway Analysis Tool</h1>
+          </div>
         </div>
-        <div id="spinner"></div>
-      </form>
-      <div class="subHeading">
-        <p>If you publish results that use ARTP2, please cite:</p>
-        <p>Zhang H, Wheeler W, Hyland LP, Yang Y, Shi J, Chatterjee N, Yu K. A powerful procedure for pathway-based meta-analysis using summary statistics identifies multiple pathways associated with type II diabetes.</p>
-        <p>Yu K, Li Q, Bergen AW, Pfeiffer RM, Rosenberg PS, Caporaso N, Kraft P, Chatterjee N. (2009) Pathway analysis by adaptive combination of P-values. Genet Epidemiol 33(8): 700 - 709</p>
-        <p>Zhang H, Shi J, Liang F, Wheeler W, Stolzenberg-Solomon R, Yu K. (2014) A fast multilocus test with adaptive SNP selection for large-scale genetic association studies. European Journal of Human Genetics, 22, 696 - 702</p>
+        <div class="row">
+          <nav class="navbar navbar-default">
+            <button type="button" data-toggle="collapse" data-target="#main-nav" class="navbar-toggle"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+            <div id="main-nav" class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
+                <li role="presentation" class="active"><a href="#tab-home" data-toggle="tab">Home</a></li>
+                <li role="presentation"><a id="toolTabId" href="#tab-tool" data-toggle="tab">Tool</a></li>
+                <li role="presentation"><a id="helpTabId" href="#tab-help" data-toggle="tab">Help</a></li>
+              </ul>
+            </div>
+          </nav>
+        </div>
       </div>
-      <div class="notice">
-        Site is currently under section 508 review. This site is undergoing remediation for compliance with section 508.
-        In the interim, should you require any accessibility assistance with any content, please contact us at <a href="mailto:NCIPathwayAnalysisToolWebSupport@mail.nih.gov?subject=Pathway Tool 508">NCIPathwayAnalysisToolWebSupport@mail.nih.gov</a>. Thank you!
+      <div id="main" class="tab-content">
+        <section id="tab-home" class="tab-pane active">
+          <h2 class="section-title">Home</h2>
+          <div class="section-content">
+            <div class="well well-sm">
+              <p>
+                ARTP2 (Adaptive Rank Truncated Product - Version 2) is an R package of biological pathway association analysis or pathway meta-analysis 
+                for genome-wide association studies (GWAS). It also provides tools for gene-level association test as a special case. ARTP2 is an 
+                enhanced version of two previously released packages ARTP and AdaJoint.
+              </p>
+              <p><span>This online application was developed to assist epidemiological researchers for testing the association between complex disease/trait outcome and predefined pathways when only SNP-level summary statistics from one or multiple GWAS were available. We provide reference panel data incorporated from the </span><a href="http://www.1000genomes.org/">1000 Genomes Project</a><span> to facilitate the studies on various populations. We also support over 4,700 pathways predefined by the </span><a href="http://software.broadinstitute.org/gsea/msigdb/collections.jsp">BROAD Institute</a><span>.</span></p>
+              <p><em><b>Note: use the link (</b><a href="http://biorxiv.org/content/early/2016/02/24/041244">http://biorxiv.org/content/early/2016/02/24/041244</a>) and rename the paper to "A Powerful Procedure for Pathway-based Meta-Analysis Using Summary Statistics Identities 
+                   43 Pathways Associated with Type II Diabetes in European Populations"</em></p>
+            </div>
+          </div>
+        </section>
+        <section id="tab-tool" class="tab-pane">
+          <h2 class="section-title">Tool</h2>
+          <div class="section-content">
+            <div class="container">
+              <div id="errorDisplay" class="box-error"></div>
+              <div id="successBox"><span class="ui-icon ui-icon-circle-check"></span>
+                <div id="message"></div>
+              </div>
+              <div id="dialogElm"></div>
+              <form name="pathForm" action="calculate/" method="POST" enctype="multipart/form-data">
+                <fieldset>
+                  <legend data-term="study" class="termToDefine">Study Selection</legend>
+                  <div id="studySelections">
+                    <div class="alert alert-warning">To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.</div>
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-8"><b>Select Family</b></div>
+                      <div class="col-xs-12 col-sm-4">
+                        <div data-toggle="buttons" class="btn-group btn-group-justified">
+                          <label for="gaussian" class="btn btn-default active">
+                            <input id="gaussian" type="radio" name="family" value="gaussian" autocomplete="off" checked="">Gaussian
+                          </label>
+                          <label for="binomial" class="btn btn-default">
+                            <input id="binomial" type="radio" name="family" value="binomial" autocomplete="off">Binomial
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-8">
+                        <label for="studyFiles">Upload File(s) for Integrity Check</label>
+                      </div>
+                      <div class="col-xs-12 col-sm-4">
+                        <div class="input-group">
+                          <div id="uploadStatus" class="form-control">No Files Uploaded</div>
+                          <div class="input-group-btn">
+                            <button id="integrityUpload" type="button" class="btn btn-default">Load</button>
+                          </div>
+                        </div>
+                      </div>
+                      <input id="studyFiles" type="file" name="studyFiles" data-url="integrity/" multiple>
+                    </div>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file</legend>
+                  <ul>
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-8">
+                        <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked="">
+                        <label for="database_pathway_option">Select from&nbsp;<span id="pop-list">existing pathways</span></label>
+                      </div>
+                      <div class="col-xs-12 col-sm-4">
+                        <div class="input ui-widget">
+                          <input id="database_pathway" name="database_pathway" aria-label="Search">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-8">
+                        <input id="file_pathway_option" type="radio" name="pathway_type" value="file_pathway">
+                        <label for="file_pathway_option">Upload from the client</label>
+                      </div>
+                      <div class="col-xs-12 col-sm-4">
+                        <div class="input">
+                          <input id="file_pathway" type="file" name="file_pathway" aria-label="Upload">
+                        </div>
+                      </div>
+                    </div>
+                  </ul>
+                </fieldset>
+                <fieldset>
+                  <legend data-term="population" class="termToDefine">Select the population</legend>
+                  <ul>
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-8">
+                        <label for="super_population">Super Population</label>
+                      </div>
+                      <div class="col-xs-12 col-sm-4">
+                        <div class="input">
+                          <select id="super_population" name="super_population" required="">
+                            <option value="">-- Select a super population --</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div id="sub" class="row">
+                      <div class="col-xs-12 col-sm-8">
+                        <label for="population">Sub Population</label>
+                      </div>
+                      <div class="col-xs-12 col-sm-4">
+                        <div class="input">
+                          <select id="population" name="population" required="" multiple></select>
+                        </div>
+                      </div>
+                    </div>
+                  </ul>
+                </fieldset>
+                <fieldset>
+                  <legend>Set the following options:</legend>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="nperm" for="nperm" class="termToDefine">nperm</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="nperm" type="text" name="nperm" value="1e+5">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">&nbsp;</div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div id="refinep_div" class="input">
+                        <input id="refinep" type="checkbox" name="refinep">
+                        <label for="refinep">Refine p-Value</label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="miss_rate" for="miss_rate" class="termToDefine">snp.miss.rate</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="miss_rate" type="number" name="miss_rate" value="0.05" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="maf" for="maf" class="termToDefine">maf</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="maf" type="number" name="maf" value="0.05" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="hwep" for="hwep" class="termToDefine">HWE.p</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="hwep" type="text" name="hwep" value="1e-5" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="gene" for="gene" class="termToDefine">Gene.R2</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="gene" type="number" name="gene" value="0.95" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="chr" for="chr" class="termToDefine">Chr.R2</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="chr" type="number" name="chr" value="0.95" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="gene_subset" for="gene_subset" class="termToDefine">rm.gene.subset</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="gene_subset" type="checkbox" name="gene_subset">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="snp_n" for="snp_n" class="termToDefine">inspect.snp.n</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="snp_n" type="number" name="snp_n" value="5" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="snp_percent" for="snp_percent" class="termToDefine">inspect.snp.percent</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="snp_percent" type="number" name="snp_percent" value="0" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="gene_n" for="gene_n" class="termToDefine">inspect.gene.n</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="gene_n" type="number" name="gene_n" value="10" required="">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label data-term="gene_percent" for="gene_percent" class="termToDefine">inspect.gene.percent</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input">
+                        <input id="gene_percent" type="number" name="gene_percent" step=".01" value="0.05" required="">
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
+                <fieldset>
+                  <legend>Results:</legend>
+                  <ul>
+                    <div class="row">
+                      <div class="col-xs-12 col-sm-8">
+                        <label for="email">E-mail (Results will be sent here)</label>
+                      </div>
+                      <div class="col-xs-12 col-sm-4">
+                        <div class="input">
+                          <input id="email" type="email" name="email" required="">
+                        </div>
+                      </div>
+                    </div>
+                  </ul>
+                </fieldset>
+                <div class="buttonGroup">
+                  <div class="btn-group">
+                    <button id="calculate" type="button">Calculate</button>
+                    <button id="reset" type="button">Reset</button>
+                  </div>
+                </div>
+                <progress value="0"></progress>
+                <div id="spinner"></div>
+              </form>
+              <div class="alert alert-info">
+                <div class="text-center"> <b>If you publish results that use ARTP2, please cite:</b></div>
+                <ul class="list-unstyled">
+                  <li> <b>Zhang H, Wheeler W, Hyland LP, Yang Y, Shi J, Chatterjee N, Yu K. </b><i>
+                      A powerful procedure for pathway-based meta-analysis using summary statistics identifies 
+                      multiple pathways associated with type II diabetes.</i></li>
+                  <li><b>Yu K, Li Q, Bergen AW, Pfeiffer RM, Rosenberg PS, Caporaso N, Kraft P, Chatterjee N. </b><i>(2009) Pathway analysis by adaptive combination of P-values. Genet Epidemiol 33(8): 700 - 709</i></li>
+                  <li> <b>Zhang H, Shi J, Liang F, Wheeler W, Stolzenberg-Solomon R, Yu K. (2014) </b><i>
+                      A fast multilocus test with adaptive SNP selection for large-scale 
+                      genetic association studies. European Journal of Human Genetics, 22, 696 - 702</i></li>
+                </ul>
+              </div>
+              <div class="alert alert-warning">
+                Site is currently under section 508 review. This site is undergoing remediation for compliance with section 508.
+                In the interim, should you require any accessibility assistance with any content, please contact us at <a href="mailto:NCIPathwayAnalysisToolWebSupport@mail.nih.gov?subject=Pathway Tool 508">NCIPathwayAnalysisToolWebSupport@mail.nih.gov</a>. Thank you!
+              </div>
+            </div>
+          </div>
+        </section>
+        <section id="tab-help" class="tab-pane">
+          <h2 class="section-title">Help</h2>
+          <div class="section-content">
+            <div class="side-panel col-xs-12 col-sm-4">
+              <div class="well well-sm">
+                <h3>Helpful 508 compliance resources and tips</h3>
+                <ul>
+                  <li><a target="_blank" href="https://www.bluefishgroup.com/insights/ecm/tips-for-making-your-website-section-508-compliant/">Tips for Making Your Website Section 508 Compliant</a></li>
+                  <li><a target="_blank" href="http://www.techrepublic.com/blog/web-designer/creating-an-ada-compliant-website/">Creating an ADA-compliant website</a></li>
+                  <li><a target="_blank" href="https://www.viget.com/articles/a-designers-guide-to-accessibility-and-508-compliance">A Designer's Guide To Accessibility and 508 Compliance</a></li>
+                </ul>
+                <h3>NIH/NCI application guidelines</h3>
+                <ul>
+                  <li><a target="_blank" href="https://mynci.cancer.gov/topics/nci-branding-logo-use-templates">NCI Branding, Logo Use, & Templates</a></li>
+                  <li><a target="_blank" href="https://oma1.od.nih.gov/manualchapters/management/1186/">NIH use of names and logos</a></li>
+                </ul>
+                <h3>Mobile/Responsive layout resource</h3>
+                <ul>
+                  <li><a target="_blank" href="http://getbootstrap.com/css/">CSS - Bootstrap</a></li>
+                  <li><a target="_blank" href="https://css-tricks.com/snippets/css/media-queries-for-standard-devices/">Media Queries for standard devices</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="main-panel col-xs-12 col-sm-8">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,</div>
+          </div>
+        </section>
       </div>
-    </div>
-    <footer>
-      <ul>
-        <li><a href="http://www.cancer.gov/" target="_blank" title="National Cancer Institute Home">Home</a></li>
-        <div class="spacer"></div>
-        <li><a href="mailto:NCIPathwayAnalysisToolWebSupport@mail.nih.gov" target="_blank" title="Contact us for technical support">Support</a></li>
-        <div class="spacer"></div>
-        <li><a href="http://www.cancer.gov/global/web/policies" target="_blank" title="Web Policies">Policies</a></li>
-        <div class="spacer"></div>
-        <li><a href="http://www.cancer.gov/global/web/policies/accessibility" target="_blank" title="Document Viewers, Multimedia Players and Accessibility Policy">Accessibility</a></li>
-        <div class="spacer"></div>
-        <li><a href="http://www.cancer.gov/global/web/policies/foia" target="_blank" title="Freedom of Information Act (FOIA)">FOIA</a></li>
-        <div class="spacer"></div>
-        <li><a target="_blank" href="http://www.dhhs.gov/">Department of Health and Human Services</a></li><br/><br/>
-        <li><a target="_blank" href="http://www.nih.gov/">National Institutes of Health</a></li>
-        <div class="spacer"></div>
-        <li><a target="_blank" href="http://www.cancer.gov/">National Cancer Institute</a></li>
-        <div class="spacer"></div>
-        <li><a target="_blank" href="http://www.usa.gov/">USA.gov</a></li>
-      </ul>NIH...Turning Discovery Into Health<sup>&reg;</sup>
-    </footer>
-    <div id="snippets">
-      <!-- dynamic template for a study entry-->
-      <!-- display in accordion/collapsible manner-->
-      <div class="studies">
-        <div class="studyTitle">Study #</div>
-        <ul>
-          <li>
-            <div class="warning">To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.</div>
-          </li>
-          <li>
-            <label for="study">Browse and select study file:</label>
-            <div class="input">
-              <input id="study" type="file" name="study" required=""/>
-            </div>
-          </li>
-          <li>
-            <label data-term="lambda" for="lambda" class="termToDefine">Lambda (&lambda;):</label>
-            <div class="input">
-              <input id="lambda" type="text" name="lambda" value="1.0" required=""/>
-            </div>
-          </li>
-          <li>
-            <label for="num_resource">Number of data resources in this study:</label>
-            <div class="input">
-              <input id="num_resource" type="text" name="num_resource" value="1" required=""/>
-            </div>
-            <ul class="resource-list"></ul>
-          </li>
+      <footer>
+        <ul class="list-inline">
+          <li><a target="_blank" title="Home" href="http://www.cancer.gov/">Home</a></li>
+          <li><a href="mailto:NCIPathwayAnalysisToolWebSupport@mail.nih.gov" target="_blank" title="Contact us for technical support">Support</a></li>
+          <li><a target="_blank" title="Policies" href="http://www.cancer.gov/global/web/policies">Policies</a></li>
+          <li><a target="_blank" title="Accessibility" href="http://www.cancer.gov/global/web/policies/accessibility">Accessibility</a></li>
+          <li><a target="_blank" title="Viewing Files" href="http://cancer.gov/global/viewing-files">Viewing Files</a></li>
+          <li><a target="_blank" title="FOIA" href="http://www.cancer.gov/global/web/policies/foia">FOIA</a></li>
         </ul>
-      </div>
-      <li class="studyResources">
-        <label for="sample_size">Enter the sample size for resource</label>
-        <div class="input">
-          <input id="sample_size" type="number" name="sample_size" min="1" value=""/>
+        <ul class="list-inline">
+          <li><a target="_blank" href="http://www.hhs.gov/">U.S. Department of Health and Human Services</a></li>
+          <li><a target="_blank" href="http://www.nih.gov">National Institutes of Health</a></li>
+          <li><a target="_blank" href="http://www.cancer.gov/">National Cancer Institute</a></li>
+          <li><a target="_blank" href="http://usa.gov">USA.gov</a></li>
+        </ul>
+        <div class="text-center">NIH ... Turning Discovery Into Health<sup>&reg;</sup></div>
+      </footer>
+      <div id="snippets">
+        <!-- dynamic template for a study entry-->
+        <!-- display in accordion/collapsible manner-->
+        <div class="studies">
+          <div class="studyTitle"></div>
         </div>
-      </li>
+        <li class="studyResources">
+          <label for="sample_size">Enter the sample size for resource</label>
+          <div class="input">
+            <input id="sample_size" type="number" name="sample_size" min="1" value="">
+          </div>
+        </li>
+      </div>
     </div>
   </body>
 </html>

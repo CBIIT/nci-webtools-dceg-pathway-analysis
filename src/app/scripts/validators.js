@@ -196,10 +196,10 @@ $(function () {
                 errors_div.html("<b>There " + grammar + ", see details below: </b>");
                 this.defaultShowErrors();
 
-                errors_div.show();
+                errors_div.addClass('show');
             } else {
                 $(pathForm).find('input,select').removeClass('error');
-                errors_div.hide().empty();
+                errors_div.removeClass('show').empty();
             }
         }
     });

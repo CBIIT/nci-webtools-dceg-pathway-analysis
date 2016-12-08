@@ -1,96 +1,182 @@
-form(name='pathForm', action='calculate/', method='POST', enctype='multipart/form-data')
-    fieldset
-        legend.termToDefine(data-term="study") Study Selection
-        #studyEntry
-        button.addControl(title="study") Add Study
-    fieldset
-      legend.termToDefine(data-term="file_pathway") Select or upload the pathway file:
-      ul
-        li
-            input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-            label(for="database_pathway_option") Select from&nbsp;
-                span#pop-list existing pathways:
-            .input.ui-widget
-                label(for='database_pathway') Search
-                input#database_pathway(name='database_pathway')
-        li
-            input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
-            label(for="file_pathway_option") Upload from the client:
-            .input
-                label(for='file_pathway') Upload
-                input#file_pathway(type='file', name='file_pathway')
-    fieldset
-        legend.termToDefine(data-term="population") Select the population:
-        ul
-            li
-                label(for="super_population") Super Population:
-                .input
-                    select#super_population(name="super_population",required='')
-                      option(value='') -- Select a super population --
-            li
-                label(for="population") Sub Population:
-                .input.hide
-                    select#population(name="population",required='', multiple)
-    fieldset
-      legend Set the following options:
-      ul
-        li
-            label.termToDefine(data-term="nperm", for='nperm') nperm:
-            .input
-                input#nperm(type='text', name='nperm', value='1e+5')
-        li
-            #refinep_div.input
-                input#refinep(type='checkbox', name='refinep')
-                label(for='refinep') Refine p-Value
-        li
-            label.termToDefine(data-term="miss_rate", for='miss_rate') snp.miss.rate:
-            .input
-                input#miss_rate(type='number', name='miss_rate', value='0.05', required='')
-        li
-            label.termToDefine(data-term="maf", for='maf') maf:
-            .input
-                input#maf(type='number', name='maf', value='0.05', required='')
-        li
-            label.termToDefine(data-term="hwep", for='hwep') HWE.p:
-            .input
-                input#hwep(type='text', name='hwep', value='1e-5', required='')
-        li
-            label.termToDefine(data-term="gene", for='gene') Gene.R2:
-            .input
-                input#gene(type='number', name='gene', value='0.95', required='')
-        li
-            label.termToDefine(data-term="chr", for='chr') Chr.R2:
-            .input
-                input#chr(type='number', name='chr', value='0.95', required='')
-        li
-            label.termToDefine(data-term="gene_subset", for='gene_subset') rm.gene.subset:
-            .input
-                input#gene_subset(type='checkbox', name='gene_subset')
-        li
-            label.termToDefine(data-term="snp_n", for='snp_n') inspect.snp.n:
-            .input
-                input#snp_n(type='number', name='snp_n', value='5', required='')
-        li
-            label.termToDefine(data-term="snp_percent", for='snp_percent') inspect.snp.percent:
-            .input
-                input#snp_percent(type='number', name='snp_percent', value='0', required='')
-        li
-            label.termToDefine(data-term="gene_n", for='gene_n') inspect.gene.n:
-            .input
-                input#gene_n(type='number', name='gene_n', value='10', required='')
-        li
-            label.termToDefine(data-term="gene_percent", for='gene_percent') inspect.gene.percent:
-            .input
-                input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
-    fieldset
-      legend Results:
-      ul
-        li
-            label(for='email') E-mail (Results will be sent here):
-            .input
-                input#email(type='email', name='email', required='')
-    .buttonGroup
-        button#calculate(type='button') Calculate
-        button#reset(type='button') Reset
-        progress(value='0')
-    #spinner
+section#tab-tool.tab-pane
+    h2.section-title Tool
+    .section-content
+        .container
+            #errorDisplay.box-error
+            #successBox
+                span.ui-icon.ui-icon-circle-check
+                #message
+            #dialogElm
+            form(name='pathForm', action='calculate/', method='POST', enctype='multipart/form-data')
+                //- fieldset
+                //-     legend.termToDefine(data-term="study") Study Selection
+                //-     #studyEntry
+                //-     button.addControl(title="study") Add Study
+                fieldset
+                    legend.termToDefine(data-term="study") Study Selection
+                    #studySelections
+                        .alert.alert-warning
+                            | To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.
+                        .row
+                            .col-xs-12.col-sm-8
+                                b Select Family
+                            .col-xs-12.col-sm-4
+                                .btn-group.btn-group-justified(data-toggle='buttons')
+                                    label.btn.btn-default.active(for="gaussian")
+                                        input#gaussian(type='radio', name='family', value="gaussian", autocomplete='off', checked='')
+                                        | Gaussian
+                                    label.btn.btn-default(for="binomial")
+                                        input#binomial(type='radio', name='family', value="binomial", autocomplete='off')
+                                        | Binomial
+                        .row
+                            .col-xs-12.col-sm-8
+                                label(for="studyFiles") Upload File(s) for Integrity Check
+                            .col-xs-12.col-sm-4
+                                .input-group
+                                    #uploadStatus.form-control No Files Uploaded
+                                    .input-group-btn
+                                        button.btn.btn-default#integrityUpload(type="button") Load
+                            input#studyFiles(type="file", name="studyFiles", data-url="integrity/", multiple)
+                fieldset
+                  legend.termToDefine(data-term="file_pathway") Select or upload the pathway file
+                  ul
+                    .row
+                        .col-xs-12.col-sm-8
+                            input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
+                            label(for="database_pathway_option") Select from&nbsp;
+                                span#pop-list existing pathways
+                        .col-xs-12.col-sm-4
+                            .input.ui-widget
+                                input#database_pathway(name='database_pathway', aria-label="Search")
+                    .row
+                        .col-xs-12.col-sm-8
+                            input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
+                            label(for="file_pathway_option") Upload from the client
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#file_pathway(type='file', name='file_pathway', aria-label="Upload")
+                fieldset
+                    legend.termToDefine(data-term="population") Select the population
+                    ul
+                        .row
+                            .col-xs-12.col-sm-8
+                                label(for="super_population") Super Population
+                            .col-xs-12.col-sm-4
+                                .input
+                                    select#super_population(name="super_population",required='')
+                                      option(value='') -- Select a super population --
+                        #sub.row
+                            .col-xs-12.col-sm-8
+                                label(for="population") Sub Population
+                            .col-xs-12.col-sm-4
+                                .input
+                                    select#population(name="population",required='', multiple)
+                fieldset
+                    legend Set the following options:
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="nperm", for='nperm') nperm
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#nperm(type='text', name='nperm', value='1e+5')
+                    .row
+                        .col-xs-12.col-sm-8 &nbsp;
+                        .col-xs-12.col-sm-4
+                            #refinep_div.input
+                                input#refinep(type='checkbox', name='refinep')
+                                label(for='refinep') Refine p-Value
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="miss_rate", for='miss_rate') snp.miss.rate
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#miss_rate(type='number', name='miss_rate', value='0.05', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="maf", for='maf') maf
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#maf(type='number', name='maf', value='0.05', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="hwep", for='hwep') HWE.p
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#hwep(type='text', name='hwep', value='1e-5', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="gene", for='gene') Gene.R2
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#gene(type='number', name='gene', value='0.95', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="chr", for='chr') Chr.R2
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#chr(type='number', name='chr', value='0.95', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="gene_subset", for='gene_subset') rm.gene.subset
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#gene_subset(type='checkbox', name='gene_subset')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="snp_n", for='snp_n') inspect.snp.n
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#snp_n(type='number', name='snp_n', value='5', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="snp_percent", for='snp_percent') inspect.snp.percent
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#snp_percent(type='number', name='snp_percent', value='0', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="gene_n", for='gene_n') inspect.gene.n
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#gene_n(type='number', name='gene_n', value='10', required='')
+                    .row
+                        .col-xs-12.col-sm-8
+                            label.termToDefine(data-term="gene_percent", for='gene_percent') inspect.gene.percent
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
+                fieldset
+                  legend Results:
+                  ul
+                    .row
+                        .col-xs-12.col-sm-8
+                            label(for='email') E-mail (Results will be sent here)
+                        .col-xs-12.col-sm-4
+                            .input
+                                input#email(type='email', name='email', required='')
+                .buttonGroup
+                    .btn-group
+                        button#calculate(type='button') Calculate
+                        button#reset(type='button') Reset
+                progress(value='0')
+                #spinner
+            .alert.alert-info
+                .text-center 
+                    b If you publish results that use ARTP2, please cite:
+                ul.list-unstyled
+                    li 
+                        b Zhang H, Wheeler W, Hyland LP, Yang Y, Shi J, Chatterjee N, Yu K. 
+                        i A powerful procedure for pathway-based meta-analysis using summary statistics identifies 
+                            | multiple pathways associated with type II diabetes.
+                    li
+                        b Yu K, Li Q, Bergen AW, Pfeiffer RM, Rosenberg PS, Caporaso N, Kraft P, Chatterjee N. 
+                        i (2009) Pathway analysis by adaptive combination of P-values. Genet Epidemiol 33(8): 700 - 709
+                    li 
+                        b Zhang H, Shi J, Liang F, Wheeler W, Stolzenberg-Solomon R, Yu K. (2014) 
+                        i A fast multilocus test with adaptive SNP selection for large-scale 
+                            | genetic association studies. European Journal of Human Genetics, 22, 696 - 702
+            .alert.alert-warning
+              | Site is currently under section 508 review. This site is undergoing remediation for compliance with section 508.
+              | In the interim, should you require any accessibility assistance with any content, please contact us at 
+              a(href="mailto:NCIPathwayAnalysisToolWebSupport@mail.nih.gov?subject=Pathway Tool 508") NCIPathwayAnalysisToolWebSupport@mail.nih.gov
+              | . Thank you!

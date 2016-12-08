@@ -57,7 +57,7 @@ var population_labels = {
 
 function pre_request() {
     // display spinner
-    $("#spinner").show();
+    $("#spinner").addClass('show');
 
     // disable controls
     $(pathForm).find(":input").prop("disabled",true);
@@ -66,8 +66,8 @@ function pre_request() {
 
 function post_request() {
     // hide progressbar and spinner
-    $("button#calculate").show();
-    $("progress, #spinner").hide();
+    $("button#calculate").addClass('show');
+    $("progress, #spinner").removeClass('show');
 
     // enable controls
     $('button.ui-button').button("enable");
@@ -126,11 +126,11 @@ function submission_result(response) {
 
         // display confirmation message
         $( "#successBox #message" ).text(response.message);
-        $( "#successBox").show();
+        $( "#successBox").addClass('show');
         document.querySelector("#successBox").scrollIntoView(true);
 
         setTimeout(function(){
-            $( "#successBox" ).fadeOut().hide();
+            $( "#successBox" ).fadeOut().removeClass('show');
             $( "#successBox #message" ).html("");
         }, 10000);
     } else {

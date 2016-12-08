@@ -40,7 +40,7 @@ function resetForm() {
   $('#file_pathway').unwrap();
 
   $(pathForm).validate().resetForm();
-  $('#population').parent().addClass('hide');
+  $('#population').parent().removeClass('show');
   $(pathForm).find("button,input,select,div,span").removeClass("error");
 }
 
@@ -53,8 +53,8 @@ function clickCalculate(e) {
     $(pathForm).find('.error').each(function( ind,el) {
       $(el).removeClass('error');
     });
-    $("#calculate").hide();
-    $("progress").show();
+    $("#calculate").removeClass('show');
+    $("progress").addClass('show');
 
     var formData = new FormData(pathForm);
     var numStudies = 0;
@@ -111,7 +111,7 @@ function displayErrors(el, messagesArray){
     $(el).append(message + "<br />");
   });
 
-  $(el).show();
+  $(el).addClass('show');
   document.querySelector(el).scrollIntoView(true);
 }
 
@@ -135,10 +135,9 @@ function apply_multiselect_options(element, group){
       }
     });
     element.multipleSelect("refresh").multipleSelect("uncheckAll");
-    element.parent().removeClass('hide');
+    $('#sub').addClass('show');
   } else {
-    element.parent().addClass('hide');
-
+    $('#sub').removeClass('show');
   }
 }
 
@@ -160,12 +159,12 @@ $(function() {
 
   $("#calculate").on("click", clickCalculate);
   $("#reset").on("click", resetForm);
-  $("#errorDisplay, #successBox,progress").hide();
-  $("#studyEntry").accordion({
-    collapsible: true,
-    heightStyle: "content",
-    header: ".studyTitle"
-  });
+  $("#errorDisplay, #successBox,progress").removeClass('show');
+  // $("#studyEntry").accordion({
+  //   collapsible: true,
+  //   heightStyle: "content",
+  //   header: ".studyTitle"
+  // });
 
   // initialize button using jquery ui
   $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
@@ -176,6 +175,6 @@ $(function() {
     apply_multiselect_options($('#population'), this.value);
   });
 
-  $("#studyEntry").accordion("option", "active", 0);
-  addStudy();// add first element by default, function declaration in template-manager
+  // $("#studyEntry").accordion("option", "active", 0);
+  // addStudy();// add first element by default, function declaration in template-manager
 });

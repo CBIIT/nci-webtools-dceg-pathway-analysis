@@ -1,6 +1,22 @@
 header
     a(href="http://dceg.cancer.gov/", target="_blank")
         img.division-logo(src="/common/images/DCEG-logo.svg", alt="Division of Cancer Epidemiology & Genetics")
-    hr
-//-    img#branch-logo(src="/common/images/DCEG-BB-HREB.png", alt="Biostatistics Branch")
-h1#mainTitle Pathway Analysis Tool
+.container-fluid            
+    .row
+        #page-head
+            h1 Pathway Analysis Tool
+    .row
+        nav.navbar.navbar-default
+            button.navbar-toggle(type='button', data-toggle='collapse', data-target='#main-nav')
+                span.sr-only Toggle navigation
+                span.icon-bar
+                span.icon-bar
+                span.icon-bar
+            #main-nav.navbar-collapse.collapse
+                ul.nav.navbar-nav
+                  li.active(role='presentation')
+                    a(href='#tab-home', data-toggle='tab') Home
+                  li(role='presentation')
+                    a#toolTabId(href='#tab-tool', data-toggle='tab') Tool
+                  li(role='presentation')
+                    a#helpTabId(href='#tab-help', data-toggle='tab') Help

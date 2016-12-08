@@ -196,10 +196,10 @@ $(function () {
                 errors_div.html("<b>There " + grammar + ", see details below: </b>");
                 this.defaultShowErrors();
 
-                errors_div.show();
+                errors_div.addClass('show');
             } else {
                 $(pathForm).find('input,select').removeClass('error');
-                errors_div.hide().empty();
+                errors_div.removeClass('show').empty();
             }
         }
     });
@@ -289,7 +289,7 @@ var population_labels = {
 
 function pre_request() {
    
-    $("#spinner").show();
+    $("#spinner").addClass('show');
 
    
     $(pathForm).find(":input").prop("disabled",true);
@@ -298,8 +298,8 @@ function pre_request() {
 
 function post_request() {
    
-    $("button#calculate").show();
-    $("progress, #spinner").hide();
+    $("button#calculate").addClass('show');
+    $("progress, #spinner").removeClass('show');
 
    
     $('button.ui-button').button("enable");
@@ -358,11 +358,11 @@ function submission_result(response) {
 
        
         $( "#successBox #message" ).text(response.message);
-        $( "#successBox").show();
+        $( "#successBox").addClass('show');
         document.querySelector("#successBox").scrollIntoView(true);
 
         setTimeout(function(){
-            $( "#successBox" ).fadeOut().hide();
+            $( "#successBox" ).fadeOut().removeClass('show');
             $( "#successBox #message" ).html("");
         }, 10000);
     } else {
@@ -467,114 +467,114 @@ $(function() {
 
 
 
-function addStudy() {
-   
-    var studyTemplate = $("#snippets").find(".studies").clone();
 
-   
-    var studyCount = $(pathForm).find(".studies").length;
-    var studyIndex = studyCount + 1;
 
-    var firstResource = addStudyResource(studyIndex,1);
-    studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
-    studyTemplate.find(".studyTitle").append(studyIndex);
 
-    var studyLabel = studyTemplate.find('[for="study"]');
-    studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
-    var studyId = studyTemplate.find("#study");
-    studyId.attr("name",studyId.attr("id")+"_"+studyIndex).attr("id",studyId.attr("id")+"_"+studyIndex);
 
-    var lambdaLabel = studyTemplate.find('[for="lambda"]');
-    lambdaLabel.attr("for",lambdaLabel.attr("for")+"_"+studyIndex);
-    var lambdaId = studyTemplate.find("#lambda");
-    lambdaId.attr("name",lambdaId.attr("id")+"_"+studyIndex).attr("id",lambdaId.attr("id")+"_"+studyIndex);
 
-    var numLabel = studyTemplate.find('[for="num_resource"]');
-    numLabel.attr("for",numLabel.attr("for")+"_"+studyIndex);
-    var numId = studyTemplate.find("#num_resource");
-    numId.attr("name",numId.attr("id")+"_"+studyIndex).attr("id",numId.attr("id")+"_"+studyIndex);
 
-   
-    $("#studyEntry").append(studyTemplate);
-    firstResource.find('input').rules("add", {
-        required: true,
-        digits: true,
-        messages: {
-            required: "The sample size value is required",
-            digits: "The sample size value must be an integer"
-        }
-    });
 
-    studyId.rules("add", {
-        required: true,
-        messages: {
-            required: "The " + studyId.attr('id') + " field is required",
-        }
-    });
 
-    lambdaId.rules("add", {
-        required: true,
-        number: true,
-        min: 1,
-        messages: {
-            required: "The " + lambdaId.attr('id') + " field is required",
-            number: "The " + lambdaId.attr('id') + " value must be a number",
-            min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
-        }
-    });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
-    numId.rules("add", {
-        required: true,
-        number: true,
-        min: 1,
-        messages: {
-            required: "The " + numId.attr('id') + " field is required",
-            number: "The " + numId.attr('id') + " value must be a number",
-            min: "The " + numId.attr('id') + " value must be greater than or equal to 1"
-        }
-    });
 
-   
-    var activeIndex = $("#studyEntry").accordion("refresh").accordion({
-        active: studyCount
-    }).accordion("option", "active");
 
-    studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
-        var id = $(this).prop('id');
-        var valid = false;
-        valid = $(this).validate().element('#' + id);
-        if (valid) {
-            var choice;
-            if (this.value > 20)
-                choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
-            else
-                choice = true;
 
-            if (choice) {
-                var resourceList = studyTemplate.find('ul.resource-list');
-                resourceList.children('.studyResources:nth('+(this.value-1)+') ~ .studyResources').remove();
-                resourceList.find('input').each(function(i,el) {
-                  el.value = '';
-                });
-                for (var i = resourceList.children().length+1; i <= this.value; i++) {
-                   
-                   
-                    var studyResource = addStudyResource(id.substr(13), i);
-                    resourceList.append(studyResource);
 
-                    studyResource.find('input').rules("add", {
-                        required: true,
-                        digits: true,
-                        messages: {
-                            required: "The sample size value is required",
-                            digits: "The sample size value must be an integer"
-                        }
-                    });
-                }
-            }
-        }
-    });
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function addStudyResource(study, ind) {
     var resource_element = $("#snippets").children(".studyResources").clone();
@@ -637,8 +637,48 @@ $(function () {
             if (previousValid)
                 addStudy();
         });
+
+
+    $("#integrityUpload").on('click', function(e) {
+        $("input#studyFiles").trigger('click');
+    });
+
+    $('#studyFiles').fileupload({
+        dataType: 'json',
+        start:function (e) {
+            console.log('Uploads started');
+        },
+        progress: function (e, data) {
+            var progress = parseInt(data.loaded / data.total * 100, 10);
+            var progressBar = '<div class="progress"><div class="progress-bar progress-bar-striped active" ' +
+            'role="progressbar" aria-valuenow="' + progress + '" aria-valuemin="0" aria-valuemax="100" ' +
+            'style="width: '+ progress +'%"><span class="sr-only">'+ progress +'% Complete</span></div></div>';
+
+           
+        },
+        done: function (e, data) {
+            if(data.result.success) {
+                $("#uploadStatus").append(data.result.message);
+               
+
+
+               
+               
+               
+            }
+        }
+    });
 });
 
+
+function addStudy() {
+    console.log('in addStudy');
+
+}
+
+function removeStudy(ind) {
+    console.log('in removeStudy');
+}
 var terms = {
     "study":{
         fullName:"",
@@ -749,7 +789,7 @@ function resetForm() {
   $('#file_pathway').unwrap();
 
   $(pathForm).validate().resetForm();
-  $('#population').parent().addClass('hide');
+  $('#population').parent().removeClass('show');
   $(pathForm).find("button,input,select,div,span").removeClass("error");
 }
 
@@ -762,8 +802,8 @@ function clickCalculate(e) {
     $(pathForm).find('.error').each(function( ind,el) {
       $(el).removeClass('error');
     });
-    $("#calculate").hide();
-    $("progress").show();
+    $("#calculate").removeClass('show');
+    $("progress").addClass('show');
 
     var formData = new FormData(pathForm);
     var numStudies = 0;
@@ -820,7 +860,7 @@ function displayErrors(el, messagesArray){
     $(el).append(message + "<br />");
   });
 
-  $(el).show();
+  $(el).addClass('show');
   document.querySelector(el).scrollIntoView(true);
 }
 
@@ -844,10 +884,9 @@ function apply_multiselect_options(element, group){
       }
     });
     element.multipleSelect("refresh").multipleSelect("uncheckAll");
-    element.parent().removeClass('hide');
+    $('#sub').addClass('show');
   } else {
-    element.parent().addClass('hide');
-
+    $('#sub').removeClass('show');
   }
 }
 
@@ -869,12 +908,12 @@ $(function() {
 
   $("#calculate").on("click", clickCalculate);
   $("#reset").on("click", resetForm);
-  $("#errorDisplay, #successBox,progress").hide();
-  $("#studyEntry").accordion({
-    collapsible: true,
-    heightStyle: "content",
-    header: ".studyTitle"
-  });
+  $("#errorDisplay, #successBox,progress").removeClass('show');
+ 
+ 
+ 
+ 
+ 
 
  
   $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
@@ -885,6 +924,6 @@ $(function() {
     apply_multiselect_options($('#population'), this.value);
   });
 
-  $("#studyEntry").accordion("option", "active", 0);
-  addStudy();// add first element by default, function declaration in template-manager
+ 
+ 
 });

@@ -1,23 +1,14 @@
 html {
-  background: -webkit-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: -moz-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: -o-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: -ms-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-}
-.division-logo {
-  max-width: 600px;
-  margin-left: 3%;
+  height: 100%;
 }
 body {
+  min-height: 100%;
+}
+.division-logo {
+  min-width: 380px;
+}
+#content {
   background: #fff;
-  padding-bottom: 1%;
-  font-size: 1em;
-  margin: 0 auto;
-  width: 100%;
-  float: right;
-  -webkit-box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
-  box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
 }
 .ui-autocomplete {
   overflow-x: hidden;
@@ -28,17 +19,24 @@ body {
 .ui-widget {
   font-size: inherit;
 }
-p {
-  padding: 20px 24px;
-}
 form {
   background: #fff;
+}
+form .row {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+form p {
+  padding: 20px 24px;
 }
 form button.ui-button-icon-only,
 form a.ui-button {
   height: 35px;
   margin: 0px;
   width: 40px;
+}
+form #sub:not(.show) {
+  display: none;
 }
 form .ms-parent {
   width: 100%;
@@ -69,6 +67,13 @@ form input.input-fit[type='text'],
 form select.input-fit[type='text'] {
   width: 254px;
 }
+form #studyFiles {
+  display: none;
+}
+form ul {
+  display: block;
+  padding-left: 16px;
+}
 form ul#select2-database_pathway-results {
   float: left;
   width: 100%;
@@ -94,14 +99,16 @@ form .warning {
   border: 5px solid #daa520;
   padding: 5px;
 }
-#content {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  display: block;
-  width: 100%;
-  margin: 0px auto;
-  max-width: 800px;
+form ol li {
+  margin: 2% auto;
+}
+form li {
+  position: relative;
+  padding: 4px 0px;
+  clear: both;
+}
+.section-content {
+  margin: 10px auto;
 }
 #mainTitle {
   text-align: center;
@@ -109,8 +116,8 @@ form .warning {
   font-size: x-large;
 }
 header {
-  padding: 2% 0;
-  margin-top: 0;
+  padding: 0;
+  margin: 0;
 }
 header hr {
   width: 100%;
@@ -123,6 +130,29 @@ header hr {
   background-image: -o-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: linear-gradient(to right, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
+}
+#page-head {
+  color: #fff;
+  background: #bb0e3d 50%;
+  border-radius: 5px 5px 0 0;
+  padding: 10px;
+  margin: 0 auto;
+  font-weight: bold;
+}
+#page-head h1 {
+  font-size: 18px;
+  margin: 0;
+}
+#main {
+  display: inline-block;
+  margin-bottom: 1em;
+}
+.section-title {
+  margin: 0 auto;
+  padding: 5px 10px;
+  background: #606060;
+  color: #fff;
+  font-size: 18px;
 }
 .subHeading {
   font-size: medium;
@@ -148,6 +178,10 @@ header hr {
   text-align: center;
   font-size: 0.9em;
 }
+#errorDisplay:not(.show),
+#successBox:not(.show) {
+  display: none;
+}
 #errorDisplay li,
 #successBox li {
   list-style: none;
@@ -170,18 +204,6 @@ header hr {
   width: 20px;
   float: left;
 }
-ol li {
-  margin: 2% auto;
-}
-ul {
-  display: block;
-  padding-left: 16px;
-}
-li {
-  position: relative;
-  padding: 4px 0px;
-  clear: both;
-}
 label {
   display: block;
   float: left;
@@ -192,12 +214,17 @@ fieldset {
   border: 0.1em groove;
 }
 legend {
+  padding: 5px;
   font-size: 1em;
   font-weight: bold;
+  border: 1px solid #9a9a9a;
 }
 progress {
   display: block;
   margin: 0 auto;
+}
+progress:not(.show) {
+  display: none;
 }
 .tooltip {
   background: url("/common/images/info.png") no-repeat center;
@@ -231,12 +258,11 @@ progress {
   margin: 2% 0;
 }
 .buttonGroup {
-  margin: 0 auto;
+  margin: 10px auto;
   text-align: center;
 }
 .buttonGroup button {
   width: 300px;
-  display: inline-block;
 }
 .input {
   position: relative;
@@ -258,10 +284,14 @@ progress {
   width: 100px;
   clear: both;
   margin: 0 auto;
+}
+#spinner:not(.show) {
   display: none;
 }
-#snippets,
-.hide {
+progress,
+#spinner,
+#sub,
+#snippets {
   display: none;
 }
 .notice {
@@ -271,72 +301,17 @@ progress {
   margin: 5px auto;
 }
 footer {
-  padding: 2% 0;
-  clear: both;
   text-align: center;
-  font-size: small;
 }
 footer ul li {
   list-style: none;
   display: inline-block;
-  margin: 0 5px;
+}
+footer ul li:after {
+  content: "|";
+  margin: 0 15px;
 }
 footer ul li a {
   color: #000;
 }
 
-@media (min-width: 1279px) {
-  body {
-    width: 93%;
-    font: 0.9em "Verdana", "Geneva", "sans-serif";
-  }
-}
-@media (max-width: 990px) {
-  .tooltip {
-    display: none;
-  }
-}
-@media (min-width: 481px) and (max-width: 810px) {
-  #content {
-    max-width: 810px;
-    margin: 0px;
-    padding: 0px 5px;
-  }
-}
-@media (max-width: 990px) {
-  .ui-accordion .ui-accordion-content {
-    padding: 0.5em;
-  }
-  footer {
-    font-size: inherit;
-  }
-  footer .spacer {
-    display: none;
-  }
-  footer ul li {
-    display: block;
-    margin: 0;
-    width: 100%;
-  }
-  .tooltip {
-    -webkit-background-size: 90%;
-    -moz-background-size: 90%;
-    background-size: 90%;
-    width: 25px;
-    height: 30px;
-    padding: 5px;
-    float: right;
-  }
-  input[type="checkbox"] {
-    width: 25px;
-    height: 25px;
-  }
-}
-@media (max-width: 480px) {
-  #content {
-    width: 360px;
-  }
-  .division-logo {
-    max-width: 330px;
-  }
-}
