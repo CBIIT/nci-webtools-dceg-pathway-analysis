@@ -21,6 +21,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.iframe-transport.min.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload.min.js" type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.14.1/js/jquery.fileupload-jquery-ui.min.js" type="application/javascript"></script>
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="/common/js/popover-functions.js" type="application/javascript"></script>
     <script src="main.js" type="application/javascript"></script>
@@ -75,36 +76,35 @@
               <form name="pathForm" action="calculate/" method="POST" enctype="multipart/form-data">
                 <fieldset>
                   <legend data-term="study" class="termToDefine">Study Selection</legend>
-                  <div id="studySelections">
-                    <div class="alert alert-warning">To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.</div>
-                    <div class="row">
-                      <div class="col-xs-12 col-sm-8"><b>Select Family</b></div>
-                      <div class="col-xs-12 col-sm-4">
-                        <div data-toggle="buttons" class="btn-group btn-group-justified">
-                          <label for="gaussian" class="btn btn-default active">
-                            <input id="gaussian" type="radio" name="family" value="gaussian" autocomplete="off" checked="">Gaussian
-                          </label>
-                          <label for="binomial" class="btn btn-default">
-                            <input id="binomial" type="radio" name="family" value="binomial" autocomplete="off">Binomial
-                          </label>
-                        </div>
+                  <div class="alert alert-warning">To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.</div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8"><b>Select Family</b></div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div data-toggle="buttons" class="btn-group btn-group-justified">
+                        <label for="gaussian" class="btn btn-default">
+                          <input id="gaussian" type="radio" name="family" value="gaussian" autocomplete="off">Gaussian
+                        </label>
+                        <label for="binomial" class="btn btn-default active">
+                          <input id="binomial" type="radio" name="family" value="binomial" autocomplete="off" checked="">Binomial
+                        </label>
                       </div>
-                    </div>
-                    <div class="row">
-                      <div class="col-xs-12 col-sm-8">
-                        <label for="studyFiles">Upload File(s) for Integrity Check</label>
-                      </div>
-                      <div class="col-xs-12 col-sm-4">
-                        <div class="input-group">
-                          <div id="uploadStatus" class="form-control">No Files Uploaded</div>
-                          <div class="input-group-btn">
-                            <button id="integrityUpload" type="button" class="btn btn-default">Load</button>
-                          </div>
-                        </div>
-                      </div>
-                      <input id="studyFiles" type="file" name="studyFiles" data-url="integrity/" multiple>
                     </div>
                   </div>
+                  <div class="row">
+                    <div class="col-xs-12 col-sm-8">
+                      <label for="studyFiles">Upload File(s) for Integrity Check</label>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                      <div class="input-group">
+                        <div id="uploadStatus" class="form-control">No Files Uploaded</div>
+                        <div class="input-group-btn">
+                          <button id="integrityUpload" type="button" class="btn btn-default">Load</button>
+                        </div>
+                      </div>
+                    </div>
+                    <input id="studyFiles" type="file" name="studyFiles[]" multiple>
+                  </div>
+                  <div id="studySelections" role="tablist" class="panel-group"></div>
                 </fieldset>
                 <fieldset>
                   <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file</legend>
@@ -372,15 +372,19 @@
       <div id="snippets">
         <!-- dynamic template for a study entry-->
         <!-- display in accordion/collapsible manner-->
-        <div class="studies">
-          <div class="studyTitle"></div>
+        <div class="studies panel panel-default">
+          <div role="tab" class="panel-heading"> 
+            <div class="panel-title"><a role="button" data-toggle="collapse" data-parent="#studySelections" class="studyTitle"> <b>{%= studyTitle %}</b><i class="toggleIcons pull-right glyphicon glyphicon-chevron-left"></i></a></div>
+          </div>
+          <div role="tabpanel" class="panel-collapse collapse">
+            <div class="panel-body"></div>
+          </div>
         </div>
-        <li class="studyResources">
-          <label for="sample_size">Enter the sample size for resource</label>
+        <div class="studyResources col-xs-12 col-sm-6 col-md-4">
           <div class="input">
             <input id="sample_size" type="number" name="sample_size" min="1" value="">
           </div>
-        </li>
+        </div>
       </div>
     </div>
   </body>

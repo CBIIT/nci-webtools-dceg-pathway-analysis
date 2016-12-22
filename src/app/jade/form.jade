@@ -14,29 +14,29 @@ section#tab-tool.tab-pane
                 //-     button.addControl(title="study") Add Study
                 fieldset
                     legend.termToDefine(data-term="study") Study Selection
-                    #studySelections
-                        .alert.alert-warning
-                            | To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.
-                        .row
-                            .col-xs-12.col-sm-8
-                                b Select Family
-                            .col-xs-12.col-sm-4
-                                .btn-group.btn-group-justified(data-toggle='buttons')
-                                    label.btn.btn-default.active(for="gaussian")
-                                        input#gaussian(type='radio', name='family', value="gaussian", autocomplete='off', checked='')
-                                        | Gaussian
-                                    label.btn.btn-default(for="binomial")
-                                        input#binomial(type='radio', name='family', value="binomial", autocomplete='off')
-                                        | Binomial
-                        .row
-                            .col-xs-12.col-sm-8
-                                label(for="studyFiles") Upload File(s) for Integrity Check
-                            .col-xs-12.col-sm-4
-                                .input-group
-                                    #uploadStatus.form-control No Files Uploaded
-                                    .input-group-btn
-                                        button.btn.btn-default#integrityUpload(type="button") Load
-                            input#studyFiles(type="file", name="studyFiles", data-url="integrity/", multiple)
+                    .alert.alert-warning
+                        | To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.
+                    .row
+                        .col-xs-12.col-sm-8
+                            b Select Family
+                        .col-xs-12.col-sm-4
+                            .btn-group.btn-group-justified(data-toggle='buttons')
+                                label.btn.btn-default(for="gaussian")
+                                    input#gaussian(type='radio', name='family', value="gaussian", autocomplete='off')
+                                    | Gaussian
+                                label.btn.btn-default.active(for="binomial")
+                                    input#binomial(type='radio', name='family', value="binomial", autocomplete='off', checked='')
+                                    | Binomial
+                    .row
+                        .col-xs-12.col-sm-8
+                            label(for="studyFiles") Upload File(s) for Integrity Check
+                        .col-xs-12.col-sm-4
+                            .input-group
+                                #uploadStatus.form-control No Files Uploaded
+                                .input-group-btn
+                                    button.btn.btn-default#integrityUpload(type="button") Load
+                        input#studyFiles(type="file", name="studyFiles[]", multiple)
+                    #studySelections.panel-group(role='tablist')
                 fieldset
                   legend.termToDefine(data-term="file_pathway") Select or upload the pathway file
                   ul

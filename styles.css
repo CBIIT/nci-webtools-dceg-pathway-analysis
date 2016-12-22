@@ -45,6 +45,9 @@ form .ms-parent > button {
   width: 100% !important;
   height: 35px;
 }
+form .studies > .panel-title {
+  font-weight: bold;
+}
 form input,
 form select {
   float: left;

@@ -10,6 +10,7 @@ import RequestProcessor
 from stompest.config import StompConfig
 from stompest.sync import Stomp
 import threading
+import random
 
 app = Flask(__name__)
 
@@ -41,8 +42,21 @@ def buildSuccess(message):
 @app.route('/integrity', methods=["POST"])
 @app.route('/integrity/', methods=["POST"])
 def integrity():
+  print(request.form)
   if len(request.files) > 0:
-    return buildSuccess("Files uploaded! " + str(request.files))
+    studyDetails = []
+    print(request.files["studyFiles[]"])
+    print(request)
+    for studyFile in request.files:
+      print type(studyFile)
+      print studyFile
+      study = { 
+        "file" : str(studyFile), 
+        "resources" : random.randint(0, 20) 
+      }
+
+      studyDetails.append(study)  
+    return buildSuccess(studyDetails)
   else:
     return buildFailure("No files uploaded")
 

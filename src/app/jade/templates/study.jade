@@ -19,6 +19,11 @@
 //-                     input#num_resource(type="text", name="num_resource", value="1", required='')
 //-                 ul.resource-list
 
-.studies
-    .studyTitle
-    
+.studies.panel.panel-default
+    .panel-heading(role="tab") 
+        .panel-title
+            a.studyTitle(role="button", data-toggle="collapse", data-parent="#studySelections") 
+                b {%= studyTitle %}
+                i.toggleIcons.pull-right.glyphicon.glyphicon-chevron-left
+    .panel-collapse.collapse(role="tabpanel")
+        .panel-body
