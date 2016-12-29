@@ -1,3 +1,2 @@
-.studyResources.col-xs-12.col-sm-6.col-md-4
-    .input
-        input#sample_size(type="number", name="sample_size", min="1", value="")
+.studyResources
+    input#sample_size(type="number", name="sample_size", min="1", value="", pattern="/(\d+)[^,]?+/gm")

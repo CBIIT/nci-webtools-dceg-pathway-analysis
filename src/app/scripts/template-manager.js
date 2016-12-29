@@ -20,6 +20,18 @@ $(function () {
                 value: form[0].family.value
             }];
         },
+        add: function(e, data) {
+            console.log(e);
+            console.log(data);
+            paramIds = [];
+            $.each(data.paramName, function(i, param){
+                paramIds.push(param + "_" + (i + 1));
+            });
+
+            data.paramName = paramIds;
+
+            data.submit();
+        },
         start: function () {
             $("#studySelections").empty().html('<div><img src="/common/images/loading.gif"></span></div>');
         },
@@ -39,10 +51,6 @@ $(function () {
         },
         fail: function (e, data) {
             $("#studySelections").empty();
-            $("#uploadStatus").addClass('has-error');
-            console.log(data.errorThrown);
-            console.log(data.textStatus);
-            console.log(data.jqXHR);
         },
         done: function (e, data) {
             $("#studySelections").empty();
@@ -50,9 +58,6 @@ $(function () {
                 // display integrity check result
                 addStudy(data.files, data.result);
             }
-        },
-        always: function () {
-
         }
     });
 });
@@ -67,7 +72,7 @@ function addStudy(studyFiles, studyData) {
         var studyInd = i + 1;
         var newStudy = $("#snippets .studies").clone();
         newStudy.find('.panel-heading').attr('id', "studyHeading-" + studyInd);
-        newStudy.find("a.studyTitle").attr("href", "#study-" + studyInd).attr("aria-controls", "study-" + i).find("b").html(studyFiles[i].name + " (Study #" + studyInd + ")");
+        newStudy.find("a.panel-title").attr("href", "#study-" + studyInd).attr("aria-controls", "study-" + i).find("b").html(studyFiles[i].name + " (Study #" + studyInd + ")");
         newStudy.find(".panel-collapse").attr("id", "study-" + studyInd);
 
         var resources = studyData.message[i].resources;
@@ -75,6 +80,28 @@ function addStudy(studyFiles, studyData) {
         addStudyResource(studyInd, resources, newStudy);
 
         $("#studySelections").append(newStudy);
+
+        var inputLambda = $("input#lambda_" + studyInd);
+        var inputSamples = $("textarea#sample_sizes_" + studyInd);
+
+        var lambdaRules = {
+            required: true,
+            messages: {
+                required: "Lambda for Study #" + studyInd + " is required",
+            }
+        };
+        
+        var sampleSizeRules = {
+            required: true,
+            csFormat: true,
+            messages: {
+                required: "Sample Sizes for Study #" + studyInd + " are required",
+                csFormat: "Sample Sizes for Study #" + studyInd + " are in invalid format"
+            }
+        };
+
+        $(inputLambda).rules("add", lambdaRules);
+        $(inputSamples).rules("add", sampleSizeRules);
     }
 
     $("#studySelections").collapse();
@@ -82,18 +109,12 @@ function addStudy(studyFiles, studyData) {
 }
 
 function addStudyResource(studyNum, resources, studyElm) {
-    studyElm.find('.panel-body').append("<div class='resourceList'></div>");
+    if(resources > 0) {
+        studyElm.find("#lambda").attr('id', 'lambda_' + studyNum).attr('name', 'lambda_' + studyNum);
+        studyElm.find("#sample_sizes").attr('id', 'sample_sizes_' + studyNum).attr('name', 'sample_sizes_' + studyNum).attr("placeholder", "Enter sample sizes for (" + resources + ") resource(s) (separated by comma):")
+        .attr("aria-label", "Enter sample sizes for (" + resources + ") resource(s) separated by comma");
 
-    for (var res = 1; res <= resources; res++) {
-        // One study file can contain one or more data resources
-        var newResource = $("#snippets .studyResources").clone();
-
-        newResource.find("input").attr('id', 'resource_' + studyNum + '_' + res)
-        .attr("placeholder", "Enter sample size for resource #" + res)
-        .attr("aria-label", "Enter sample size for resource #" + res);
-
-        studyElm.find('.panel-body .resourceList').append(newResource);
-
+        studyElm.find(".studyResources span").html("Enter sample sizes for </b>(" + resources + ")</b> resource(s) (separated by comma):");
     }
 
     return studyElm;

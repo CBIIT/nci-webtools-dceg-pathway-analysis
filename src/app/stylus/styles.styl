@@ -69,9 +69,14 @@ form
     //         padding 0
     //         &.placeholder
     //             color initial
-    .studies > .panel-title
-        font-weight bold
-    input, select
+    .studies
+        > .panel-title
+            font-weight bold
+        > .panel-heading.error
+            border 1px solid red
+            border-radius inherit
+            background #f8c2c2
+    input, select, textarea
         float left
         &.error
             border 1px solid red
@@ -134,7 +139,7 @@ header
         background-image linear-gradient(to right, rgba(0, 0, 0, 0) 8%, #BB0E3D, rgba(0, 0, 0, 0) 100%);
 #page-head
     color #FFF
-    background #BB0E3D 50%
+    background linear-gradient(to right, #bb0e3d 80%, transparent)
     border-radius 5px 5px 0 0
     padding 10px
     margin 0 auto

@@ -48,26 +48,35 @@ form .ms-parent > button {
 form .studies > .panel-title {
   font-weight: bold;
 }
+form .studies > .panel-heading.error {
+  border: 1px solid #f00;
+  background: #f8c2c2;
+}
 form input,
-form select {
+form select,
+form textarea {
   float: left;
 }
 form input.error,
-form select.error {
+form select.error,
+form textarea.error {
   border: 1px solid #f00;
   background: rgba(225,0,0,0.24);
 }
 form input.error:before,
-form select.error:before {
+form select.error:before,
+form textarea.error:before {
   content: "*";
 }
 form input:not([type='radio']):not([type='checkbox']),
-form select:not([type='radio']):not([type='checkbox']) {
+form select:not([type='radio']):not([type='checkbox']),
+form textarea:not([type='radio']):not([type='checkbox']) {
   height: 35px;
   width: 100%;
 }
 form input.input-fit[type='text'],
-form select.input-fit[type='text'] {
+form select.input-fit[type='text'],
+form textarea.input-fit[type='text'] {
   width: 254px;
 }
 form #studyFiles {
@@ -136,7 +145,11 @@ header hr {
 }
 #page-head {
   color: #fff;
-  background: #bb0e3d 50%;
+  background: -webkit-linear-gradient(left, #bb0e3d 80%, transparent);
+  background: -moz-linear-gradient(left, #bb0e3d 80%, transparent);
+  background: -o-linear-gradient(left, #bb0e3d 80%, transparent);
+  background: -ms-linear-gradient(left, #bb0e3d 80%, transparent);
+  background: linear-gradient(to right, #bb0e3d 80%, transparent);
   border-radius: 5px 5px 0 0;
   padding: 10px;
   margin: 0 auto;

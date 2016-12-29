@@ -45,7 +45,7 @@ def integrity():
   print(request.form)
   if len(request.files) > 0:
     studyDetails = []
-    print(request.files["studyFiles[]"])
+    print(request.files)
     print(request)
     for studyFile in request.files:
       print type(studyFile)

@@ -28,13 +28,9 @@ section#tab-tool.tab-pane
                                     input#binomial(type='radio', name='family', value="binomial", autocomplete='off', checked='')
                                     | Binomial
                     .row
-                        .col-xs-12.col-sm-8
-                            label(for="studyFiles") Upload File(s) for Integrity Check
+                        .col-xs-12.col-sm-8 &nbsp;
                         .col-xs-12.col-sm-4
-                            .input-group
-                                #uploadStatus.form-control No Files Uploaded
-                                .input-group-btn
-                                    button.btn.btn-default#integrityUpload(type="button") Load
+                            button.col-xs-12.btn.btn-default#integrityUpload(type="button") Upload File(s) for Integrity Check
                         input#studyFiles(type="file", name="studyFiles[]", multiple)
                     #studySelections.panel-group(role='tablist')
                 fieldset

@@ -91,16 +91,9 @@
                     </div>
                   </div>
                   <div class="row">
-                    <div class="col-xs-12 col-sm-8">
-                      <label for="studyFiles">Upload File(s) for Integrity Check</label>
-                    </div>
+                    <div class="col-xs-12 col-sm-8">&nbsp;</div>
                     <div class="col-xs-12 col-sm-4">
-                      <div class="input-group">
-                        <div id="uploadStatus" class="form-control">No Files Uploaded</div>
-                        <div class="input-group-btn">
-                          <button id="integrityUpload" type="button" class="btn btn-default">Load</button>
-                        </div>
-                      </div>
+                      <button id="integrityUpload" type="button" class="col-xs-12 btn btn-default">Upload File(s) for Integrity Check</button>
                     </div>
                     <input id="studyFiles" type="file" name="studyFiles[]" multiple>
                   </div>
@@ -373,17 +366,21 @@
         <!-- dynamic template for a study entry-->
         <!-- display in accordion/collapsible manner-->
         <div class="studies panel panel-default">
-          <div role="tab" class="panel-heading"> 
-            <div class="panel-title"><a role="button" data-toggle="collapse" data-parent="#studySelections" class="studyTitle"> <b>{%= studyTitle %}</b><i class="toggleIcons pull-right glyphicon glyphicon-chevron-left"></i></a></div>
-          </div>
+          <div role="tab" class="panel-heading"> <a role="button" data-toggle="collapse" data-parent="#studySelections" class="panel-title"> 
+              <div class="studyTitle"><b>{%= studyTitle %}</b><i class="toggleIcons pull-right glyphicon glyphicon-chevron-left"></i></div></a></div>
           <div role="tabpanel" class="panel-collapse collapse">
-            <div class="panel-body"></div>
+            <div class="panel-body">
+              <div class="lambda col-xs-12 col-sm-6"><span data-term="lambda" for="lambda" class="input-group-addon termToDefine">Lambda (&lambda;):</span>
+                <input id="lambda" type="text" name="lambda" required class="form-control">
+              </div>
+              <div class="studyResources col-xs-12 col-sm-6"><span for="sample_sizes" class="input-group-addon"></span>
+                <textarea id="sample_sizes" name="sample_sizes" rows="3" pattern="/(d+)[^,]?+/gm" required class="form-control"></textarea>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="studyResources col-xs-12 col-sm-6 col-md-4">
-          <div class="input">
-            <input id="sample_size" type="number" name="sample_size" min="1" value="">
-          </div>
+        <div class="studyResources">
+          <input id="sample_size" type="number" name="sample_size" min="1" value="" pattern="/(d+)[^,]?+/gm">
         </div>
       </div>
     </div>

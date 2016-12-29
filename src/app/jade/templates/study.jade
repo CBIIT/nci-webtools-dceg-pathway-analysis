@@ -1,29 +1,17 @@
 // dynamic template for a study entry
 // display in accordion/collapsible manner
-//- .studies
-//-         .studyTitle Study #
-//-         ul
-//-             li
-//-                 .alert.alert-warning To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.
-//-             li
-//-                 label(for='study') Browse and select study file:
-//-                 .input
-//-                     input#study(type='file', name='study',  required='')
-//-             li
-//-                 label.termToDefine(data-term="lambda", for="lambda") Lambda (&lambda;):
-//-                 .input
-//-                     input#lambda(type="text", name="lambda",value="1.0", required='')
-//-             li
-//-                 label(for="num_resource") Number of data resources in this study:
-//-                 .input
-//-                     input#num_resource(type="text", name="num_resource", value="1", required='')
-//-                 ul.resource-list
 
 .studies.panel.panel-default
     .panel-heading(role="tab") 
-        .panel-title
-            a.studyTitle(role="button", data-toggle="collapse", data-parent="#studySelections") 
+        a.panel-title(role="button", data-toggle="collapse", data-parent="#studySelections") 
+            .studyTitle
                 b {%= studyTitle %}
                 i.toggleIcons.pull-right.glyphicon.glyphicon-chevron-left
     .panel-collapse.collapse(role="tabpanel")
         .panel-body
+            .lambda.col-xs-12.col-sm-6
+                span.input-group-addon.termToDefine(data-term="lambda", for="lambda") Lambda (&lambda;):
+                input.form-control#lambda(type="text", name="lambda", required)
+            .studyResources.col-xs-12.col-sm-6
+                span.input-group-addon(for="sample_sizes")
+                textarea#sample_sizes.form-control(name="sample_sizes", rows="3", pattern="/(\d+)[^,]?+/gm", required)
