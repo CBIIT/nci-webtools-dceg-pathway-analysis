@@ -6,6 +6,29 @@ runARTP <- function(parameters) {
   id.str <- parameters$idstr
   out.dir <- parameters$outdir
   studies <- parameters$studies
+  ## comments by Han Zhang May 24, 2017
+  ## parameters mush contain a element named family
+  ## it is a character
+  ## it takes value of 'binomial' or 'gaussian'
+  ## please match its value exactly, 'Binomial' or 'GAUSSIAN', for example, are not accepted
+  family <- parameters$family
+  # end of comments by Han Zhang May 24, 2017
+  
+  ## comments by Han Zhang May 24, 2017
+  ## parameters must contain a element named excluded.snps
+  ## the value of excluded.snps is the path of file uploaded by user in the section "Options"
+  ## if user does not upload such a file, set it as NULL in parameters
+  ## the uploaded file must be plain text, one column of characters, no header. File extension does not matter
+  ## put the following three lines into a file for testing purpose:
+  ##rs12354
+  ##rs2978654
+  ##rs37651290
+  excluded.snps <- parameters$excluded.snps
+  if(!is.null(excluded.snps)){
+    excluded.snps <- scan(excluded.snps, what = 'character')
+  }
+  # end of comments by Han Zhang May 24, 2017
+  
   # Turn Studies into ARTP Readable Form
   summary.files <- c()
   lambda <- c()
@@ -55,6 +78,10 @@ runARTP <- function(parameters) {
                   gene.R2 = as.numeric(parameters$gene),
                   rm.gene.subset = parameters$gene_subset,
                   selected.subs = as.character(parameters$population),
+                  ## comments by Han Zhang May 24, 2017
+                  ## add this option
+                  excluded.snps = excluded.snps,
+                  ## end of comments by Han Zhang May 24, 2017
                   inspect.snp.n = as.integer(parameters$snp_n),
                   inspect.snp.percent = as.numeric(parameters$snp_percent),
                   inspect.gene.n = as.integer(parameters$gene_n),
@@ -62,7 +89,7 @@ runARTP <- function(parameters) {
                   only.setup = TRUE, 
                   save.setup = FALSE)
   # Run the analysis
-  family <- 'gaussian'
+  # family <- 'gaussian' # deleted by Han Zhang May 24, 2017
   setup <- sARTP(summary.files, pathway, family, reference, lambda, nsamples=sample.size, options = options)
   ret1 <- warm.start(setup)
   
