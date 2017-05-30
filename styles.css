@@ -1,23 +1,27 @@
 html {
-  background: -webkit-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: -moz-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: -o-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: -ms-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
-  background: linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  font-size: 11pt;
 }
 .division-logo {
   max-width: 600px;
   margin-left: 3%;
 }
 body {
-  background: #fff;
-  padding-bottom: 1%;
-  font-size: 1em;
-  margin: 0 auto;
-  width: 100%;
+  background: -webkit-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: -moz-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: -o-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: -ms-linear-gradient(left, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+  background: linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,0.4) 19%, rgba(255,255,255,0.2) 100%);
+}
+a {
+  text-decoration: underline;
+}
+#content {
+  width: 93%;
   float: right;
-  -webkit-box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
-  box-shadow: -9px 17px 31px -4px rgba(0,0,0,0.75);
+  background: #fff;
+}
+.tab-content {
+  min-height: 900px;
 }
 .ui-autocomplete {
   overflow-x: hidden;
@@ -28,11 +32,23 @@ body {
 .ui-widget {
   font-size: inherit;
 }
-p {
-  padding: 20px 24px;
+.nav-tabs {
+  margin-bottom: 1%;
 }
 form {
   background: #fff;
+}
+form ol li {
+  margin: 2% auto;
+}
+form ul {
+  display: block;
+  padding-left: 16px;
+}
+form li {
+  position: relative;
+  padding: 4px 0px;
+  clear: both;
 }
 form button.ui-button-icon-only,
 form a.ui-button {
@@ -73,44 +89,35 @@ form ul#select2-database_pathway-results {
   float: left;
   width: 100%;
 }
+form ul.resource-list {
+  padding: 0;
+}
 form ul li {
   list-style: none;
 }
-form .custom-combobox {
-  position: relative;
-  display: inline-block;
-}
-form .custom-combobox a {
-  height: 33px;
-  vertical-align: bottom;
-}
-form .error.ms-choice,
-form .error.custom-combobox-input {
-  border: 1px solid #f00;
-  background: rgba(225,0,0,0.24);
+form ul li.studyResources .resourceNum {
+  text-align: center;
+  padding: 10px;
+  font-weight: bold;
 }
 form .warning {
   background: #ffd700;
   border: 5px solid #daa520;
   padding: 5px;
 }
-#content {
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
-  display: block;
-  width: 100%;
-  margin: 0px auto;
-  max-width: 800px;
+.family:not(.show),
+#calculate:not(.show),
+#messageBox:not(.show),
+#spinner:not(.show),
+progress:not(.show),
+#sub_pop:not(.show),
+button#removeControl:not(.show) {
+  display: none;
 }
 #mainTitle {
   text-align: center;
   clear: both;
   font-size: x-large;
-}
-header {
-  padding: 2% 0;
-  margin-top: 0;
 }
 header hr {
   width: 100%;
@@ -123,6 +130,9 @@ header hr {
   background-image: -o-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: linear-gradient(to right, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
+}
+#page-head h1 {
+  text-align: center;
 }
 .subHeading {
   font-size: medium;
@@ -140,21 +150,18 @@ header hr {
   padding: 0px 20px;
   text-align: left;
 }
-#errorDisplay,
-#successBox {
+#messageBox {
   padding: 1%;
   margin: 10px auto;
   clear: both;
   text-align: center;
   font-size: 0.9em;
 }
-#errorDisplay li,
-#successBox li {
+#messageBox li {
   list-style: none;
   margin: 0 auto;
 }
-#errorDisplay li.error,
-#successBox li.error {
+#messageBox li.error {
   width: inherit;
   float: none;
   color: inherit;
@@ -170,18 +177,6 @@ header hr {
   width: 20px;
   float: left;
 }
-ol li {
-  margin: 2% auto;
-}
-ul {
-  display: block;
-  padding-left: 16px;
-}
-li {
-  position: relative;
-  padding: 4px 0px;
-  clear: both;
-}
 label {
   display: block;
   float: left;
@@ -192,7 +187,9 @@ fieldset {
   border: 0.1em groove;
 }
 legend {
-  font-size: 1em;
+  padding: 5px;
+  border: 1px solid;
+  font-size: inherit;
   font-weight: bold;
 }
 progress {
@@ -205,8 +202,8 @@ progress {
   height: 16px;
   margin-left: 5px;
 }
-.studyResources {
-  float: right;
+#studyEntry {
+  margin: 10px auto;
 }
 .studyResources label {
   padding: 0 5px;
@@ -231,12 +228,13 @@ progress {
   margin: 2% 0;
 }
 .buttonGroup {
-  margin: 0 auto;
+  margin: 10px auto;
   text-align: center;
 }
-.buttonGroup button {
+.buttonGroup button,
+.buttonGroup button.show {
   width: 300px;
-  display: inline-block;
+  display: inline-block !important;
 }
 .input {
   position: relative;
@@ -285,25 +283,19 @@ footer ul li a {
   color: #000;
 }
 
-@media (min-width: 1279px) {
-  body {
-    width: 93%;
-    font: 0.9em "Verdana", "Geneva", "sans-serif";
-  }
-}
 @media (max-width: 990px) {
+  body {
+    background: none;
+    font-size: 13pt;
+  }
   .tooltip {
     display: none;
   }
-}
-@media (min-width: 481px) and (max-width: 810px) {
   #content {
-    max-width: 810px;
+    max-width: 100%;
     margin: 0px;
     padding: 0px 5px;
   }
-}
-@media (max-width: 990px) {
   .ui-accordion .ui-accordion-content {
     padding: 0.5em;
   }
@@ -315,7 +307,7 @@ footer ul li a {
   }
   footer ul li {
     display: block;
-    margin: 0;
+    margin: 10px 0;
     width: 100%;
   }
   .tooltip {
@@ -331,12 +323,18 @@ footer ul li a {
     width: 25px;
     height: 25px;
   }
+  .input {
+    float: left;
+  }
+  .input input,
+  .input:not([type='radio']),
+  .input:not([type='checkbox']),
+  .input select {
+    width: 80%;
+  }
 }
 @media (max-width: 480px) {
-  #content {
-    width: 360px;
-  }
   .division-logo {
-    max-width: 330px;
+    width: 340px;
   }
 }

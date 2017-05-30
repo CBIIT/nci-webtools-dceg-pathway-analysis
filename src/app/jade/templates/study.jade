@@ -1,20 +1,29 @@
 // dynamic template for a study entry
 // display in accordion/collapsible manner
 .studies
-        .studyTitle Study #
-        ul
-            li
-                .warning To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.
-            li
-                label(for='study') Browse and select study file:
-                .input
-                    input#study(type='file', name='study',  required='')
-            li
-                label.termToDefine(data-term="lambda", for="lambda") Lambda (&lambda;):
-                .input
-                    input#lambda(type="text", name="lambda",value="1.0", required='')
-            li
-                label(for="num_resource") Number of data resources in this study:
-                .input
-                    input#num_resource(type="text", name="num_resource", value="1", required='')
-                ul.resource-list
+    .studyTitle Study #
+    ul
+        .alert.alert-warning
+            | To avoid issues, please keep file sizes under 20MB. If your file is larger than this, consider compressing it or splitting it into several analyses.
+        li.text-center
+            b Family:
+            .btn-group(data-toggle="buttons")
+                label.btn.btn-default(for='family')
+                    input(type="radio", name="family", aria-label="Family type bionomial", value="bionomial")
+                    | Bionomial
+                label.btn.btn-default.active(for='family')
+                    input(type="radio", name="family", aria-label="Family type gaussian", value="gaussian", checked="true")
+                    | Gaussian
+        li
+            label(for='study') Browse and select study file:
+            .input
+                input#study(type='file', name='study',  required='')
+        li
+            label.termToDefine(data-term="lambda", for="lambda") Lambda (&lambda;):
+            .input
+                input#lambda(type="text", name="lambda",value="1.0", required='')
+        li
+            label(for="num_resource") Number of data resources in this study:
+            .input
+                input#num_resource(type="text", name="num_resource", value="1", required='')
+            ul.resource-list

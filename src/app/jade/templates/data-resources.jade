@@ -1,4 +1,12 @@
 li.studyResources
-    label(for="sample_size") Enter the sample size for resource
-    .input
-        input#sample_size(type="number", name="sample_size", min="1", value="")
+    .well.well-sm
+        .row
+            .col-xs-12.col-sm-3
+                .resourceNum
+            .col-xs-12.col-sm-9
+                .col-xs-12.col-sm-4
+                    input#sample_size(type="number", name="sample_size", min="1", value="", placeholder="Sample Size", aria-label="Sample Size")
+                .family.col-xs-12.col-sm-4
+                    input#sample_case(type="number", name="sample_case", placeholder="Sample Size of Case", aria-label="Sample Size of Case")
+                .family.col-xs-12.col-sm-4
+                    input#sample_control(type="number", name="sample_control", placeholder="Sample Size of Control", aria-label="Sample Size of Control")

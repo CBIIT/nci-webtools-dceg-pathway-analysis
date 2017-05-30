@@ -1,96 +1,99 @@
-form(name='pathForm', action='calculate/', method='POST', enctype='multipart/form-data')
-    fieldset
-        legend.termToDefine(data-term="study") Study Selection
-        #studyEntry
-        button.addControl(title="study") Add Study
-    fieldset
-      legend.termToDefine(data-term="file_pathway") Select or upload the pathway file:
-      ul
-        li
-            input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
-            label(for="database_pathway_option") Select from&nbsp;
-                span#pop-list existing pathways:
-            .input.ui-widget
-                label(for='database_pathway') Search
-                input#database_pathway(name='database_pathway')
-        li
-            input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
-            label(for="file_pathway_option") Upload from the client:
-            .input
-                label(for='file_pathway') Upload
-                input#file_pathway(type='file', name='file_pathway')
-    fieldset
-        legend.termToDefine(data-term="population") Select the population:
-        ul
-            li
-                label(for="super_population") Super Population:
-                .input
-                    select#super_population(name="super_population",required='')
-                      option(value='') -- Select a super population --
-            li
-                label(for="population") Sub Population:
-                .input.hide
-                    select#population(name="population",required='', multiple)
-    fieldset
-      legend Set the following options:
-      ul
-        li
-            label.termToDefine(data-term="nperm", for='nperm') nperm:
-            .input
-                input#nperm(type='text', name='nperm', value='1e+5')
-        li
-            #refinep_div.input
-                input#refinep(type='checkbox', name='refinep')
-                label(for='refinep') Refine p-Value
-        li
-            label.termToDefine(data-term="miss_rate", for='miss_rate') snp.miss.rate:
-            .input
-                input#miss_rate(type='number', name='miss_rate', value='0.05', required='')
-        li
-            label.termToDefine(data-term="maf", for='maf') maf:
-            .input
-                input#maf(type='number', name='maf', value='0.05', required='')
-        li
-            label.termToDefine(data-term="hwep", for='hwep') HWE.p:
-            .input
-                input#hwep(type='text', name='hwep', value='1e-5', required='')
-        li
-            label.termToDefine(data-term="gene", for='gene') Gene.R2:
-            .input
-                input#gene(type='number', name='gene', value='0.95', required='')
-        li
-            label.termToDefine(data-term="chr", for='chr') Chr.R2:
-            .input
-                input#chr(type='number', name='chr', value='0.95', required='')
-        li
-            label.termToDefine(data-term="gene_subset", for='gene_subset') rm.gene.subset:
-            .input
-                input#gene_subset(type='checkbox', name='gene_subset')
-        li
-            label.termToDefine(data-term="snp_n", for='snp_n') inspect.snp.n:
-            .input
-                input#snp_n(type='number', name='snp_n', value='5', required='')
-        li
-            label.termToDefine(data-term="snp_percent", for='snp_percent') inspect.snp.percent:
-            .input
-                input#snp_percent(type='number', name='snp_percent', value='0', required='')
-        li
-            label.termToDefine(data-term="gene_n", for='gene_n') inspect.gene.n:
-            .input
-                input#gene_n(type='number', name='gene_n', value='10', required='')
-        li
-            label.termToDefine(data-term="gene_percent", for='gene_percent') inspect.gene.percent:
-            .input
-                input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
-    fieldset
-      legend Results:
-      ul
-        li
-            label(for='email') E-mail (Results will be sent here):
-            .input
-                input#email(type='email', name='email', required='')
-    .buttonGroup
-        button#calculate(type='button') Calculate
-        button#reset(type='button') Reset
-        progress(value='0')
-    #spinner
+section#tab-tool.tab-pane
+    .section-content
+        #messageBox.alert
+        form(name='pathForm', action='calculate/', method='POST', enctype='multipart/form-data')
+            fieldset
+                legend.termToDefine(data-term="study") Study Selection
+                #studyEntry
+                button#addControl(title="study")
+                    span.glyphicon.glyphicon-plus
+                    | Add Study
+            fieldset
+              legend.termToDefine(data-term="file_pathway") Select or upload the pathway file:
+              ul
+                li
+                    input#database_pathway_option(type='radio', name='pathway_type', value='database_pathway', checked='')
+                    label(for="database_pathway_option") Select from&nbsp;
+                        span#pop-list existing pathways:
+                    .input.ui-widget
+                        input#database_pathway(name='database_pathway', aria-label="Search")
+                li
+                    input#file_pathway_option(type='radio', name='pathway_type', value='file_pathway')
+                    label(for="file_pathway_option") Upload from the client:
+                    .input
+                        input#file_pathway(type='file', name='file_pathway', aria-label="Upload")
+            fieldset
+                legend.termToDefine(data-term="population") Select the population:
+                ul
+                    li
+                        label(for="super_population") Super Population:
+                        .input
+                            select#super_population(name="super_population",required='')
+                              option(value='') -- Select a super population --
+                    li#sub_pop
+                        label(for="population") Sub Population:
+                        .input
+                            select#population(name="population",required='', multiple)
+            fieldset
+              legend Set the following options:
+              ul
+                li
+                    label.termToDefine(data-term="nperm", for='nperm') nperm:
+                    .input
+                        input#nperm(type='text', name='nperm', value='1e+5')
+                li
+                    #refinep_div.input
+                        input#refinep(type='checkbox', name='refinep')
+                        label(for='refinep') Refine p-Value
+                li
+                    label.termToDefine(data-term="miss_rate", for='miss_rate') snp.miss.rate:
+                    .input
+                        input#miss_rate(type='number', name='miss_rate', value='0.05', required='')
+                li
+                    label.termToDefine(data-term="maf", for='maf') maf:
+                    .input
+                        input#maf(type='number', name='maf', value='0.05', required='')
+                li
+                    label.termToDefine(data-term="hwep", for='hwep') HWE.p:
+                    .input
+                        input#hwep(type='text', name='hwep', value='1e-5', required='')
+                li
+                    label.termToDefine(data-term="gene", for='gene') Gene.R2:
+                    .input
+                        input#gene(type='number', name='gene', value='0.95', required='')
+                li
+                    label.termToDefine(data-term="chr", for='chr') Chr.R2:
+                    .input
+                        input#chr(type='number', name='chr', value='0.95', required='')
+                li
+                    label.termToDefine(data-term="gene_subset", for='gene_subset') rm.gene.subset:
+                    .input
+                        input#gene_subset(type='checkbox', name='gene_subset')
+                li
+                    label.termToDefine(data-term="snp_n", for='snp_n') inspect.snp.n:
+                    .input
+                        input#snp_n(type='number', name='snp_n', value='5', required='')
+                li
+                    label.termToDefine(data-term="snp_percent", for='snp_percent') inspect.snp.percent:
+                    .input
+                        input#snp_percent(type='number', name='snp_percent', value='0', required='')
+                li
+                    label.termToDefine(data-term="gene_n", for='gene_n') inspect.gene.n:
+                    .input
+                        input#gene_n(type='number', name='gene_n', value='10', required='')
+                li
+                    label.termToDefine(data-term="gene_percent", for='gene_percent') inspect.gene.percent:
+                    .input
+                        input#gene_percent(type='number', name='gene_percent', step=".01", value='0.05', required='')
+            fieldset
+              legend Results:
+              ul
+                li
+                    label(for='email') E-mail (Results will be sent here):
+                    .input
+                        input#email(type='email', name='email', required='')
+            .buttonGroup
+                button#calculate(type='button') Calculate
+                button#reset(type='button') Reset
+                progress(value='0')
+            #spinner

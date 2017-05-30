@@ -1,21 +1,26 @@
 @import 'nib'
 
 html
-    background linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,.4) 19%, rgba(255,255,255,0.2) 100%)
-
+    font-size 11pt
+    
 .division-logo
     max-width 600px
     margin-left 3%
 
 body
-    background white
-    padding-bottom 1%
-    font-size 1em
-    margin 0 auto
-    width 100%
+    background linear-gradient(to right, rgba(169,3,41,0.8) 0%, rgba(143,2,34,0.6) 4%, rgba(255,255,255,.4) 19%, rgba(255,255,255,0.2) 100%)
+    
+a
+    text-decoration underline
+    
+#content
+    width 93%
     float right
-    box-shadow -9px 17px 31px -4px rgba(0,0,0,0.75)
-
+    background white
+    
+.tab-content
+    min-height 900px
+    
 .ui-autocomplete
     overflow-x hidden
     overflow-y auto
@@ -25,11 +30,19 @@ body
 .ui-widget
     font-size inherit
 
-p
-    padding 20px 24px
-
+.nav-tabs
+    margin-bottom 1%
 form
     background white
+    ol li
+        margin 2% auto
+    ul
+        display block
+        padding-left 16px
+    li
+        position relative
+        padding 4px 0px
+        clear both
     button.ui-button-icon-only, a.ui-button
         height 35px
         margin 0px
@@ -57,44 +70,39 @@ form
         &#select2-database_pathway-results
             float left
             width 100%
+        &.resource-list
+            padding 0
         li
             list-style none
-    .custom-combobox
-        position relative
-        display inline-block
-        a
-            height 33px
-            vertical-align bottom
-    .error
-        &.ms-choice, &.custom-combobox-input
-            border 1px solid red
-            background rgba(225, 0, 0, 0.24)
+            &.studyResources
+                .resourceNum
+                    text-align center
+                    padding 10px
+                    font-weight bold
+
     .warning
       background gold
       border 5px solid goldenrod
       padding 5px
-#content
-    box-sizing border-box
-    display block
-    width 100%
-    margin 0px auto
-    max-width 800px
-
+      
+.family, #calculate, #messageBox, #spinner, progress, #sub_pop, button#removeControl
+    &:not(.show)
+        display none
+        
 #mainTitle
     text-align center
     clear both
     font-size x-large
-header
-    padding 2% 0
-    margin-top 0
-    hr
-        width 100%
-        float right
-        margin 0
-        border 0
-        height 13px
-        background-image linear-gradient(to right, rgba(0, 0, 0, 0) 8%, #BB0E3D, rgba(0, 0, 0, 0) 100%);
-
+header hr
+    width 100%
+    float right
+    margin 0
+    border 0
+    height 13px
+    background-image linear-gradient(to right, rgba(0, 0, 0, 0) 8%, #BB0E3D, rgba(0, 0, 0, 0) 100%);
+#page-head
+    h1
+        text-align center
 .subHeading
     font-size medium
     border 3px ridge rgba(0, 66, 118, 0.47)
@@ -109,7 +117,7 @@ header
         padding 0px 20px
         text-align left
 
-#errorDisplay,#successBox
+#messageBox
     padding 1%
     margin 10px auto
     clear both
@@ -133,17 +141,6 @@ header
         width 20px
         float left
 
-ol li
-    margin 2% auto
-ul
-    display block
-    padding-left 16px
-
-li
-    position relative
-    padding 4px 0px
-    clear both
-
 label
     display block
     float left
@@ -154,7 +151,9 @@ fieldset
     border 0.1em groove
 
 legend
-    font-size 1em
+    padding 5px
+    border 1px solid
+    font-size inherit
     font-weight bold
 
 progress
@@ -166,8 +165,11 @@ progress
     width 16px
     height 16px
     margin-left 5px
+    
+#studyEntry
+    margin 10px auto
+
 .studyResources
-    float right
     label
         padding 0 5px
 #refinep
@@ -189,11 +191,11 @@ progress
     margin 2% 0
 
 .buttonGroup
-    margin 0 auto
+    margin 10px auto
     text-align center
-    button
+    button, button.show
         width 300px
-        display inline-block
+        display inline-block !important
 
 .input
     position relative

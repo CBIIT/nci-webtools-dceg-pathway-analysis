@@ -1,5 +1,5 @@
 $(function () {
-    var errors_div = $("#errorDisplay");
+    var errors_div = $("#messageBox");
     $.validator.addMethod("boundedMax", function (value, element, params) {
         return value < params;
     });
@@ -11,6 +11,9 @@ $(function () {
 
     var validationElements = {
         study: {
+            required: true
+        },
+        family: {
             required: true
         },
         database_pathway: {
@@ -33,7 +36,6 @@ $(function () {
         population: {
             required: {
                 depends: function (element) {
-                   
                     return element.value.length === 0 && document.getElementById("super_population").value.length > 0;
                 }
             }
@@ -103,6 +105,9 @@ $(function () {
         study: {
             required: "You must upload at least one study file",
             extension: "You uploaded an incorrect file type. Please upload only .study files."
+        },
+        family: {
+            required: "You must select a family",
         },
         file_pathway: {
             required: "You must upload a pathway file",
@@ -183,7 +188,7 @@ $(function () {
         focusCleanup: true,
         ignoreTitle: true,
         errorElement: "li",
-        errorLabelContainer: "#errorDisplay",
+        errorLabelContainer: "#messageBox",
         errorPlacement: function (error, element) {
             errors_div.find("ul").append(error);
             $(element).addClass("error");
@@ -196,10 +201,10 @@ $(function () {
                 errors_div.html("<b>There " + grammar + ", see details below: </b>");
                 this.defaultShowErrors();
 
-                errors_div.show();
+                errors_div.addClass('alert-danger show');
             } else {
                 $(pathForm).find('input,select').removeClass('error');
-                errors_div.hide().empty();
+                errors_div.removeClass('alert-danger show').empty();
             }
         }
     });
@@ -217,89 +222,95 @@ $(function () {
                 $("#population").next().find('.ms-choice').children()
                     .andSelf().addClass(errorClass);
             }
+
+            if( $(el).parents(".studies").length > 0 ) {
+                var studyIndex = $(el).parents(".studies").index();
+                $("#studyEntry").accordion("refresh").accordion({
+                    active: studyIndex
+                }).accordion("option", "active");
+            }
         },
         unhighlight: function (el, errorClass, validClass) {
-            if (el.id != "population" && el.name != "selectItempopulation" &&
-                el.name != "selectAllpopulation"){
+            if ((el.id != "population") && (el.name != "selectItempopulation") &&
+                (el.name != "selectAllpopulation")) {
                 $(el).removeClass(errorClass);
-            }
-            else {
+            } else {
                 $("#population").next().find('.ms-choice').children().andSelf().removeClass(errorClass);
             }
+            
         }
     });
 });
-
 
 var pathways_list = [];
 
 var population_labels = {
     'AFR': {
-        'fullName':'African',
-        'subPopulations':{
-            'YRI':'Yoruba in Ibadan, Nigera',
-            'LWK':'Luhya in Webuye, Kenya',
-            'GWD':'Gambian in Western Gambia',
-            'MSL':'Mende in Sierra Leone',
-            'ESN':'Esan in Nigera',
-            'ASW':'Americans of African Ancestry in SW USA',
-            'ACB':'African Carribbeans in Barbados'
+        'fullName': 'African',
+        'subPopulations': {
+            'YRI': 'Yoruba in Ibadan, Nigera',
+            'LWK': 'Luhya in Webuye, Kenya',
+            'GWD': 'Gambian in Western Gambia',
+            'MSL': 'Mende in Sierra Leone',
+            'ESN': 'Esan in Nigera',
+            'ASW': 'Americans of African Ancestry in SW USA',
+            'ACB': 'African Carribbeans in Barbados'
         }
     },
     'AMR': {
-        'fullName':'Ad Mixed American',
-        'subPopulations':{
-            'MXL':'Mexican Ancestry from Los Angeles, USA',
-            'PUR':'Puerto Ricans from Puerto Rico',
-            'CLM':'Colombians from Medellin, Colombia',
-            'PEL':'Peruvians from Lima, Peru'
+        'fullName': 'Ad Mixed American',
+        'subPopulations': {
+            'MXL': 'Mexican Ancestry from Los Angeles, USA',
+            'PUR': 'Puerto Ricans from Puerto Rico',
+            'CLM': 'Colombians from Medellin, Colombia',
+            'PEL': 'Peruvians from Lima, Peru'
         }
     },
-    'EAS':{
-        'fullName':'East Asian',
-        'subPopulations':{
-            'CHB':'Han Chinese in Bejing, China',
-            'JPT':'Japanese in Tokyo, Japan',
-            'CHS':'Southern Han Chinese',
-            'CDX':'Chinese Dai in Xishuangbanna, China',
-            'KHV':'Kinh in Ho Chi Minh City, Vietnam'
+    'EAS': {
+        'fullName': 'East Asian',
+        'subPopulations': {
+            'CHB': 'Han Chinese in Bejing, China',
+            'JPT': 'Japanese in Tokyo, Japan',
+            'CHS': 'Southern Han Chinese',
+            'CDX': 'Chinese Dai in Xishuangbanna, China',
+            'KHV': 'Kinh in Ho Chi Minh City, Vietnam'
         }
     },
-    'EUR':{
-        'fullName':'European',
-        'subPopulations':{
-            'CEU':'Utah Residents from North and West Europe',
-            'TSI':'Toscani in Italia',
-            'FIN':'Finnish in Finland',
-            'GBR':'British in England and Scotland',
-            'IBS':'Iberian population in Spain'
+    'EUR': {
+        'fullName': 'European',
+        'subPopulations': {
+            'CEU': 'Utah Residents from North and West Europe',
+            'TSI': 'Toscani in Italia',
+            'FIN': 'Finnish in Finland',
+            'GBR': 'British in England and Scotland',
+            'IBS': 'Iberian population in Spain'
         }
     },
-    'SAS':{
-        'fullName':'South Asian',
-        'subPopulations':{
-            'GIH':'Gujarati Indian from Houston, Texas',
-            'PJL':'Punjabi from Lahore, Pakistan',
-            'BEB':'Bengali from Bangladesh',
-            'STU':'Sri Lankan Tamil from the UK',
-            'ITU':'Indian Telugu from the UK'
+    'SAS': {
+        'fullName': 'South Asian',
+        'subPopulations': {
+            'GIH': 'Gujarati Indian from Houston, Texas',
+            'PJL': 'Punjabi from Lahore, Pakistan',
+            'BEB': 'Bengali from Bangladesh',
+            'STU': 'Sri Lankan Tamil from the UK',
+            'ITU': 'Indian Telugu from the UK'
         }
     }
 };
 
 function pre_request() {
    
-    $("#spinner").show();
+    $("#spinner").addClass('show');
 
    
-    $(pathForm).find(":input").prop("disabled",true);
+    $(pathForm).find(":input").prop("disabled", true);
     $('button.ui-button').button("disable");
 }
 
 function post_request() {
    
-    $("button#calculate").show();
-    $("progress, #spinner").hide();
+    $("button#calculate").addClass('show');
+    $("progress, #spinner").removeClass('show');
 
    
     $('button.ui-button').button("enable");
@@ -315,12 +326,15 @@ function sendForm(formData) {
         cache: false,
         processData: false,
         contentType: false,
-        xhr: function() {
+        xhr: function () {
             var myXhr = $.ajaxSettings.xhr();
             if (myXhr.upload) {
-                myXhr.upload.addEventListener("progress", function(other) {
+                myXhr.upload.addEventListener("progress", function (other) {
                     if (other.lengthComputable) {
-                        $("progress").attr({value:other.loaded,max:other.total});
+                        $("progress").attr({
+                            value: other.loaded,
+                            max: other.total
+                        });
                     }
                 }, false);
             }
@@ -330,7 +344,7 @@ function sendForm(formData) {
     });
 }
 
-function retrieve_pathways(){
+function retrieve_pathways() {
     return $.ajax({
         url: "pathway_options.json",
         type: "GET",
@@ -341,7 +355,7 @@ function retrieve_pathways(){
     });
 }
 
-function retrieve_populations(){
+function retrieve_populations() {
     return $.ajax({
         url: "population_options.json",
         type: "GET",
@@ -353,35 +367,40 @@ function retrieve_populations(){
 }
 
 function submission_result(response) {
-    if(response.success){
+    if (response.success) {
         resetForm();
 
        
-        $( "#successBox #message" ).text(response.message);
-        $( "#successBox").show();
-        document.querySelector("#successBox").scrollIntoView(true);
+        $("#messageBox").html("<span class='glyphicon glyphicon-ok'></span><div id='message'>" + response.message + "</div>");
+        $("#messageBox").addClass('show');
+        document.querySelector("#messageBox").scrollIntoView(true);
 
-        setTimeout(function(){
-            $( "#successBox" ).fadeOut().hide();
-            $( "#successBox #message" ).html("");
+        setTimeout(function () {
+            $("#messageBox").fadeOut().removeClass('show');
+            $("#messageBox #message").html("");
         }, 10000);
     } else {
-      submission_error({"responseText": JSON.stringify(response)},200);
+        submission_error({
+            "responseText": JSON.stringify(response)
+        }, 200);
     }
 }
 
-function apply_options(element, items){
+function apply_options(element, items) {
     var source = [];
     if (typeof items === 'undefined') {
-        return function(data) {
+        return function (data) {
             $(element).attr("placeholder", data.length + " existing pathways");
-            data.forEach(function(item, i) {
+            data.forEach(function (item, i) {
                 var option = $("<option></option>");
-                item.text = item.text.replace(/_/g," ");
+                item.text = item.text.replace(/_/g, " ");
 
                 pathways_list.push(item.text);
 
-                source.push({ value: item.code, label: item.text });
+                source.push({
+                    value: item.code,
+                    label: item.text
+                });
             });
 
             $(element).autocomplete({
@@ -390,19 +409,29 @@ function apply_options(element, items){
             });
         };
     } else {
-        return function(data) {
+        return function (data) {
             var populations = {};
-            data.forEach(function(item, i) {
-                populations[item.group] = populations[item.group] || (items[item.group]?{fullName:items[item.group].fullName,subPopulations:{}}:{fullName:item.group,subPopulations:{}});
+            data.forEach(function (item, i) {
+                populations[item.group] = populations[item.group] || (items[item.group] ? {
+                    fullName: items[item.group].fullName,
+                    subPopulations: {}
+                } : {
+                    fullName: item.group,
+                    subPopulations: {}
+                });
                 populations[item.group].subPopulations[item.subPopulation] = items[item.group].subPopulations[item.subPopulation] || item.text;
             });
             population_labels = populations;
-            $.each(population_labels, function(key, item) {
+            $.each(population_labels, function (key, item) {
                 var option = $("<option></option>");
                 $(option).val(key);
                 $(option).text('(' + key + ') ' + item.fullName);
                 element.append(option);
-                source.push({label: item.fullName, value: key, option: option});
+                source.push({
+                    label: item.fullName,
+                    value: key,
+                    option: option
+                });
             });
         };
     }
@@ -416,35 +445,38 @@ function submission_error(request, statusText, error) {
         if (request.status == 500) {
             errorMessage = "An unknown error occurred. The service may be unavailable. Please try again later or contact the administrator.";
         } else {
-            errorMessage = "The request failed with the following message: <br/> "+ JSON.parse(request.responseText).message;
+            errorMessage = "The request failed with the following message: <br/> " + JSON.parse(request.responseText).message;
         }
-        displayErrors("#errorDisplay",[errorMessage]);
+        displayErrors("#messageBox", [errorMessage]);
     }
 }
 
 function get_options_error(option_type) {
-    return function(request, statusText, error) {
-        displayErrors("#errorDisplay",
-                      ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
+    return function (request, statusText, error) {
+        displayErrors("#messageBox", ["There was a problem retrieving the " + option_type + " options from the server. Try again later."]);
     };
 }
 
-$(function() {
+$(function () {
     $("button").button();
     var count = 2;
-    var hold = function() {
+    var hold = function () {
         count--;
         if (count <= 0) post_request();
     };
    
-    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).then(function(){
-        if(pathways_list.length > 0){
-            $("#pop-list").addClass("termToDefine");
+    retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).then(function () {
+        if (pathways_list.length > 0) {
+
             $('#dialogElm').html(pathways_list.join("<br />"));
 
             $('#dialogElm').dialog({
                 autoOpen: false,
-                position: { my: "left center", at: "left bottom", of: "#pop-list" },
+                position: {
+                    my: "left center",
+                    at: "left bottom",
+                    of: "#pop-list"
+                },
                 title: "Existing Pathways",
                 width: 400,
                 maxWidth: 400,
@@ -452,7 +484,7 @@ $(function() {
                 maxHeight: 300
             });
 
-            $(document).on("click", "#pop-list", function() {
+            $(document).on("click", "#pop-list", function () {
                 $('#dialogElm').dialog("open");
             });
         }
@@ -463,10 +495,6 @@ $(function() {
 });
 
 
-
-
-
-
 function addStudy() {
    
     var studyTemplate = $("#snippets").find(".studies").clone();
@@ -475,40 +503,60 @@ function addStudy() {
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
-    var firstResource = addStudyResource(studyIndex,1);
+    studyTemplate.html(function (ind, htmlString) {
+       
+        return htmlString.replace("-1", "-" + studyIndex);
+    });
+
+    var firstResource = addStudyResource(studyIndex, 1);
     studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
     studyTemplate.find(".studyTitle").append(studyIndex);
 
+
     var studyLabel = studyTemplate.find('[for="study"]');
-    studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
+    studyLabel.attr("for", studyLabel.attr("for") + "_" + studyIndex);
     var studyId = studyTemplate.find("#study");
-    studyId.attr("name",studyId.attr("id")+"_"+studyIndex).attr("id",studyId.attr("id")+"_"+studyIndex);
+    studyId.attr("name", studyId.attr("id") + "_" + studyIndex).attr("id", studyId.attr("id") + "_" + studyIndex);
 
     var lambdaLabel = studyTemplate.find('[for="lambda"]');
-    lambdaLabel.attr("for",lambdaLabel.attr("for")+"_"+studyIndex);
+    lambdaLabel.attr("for", lambdaLabel.attr("for") + "_" + studyIndex);
     var lambdaId = studyTemplate.find("#lambda");
-    lambdaId.attr("name",lambdaId.attr("id")+"_"+studyIndex).attr("id",lambdaId.attr("id")+"_"+studyIndex);
+    lambdaId.attr("name", lambdaId.attr("id") + "_" + studyIndex).attr("id", lambdaId.attr("id") + "_" + studyIndex);
 
     var numLabel = studyTemplate.find('[for="num_resource"]');
-    numLabel.attr("for",numLabel.attr("for")+"_"+studyIndex);
+    numLabel.attr("for", numLabel.attr("for") + "_" + studyIndex);
     var numId = studyTemplate.find("#num_resource");
-    numId.attr("name",numId.attr("id")+"_"+studyIndex).attr("id",numId.attr("id")+"_"+studyIndex);
+    numId.attr("name", numId.attr("id") + "_" + studyIndex).attr("id", numId.attr("id") + "_" + studyIndex);
 
    
     $("#studyEntry").append(studyTemplate);
-    firstResource.find('input').rules("add", {
-        required: true,
-        digits: true,
-        messages: {
-            required: "The sample size value is required",
-            digits: "The sample size value must be an integer"
+
+    $.each($('#studyEntry .studyResources input'), function (ind, el) {
+        var rules = {
+            messages: {}
+        };
+        
+        if(el.id.indexOf("sample_size_") > -1) {
+            rules.required = true;
+            rules.digits = true;
+            
+            rules.messages.required = "The " + $(el).attr('aria-label') + " for Study " + el.id.charAt(12) + " is required";
+            rules.messages.digits = "The " + $(el).attr('aria-label') + " for Study " + el.id.charAt(12) + " must be an integer";
         }
+        
+        if(el.id.indexOf("sample_case_") > -1 || el.id.indexOf("sample_control_") > -1) {
+            rules.required = false;
+            var studyInd = (el.id.indexOf("sample_case_") > -1) ? el.id.charAt(13) : el.id.charAt(15);
+            rules.messages.required = "The " + $(el).attr('aria-label') + " for Study " + studyIndex + " is required";
+        }
+        
+        $(el).rules("add", rules);
     });
 
     studyId.rules("add", {
         required: true,
         messages: {
-            required: "The " + studyId.attr('id') + " field is required",
+            required: "A file is required for Study " + studyIndex,
         }
     });
 
@@ -517,21 +565,37 @@ function addStudy() {
         number: true,
         min: 1,
         messages: {
-            required: "The " + lambdaId.attr('id') + " field is required",
-            number: "The " + lambdaId.attr('id') + " value must be a number",
-            min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
+            required: "The Lambda value for Study " + studyIndex + " is required",
+            number: "The Lambda value for Study " + studyIndex + " must be a number",
+            min: "The Lambda value for Study " + studyIndex + " must be greater than or equal to 1"
         }
     });
-    
+
     numId.rules("add", {
         required: true,
         number: true,
         min: 1,
         messages: {
-            required: "The " + numId.attr('id') + " field is required",
-            number: "The " + numId.attr('id') + " value must be a number",
-            min: "The " + numId.attr('id') + " value must be greater than or equal to 1"
+            required: "The Number of Resources for Study " + studyIndex + " is required",
+            number: "The Number of Resources for Study " + studyIndex + " must be a number",
+            min: "The Number of Resources for Study " + studyIndex + " must be greater than or equal to 1"
         }
+    });
+    
+    studyTemplate.find("input[name='family']").on('change', function (e) {
+        var value = $(e.target).val();
+        var req = (value == 'bionomial') ? true : false;
+
+        $.each($("form .family input"), function (i, input) {
+            $(input).rules("add", {
+                required: req
+            });
+        });
+
+        if (req)
+            $(pathForm).find(".family").addClass("show");
+        else
+            $(pathForm).find(".family").removeClass("show");
     });
 
    
@@ -540,9 +604,11 @@ function addStudy() {
     }).accordion("option", "active");
 
     studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
-        var id = $(this).prop('id');
+        var elemId = $(this).prop('id');
+        var id = elemId.substr(13);
+
         var valid = false;
-        valid = $(this).validate().element('#' + id);
+        valid = $(this).validate().element('#' + elemId);
         if (valid) {
             var choice;
             if (this.value > 20)
@@ -551,23 +617,38 @@ function addStudy() {
                 choice = true;
 
             if (choice) {
-                var resourceList = studyTemplate.find('ul.resource-list');
-                resourceList.children('.studyResources:nth('+(this.value-1)+') ~ .studyResources').remove();
-                resourceList.find('input').each(function(i,el) {
-                  el.value = '';
-                });
-                for (var i = resourceList.children().length+1; i <= this.value; i++) {
+				var resourceList = studyTemplate.find('.resource-list');
+                removeValidators(resourceList.find('input'));
+                resourceList.children('.studyResources').remove();
+
+                for (var i = resourceList.children().length + 1; i <= this.value; i++) {
                    
                    
-                    var studyResource = addStudyResource(id.substr(13), i);
+                    resourceList = studyTemplate.find("resource-list");
+                    var studyResource = addStudyResource(id, i);
                     resourceList.append(studyResource);
 
-                    studyResource.find('input').rules("add", {
+                    resourceList.find('input[id*="sample_size_'+ id + "_" +  i + '"]').rules("add", {
                         required: true,
                         digits: true,
                         messages: {
-                            required: "The sample size value is required",
-                            digits: "The sample size value must be an integer"
+                            required: "The Sample Size for Resource #" + i + " is required",
+                            digits: "The Sample Size for Resource #" + i + " must be an integer"
+                        }
+                    });
+
+                   
+                    resourceList.find('input[id*="sample_case_'+ id + "_" +  i + '"]').rules("add", {
+                        required: false,
+                        messages: {
+                            required: "The Sample Size Case for Resource #" + i + " is required"
+                        }
+                    });
+
+                    resourceList.find('input[id*="sample_control_'+ id + "_" +  i + '"]').rules("add", {
+                        required: false,
+                        messages: {
+                            required: "The Sample Size Control for Resource #" + i + " is required"
                         }
                     });
                 }
@@ -576,19 +657,34 @@ function addStudy() {
     });
 }
 
+
+function removeValidators(inputs) {
+    $.each(inputs, function (ind, el) {
+        el.value = "";
+        $(el).rules("remove");
+    });
+}
+
 function addStudyResource(study, ind) {
     var resource_element = $("#snippets").children(".studyResources").clone();
-    var elementLabel = resource_element.find("label");
-    var elementInput = resource_element.find("input");
 
-    var LabelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
-    var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
+    var eLabels = resource_element.find("label");
+    var eInputs = resource_element.find("input");
 
-    var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
+    resource_element.find('.resourceNum').text("Resource #" + ind);
 
-    elementLabel.attr("for", LabelFor);
-    elementLabel.text(labelText);
-    elementInput.attr("id", inputId).attr("name", inputId);
+    for (var controlId = 0; controlId < eInputs.length; controlId++) {
+       
+        var elementLabel = $(eLabels[controlId]);
+        var elementInput = $(eInputs[controlId]);
+
+        var labelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
+
+        var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
+
+        elementLabel.attr("for", labelFor);
+        elementInput.attr("id", inputId).attr("name", inputId);
+    }
 
     return resource_element;
 }
@@ -618,27 +714,31 @@ function createConfirmationBox(messageText) {
 }
 
 $(function () {
-    $(".addControl[title='study']")
-        .button({
-            text: true,
-            icons: {
-                primary: "ui-icon-circle-plus"
-            }
-        })
-        .on("click", function (e) {
-            e.preventDefault();
+    $("button#addControl").on("click", function (e) {
+        e.preventDefault();
 
-            var previousValid = false;
-            $(pathForm).find(".studies input").each(function (i, el) {
-                previousValid = $(el).validate().element("#" + el.id);
-                return previousValid;
-            });
-
-            if (previousValid)
-                addStudy();
+        var previousValid = false;
+        $("form .studies input").each(function (i, el) {
+            previousValid = $(el).validate().valid();
+            return previousValid;
         });
-});
 
+        if (previousValid) {
+            addStudy();
+
+            $("#studyEntry").accordion("option", "icons", {
+                header: "ui-icon-triangle-1-e",
+                activeHeader: "ui-icon-triangle-1-s"
+            });
+        }
+        else {
+            $("#studyEntry").accordion("option", "icons", {
+                header: "ui-icon-alert",
+                activeHeader: "ui-icon-alert"
+            });
+        }
+    });
+});
 var terms = {
     "study":{
         fullName:"",
@@ -708,183 +808,193 @@ $(function() {
 });
 
 function checkedStateToValue(e) {
-  return $(this).val(this.checked);
+    return $(this).val(this.checked);
 }
 
 function resetForm() {
-  $(pathForm).find(".studies").each(function(i, el) {
-    if(i !== 0) {
-      $(this).remove();
-    } else {
-      $('#lambda_1').val("1.0");
-      $('#study_1').val("");
-      $('#study_1').wrap("<form>").closest("form").get(0).reset();
-      $('#study_1').unwrap();
-      $('#num_resource_1').val("1");
-      $(pathForm).find(".studyResources:not(:first)").remove();
-      $(pathForm).find(".studyResources input").val("");
-    }
-  });
+    $(pathForm).find(".studies").each(function (i, el) {
+        if (i !== 0) {
+            $(this).remove();
+        } else {
+            $('#lambda_1').val("1.0");
+            $('#study_1').val("");
+            $('#study_1').wrap("<form>").closest("form").get(0).reset();
+            $('#study_1').unwrap();
+            $('#num_resource_1').val("1");
+            $(pathForm).find(".studyResources:not(:first)").remove();
+            $(pathForm).find(".studyResources input").val("");
+        }
+    });
 
-  $('#database_pathway_option').attr("checked", "checked");
-  $('#nperm').val((1e5).toExponential());
-  $('#miss_rate').val(0.05);
-  $('#maf').val(0.05);
-  $('#hwep').val((1e-5).toExponential());
-  $('#gene').val(0.95);
-  $('#chr').val(0.95);
-  $('#snp_n').val(5);
-  $('#snp_percent').val(0);
-  $('#gene_n').val(10);
-  $('#gene_percent').val(0.05);
-  $('#email').val("");
-  $(".custom-combobox input").val("");
-  $('#population').html("");
-  $('#refinep')[0].checked = false;
-  $('#gene_subset')[0].checked = false;
-  $('#database_pathway_option')[0].checked = true;
-  $('#database_pathway').val("").trigger('change');
-  $('#super_population').val(0).trigger('change');
-  $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
-  $('#file_pathway').unwrap();
+    $('#database_pathway_option').attr("checked", "checked");
+    $('#nperm').val((1e5).toExponential());
+    $('#miss_rate').val(0.05);
+    $('#maf').val(0.05);
+    $('#hwep').val((1e-5).toExponential());
+    $('#gene').val(0.95);
+    $('#chr').val(0.95);
+    $('#snp_n').val(5);
+    $('#snp_percent').val(0);
+    $('#gene_n').val(10);
+    $('#gene_percent').val(0.05);
+    $('#email').val("");
+    $(".custom-combobox input").val("");
+    $('#population').html("");
+    $('#refinep')[0].checked = false;
+    $('#gene_subset')[0].checked = false;
+    $('#database_pathway_option')[0].checked = true;
+    $('#database_pathway').val("").trigger('change');
+    $('#super_population').val(0).trigger('change');
+    $('#file_pathway').wrap("<form>").closest("form").get(0).reset();
+    $('#file_pathway').unwrap();
 
-  $(pathForm).validate().resetForm();
-  $('#population').parent().addClass('hide');
-  $(pathForm).find("button,input,select,div,span").removeClass("error");
+    $('#sub_pop').removeClass('show');
+    $(pathForm).find("button,input,select,div,span").removeClass("error");
+    $(pathForm).validate().resetForm();
+    $("#messageBox").removeClass("alert-danger show");
+    
 }
 
 function clickCalculate(e) {
-  e.preventDefault();
-  $(pathForm).validate();
-  var proceed = $(pathForm).valid();
+    e.preventDefault();
+    $(pathForm).validate();
+    var proceed = $(pathForm).valid();
 
-  if (proceed) {
-    $(pathForm).find('.error').each(function( ind,el) {
-      $(el).removeClass('error');
-    });
-    $("#calculate").hide();
-    $("progress").show();
+    if (proceed) {
+        $(pathForm).find('.error').each(function (ind, el) {
+            $(el).removeClass('error');
+        });
+        $("#calculate").removeClass('show');
+        $("progress").addClass('show');
 
-    var formData = new FormData(pathForm);
-    var numStudies = 0;
+        var formData = new FormData(pathForm);
+        var numStudies = 0;
 
-    $.each(pathForm, function(ind, el) {
-      if( $(el).is("hidden") &&
-      el.id.indexOf("population") > -1 &&
-      el.name.indexOf("population") > -1 &&
-      el.id.indexOf("database_pathway") > -1) { return true;}
+        $.each(pathForm, function (ind, el) {
+            if ($(el).is("hidden") &&
+                el.id.indexOf("population") > -1 &&
+                el.name.indexOf("population") > -1 &&
+                el.id.indexOf("database_pathway") > -1) {
+                return true;
+            }
 
-     
-      if(el.id.indexOf("study") > -1) numStudies++;
+           
+            if (el.id.indexOf("study") > -1) numStudies++;
 
-     
-      if(el.type == "checkbox"){
-        if(el.checked && el.id)
-        formData.append(el.id, el.checked);
-      }
-    });
+           
+            if (el.type == "checkbox") {
+                if (el.checked && el.id)
+                    formData.append(el.id, el.checked);
+            }
+        });
 
-    formData.append('populations', $('#population').val());
-    formData.append('num_studies', numStudies);
+        formData.append('populations', $('#population').val());
+        formData.append('num_studies', numStudies);
 
-    sendForm(formData).then(submission_result, submission_error)
-    .always(post_request);
-  }
-  else {
-    document.querySelector("#errorDisplay").scrollIntoView(true);
-  }
+        sendForm(formData).then(submission_result, submission_error)
+            .always(post_request);
+    } else {
+        document.querySelector("#messageBox").scrollIntoView(true);
+    }
 }
 
 function retrieveMultiselects(selectedItems) {
-  var valuesContainer = {};
+    var valuesContainer = {};
 
-  $.each(selectedItems, function(i, item) {
-    var groupCode = $('#population').find("option[value='" + item + "']")
-    .parent().attr("label");
+    $.each(selectedItems, function (i, item) {
+        var groupCode = $('#population').find("option[value='" + item + "']")
+            .parent().attr("label");
 
-   
-   
-    if(!valuesContainer[groupCode])
-    valuesContainer[groupCode] = [item];
-    else
-    valuesContainer[groupCode].push(item);
-  });
-
-  return valuesContainer;
-}
-
-function displayErrors(el, messagesArray){
-  $(el).empty();
-
-  messagesArray.forEach(function(message, index){
-    $(el).append(message + "<br />");
-  });
-
-  $(el).show();
-  document.querySelector(el).scrollIntoView(true);
-}
-
-function apply_multiselect_options(element, group){
-  element.html("");
-  if(group.length > 0){
-    $.each(population_labels[group].subPopulations, function (subCode, text) {
-      element.append($("<option />", { value: group + "|" + subCode, text: '(' + subCode + ') ' + text }));
+       
+       
+        if (!valuesContainer[groupCode])
+            valuesContainer[groupCode] = [item];
+        else
+            valuesContainer[groupCode].push(item);
     });
 
-   
-    element.multipleSelect({
-      name: element.prop('id'),
-      width: 400,
-      placeholder: "Select Sub Population(s)",
-      selectAll: true,
-      minimumCountSelected: 2,
-      countSelected: false,
-      onClick:function(view) {
-        element.validate();
-      }
-    });
-    element.multipleSelect("refresh").multipleSelect("uncheckAll");
-    element.parent().removeClass('hide');
-  } else {
-    element.parent().addClass('hide');
+    return valuesContainer;
+}
 
-  }
+function displayErrors(el, messagesArray) {
+    $(el).empty();
+
+    messagesArray.forEach(function (message, index) {
+        $(el).append(message + "<br />");
+    });
+    
+    if(messagesArray.length > 0) {
+        $(el).addClass("alert-danger show");
+        document.querySelector(el).scrollIntoView(true);
+    }
+    else {
+        $(el).removeClass("alert-danger show");
+    }
+}
+
+function apply_multiselect_options(element, group) {
+    element.html("");
+    if (group.length > 0) {
+        $.each(population_labels[group].subPopulations, function (subCode, text) {
+            element.append($("<option />", {
+                value: group + "|" + subCode,
+                text: '(' + subCode + ') ' + text
+            }));
+        });
+
+       
+        element.multipleSelect({
+            name: element.prop('id'),
+            width: 400,
+            placeholder: "Select Sub Population(s)",
+            selectAll: true,
+            minimumCountSelected: 2,
+            countSelected: false,
+            onClick: function (view) {
+                element.validate();
+            }
+        });
+        element.multipleSelect("refresh").multipleSelect("uncheckAll");
+        $("#sub_pop").addClass('show');
+    } else {
+        $("#sub_pop").removeClass('show');
+
+    }
 }
 
 function changeRadioSelection() {
-  $("#database_pathway, #file_pathway").valid();
-  $("input[name='pathway_type'][value='" + this.name + "']")
-  .prop("checked", true);
+    $("#database_pathway, #file_pathway").valid();
+    $("input[name='pathway_type'][value='" + this.name + "']")
+        .prop("checked", true);
 }
 
-$(function() {
-  $(pathForm).on('keyup keypress', function(e) {
+$(function () {
+    $(pathForm).on('keyup keypress', function (e) {
+       
+        var code = e.keyCode || e.which;
+        if (code == 13) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    $("#calculate").on("click", clickCalculate);
+    $("#reset").on("click", resetForm);
+    $("#studyEntry").accordion({
+        collapsible: true,
+        heightStyle: "content",
+        header: ".studyTitle"
+    });
+
    
-    var code = e.keyCode || e.which;
-    if (code == 13) {
-      e.preventDefault();
-      return false;
-    }
-  });
+    $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 
-  $("#calculate").on("click", clickCalculate);
-  $("#reset").on("click", resetForm);
-  $("#errorDisplay, #successBox,progress").hide();
-  $("#studyEntry").accordion({
-    collapsible: true,
-    heightStyle: "content",
-    header: ".studyTitle"
-  });
+    $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
 
- 
-  $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
+    $("select#super_population").on('change', function () {
+        apply_multiselect_options($('#population'), this.value);
+    });
 
-  $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
-
-  $("select#super_population").on('change', function() {
-    apply_multiselect_options($('#population'), this.value);
-  });
-
-  $("#studyEntry").accordion("option", "active", 0);
-  addStudy();// add first element by default, function declaration in template-manager
+    $("#studyEntry").accordion("option", "active", 0);
+    addStudy();
 });

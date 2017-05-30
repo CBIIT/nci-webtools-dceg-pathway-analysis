@@ -3,6 +3,7 @@
 *.pyc
 localserver.py
 *.study
+*.txt.gz
 common/
 examples/
 src/node_modules/

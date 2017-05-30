@@ -1,5 +1,5 @@
 $(function () {
-    var errors_div = $("#errorDisplay");
+    var errors_div = $("#messageBox");
     $.validator.addMethod("boundedMax", function (value, element, params) {
         return value < params;
     });
@@ -11,6 +11,9 @@ $(function () {
 
     var validationElements = {
         study: {
+            required: true
+        },
+        family: {
             required: true
         },
         database_pathway: {
@@ -33,7 +36,6 @@ $(function () {
         population: {
             required: {
                 depends: function (element) {
-                    //                    return element.value.length === 0;
                     return element.value.length === 0 && document.getElementById("super_population").value.length > 0;
                 }
             }
@@ -104,6 +106,9 @@ $(function () {
             required: "You must upload at least one study file",
             extension: "You uploaded an incorrect file type. Please upload only .study files."
         },
+        family: {
+            required: "You must select a family",
+        },
         file_pathway: {
             required: "You must upload a pathway file",
         },
@@ -132,7 +137,7 @@ $(function () {
             boundedMax: "The value you entered for snp.miss.rate is invalid. The value must be a floating number not less than 0 OR not greater than or equal to 1."
         },
         maf: {
-            required: "maf is required", //decimal"
+            required: "maf is required",
             range: "The value you entered for maf is invalid. The value must be a floating number not less than 0 OR not greater than 0.5.",
             scientific_notation_check: "The value you entered for maf is invalid. The value must be a floating number or in scientific notation."
         },
@@ -157,7 +162,7 @@ $(function () {
             min: "The value you entered for inspect.snp.n is invalid. The value must not be less than 1."
         },
         snp_percent: {
-            required: "inspect.snp.percent is required", //decimal"
+            required: "inspect.snp.percent is required",
             range: "The value you entered for inspect.snp.percent is invalid. The value must be a floating number not less than 0 OR not greater than 1."
         },
         gene_n: {
@@ -183,7 +188,7 @@ $(function () {
         focusCleanup: true,
         ignoreTitle: true,
         errorElement: "li",
-        errorLabelContainer: "#errorDisplay",
+        errorLabelContainer: "#messageBox",
         errorPlacement: function (error, element) {
             errors_div.find("ul").append(error);
             $(element).addClass("error");
@@ -196,10 +201,10 @@ $(function () {
                 errors_div.html("<b>There " + grammar + ", see details below: </b>");
                 this.defaultShowErrors();
 
-                errors_div.show();
+                errors_div.addClass('alert-danger show');
             } else {
                 $(pathForm).find('input,select').removeClass('error');
-                errors_div.hide().empty();
+                errors_div.removeClass('alert-danger show').empty();
             }
         }
     });
@@ -217,15 +222,22 @@ $(function () {
                 $("#population").next().find('.ms-choice').children()
                     .andSelf().addClass(errorClass);
             }
+
+            if( $(el).parents(".studies").length > 0 ) {
+                var studyIndex = $(el).parents(".studies").index();
+                $("#studyEntry").accordion("refresh").accordion({
+                    active: studyIndex
+                }).accordion("option", "active");
+            }
         },
         unhighlight: function (el, errorClass, validClass) {
-            if (el.id != "population" && el.name != "selectItempopulation" &&
-                el.name != "selectAllpopulation"){
+            if ((el.id != "population") && (el.name != "selectItempopulation") &&
+                (el.name != "selectAllpopulation")) {
                 $(el).removeClass(errorClass);
-            }
-            else {
+            } else {
                 $("#population").next().find('.ms-choice').children().andSelf().removeClass(errorClass);
             }
+            
         }
     });
 });
