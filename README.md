@@ -1,25 +1,19 @@
-* Jade
-* Stylus
-* Gulp
-* bower
+# Purpose
 
-* partial templates written in jade are turned into html and included in `index.html`
-* css files are concatenated into `styles.css`
+ARTP2 (Adaptive Rank Truncated Product - Version 2) is an R package of biological pathway association analysis or pathway meta-analysis for genome-wide association studies (GWAS).i
+It also provides tools for gene-level association test as a special case. ARTP2 is an enhanced version of two previously released packages ARTP and AdaJoint.
 
-# Usage
-* Code and file structure is managed and compiled by the Gulp.js build system (http://gulpjs.com/, https://github.com/gulpjs/gulp/blob/master/docs/getting-started.md)
-* always work inside of the src folder (except when editing R or python files)
-* store html jade file templates inside jade folder at compilation the files will be merged in the `index.jade` -> `index.html` (review resource @ http://jade-lang.com/)
-* static scripts (js) should be stored in the scripts folder under src. At compilation, these scripts will be merged into one js file
+# Setup
+1. In the top level directory create a directory called app
+2. Move all the files from the top level directory into a directory called app
+3. Get the build.sh script which generates scripts to setup, start, and stop a wsgi application using mod_wsgi-express
+4. In the directory containing the app directory run the following command sh build.sh --name pathway --port 5001 --root `$PWD`
 
-## --- DO THIS AT FIRST USE--
-Install required packages:
-1.    install node.js, if not already installed
-2.    run following commands in command line in the directory which the code will be
-3.    `$ npm install -g` -- to download node packages required for this project and store them globally(Only need to run when first pulling down code or when new node_packages are added in package.json)
-4.    `npm link pathway` -- to link the global node_module to your local instance of the application
-5.    `$ npm run build` -- to compile code which is placed in the root folder
+# Start 
+4. In the directory containing the app directory execute the following script: ./setup-pathway.sh
+5. In the directory containing the app directory execute the following script: ./start-pathway.sh
 
-* Once compiled the code will be generated one folder level above the gulpfile.js in the project root directory
+# Stop
 
-Compile code by running `$ npm run build` in command line while in the `src` directory
+1. In the directory containing the app directory execute the following script: ./stop-pathway.sh
+ 

@@ -7,7 +7,7 @@ html {
 }
 .division-logo {
   max-width: 600px;
-  margin-left: 3%;
+  /* margin-left: 3%; */
 }
 body {
   background: #fff;
@@ -109,7 +109,7 @@ form .warning {
   font-size: x-large;
 }
 header {
-  padding: 2% 0;
+  /* padding: 2% 0; */
   margin-top: 0;
 }
 header hr {
@@ -117,13 +117,14 @@ header hr {
   float: right;
   margin: 0;
   border: 0;
-  height: 13px;
+  height: 6px;
   background-image: -webkit-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: -moz-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: -o-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-image: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
+  background-imageheader: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
   background-image: linear-gradient(to right, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
 }
+
 .subHeading {
   font-size: medium;
   border: 3px ridge rgba(0,66,118,0.47);
@@ -339,4 +340,38 @@ footer ul li a {
   .division-logo {
     max-width: 330px;
   }
+}
+
+header div {
+  background-color: #E06666;
+}
+
+/* The way the title of the application should be representated */
+.title {
+  color: white;
+  font-size: x-large;
+  padding-left: 2em;
+}
+
+header p {
+  padding-top: 1em;
+  padding-bottom: 1em;
+  padding-left:0em;
+  padding-right:0em;
+  margin-top:0px;
+  margin-bottom:0px;
+}
+
+.ui-tabs-nav {
+  display: flex;
+  background: grey;
+}
+
+/* The Style.css forces most ( excepct checkbox or radio ) input elements to  */
+/* be on different lines.  This css rule will allow input elements to be on   */
+/* the same line                                                              */
+/* Assumption : Adds some space after the last element                        */
+#excluded_snp {
+  width: auto !important;
+  padding-left: 4px;
 }

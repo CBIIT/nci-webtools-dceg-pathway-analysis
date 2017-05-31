@@ -4,7 +4,7 @@ $(function () {
         return value < params;
     });
 
-   
+
     jQuery.validator.addMethod('scientific_notation_check', function (value, el) {
         return (typeof Number(value) === "number");
     });
@@ -33,7 +33,7 @@ $(function () {
         population: {
             required: {
                 depends: function (element) {
-                   
+
                     return element.value.length === 0 && document.getElementById("super_population").value.length > 0;
                 }
             }
@@ -96,6 +96,13 @@ $(function () {
         email: {
             required: true,
             email: true
+        },
+        excluded_snp: {
+          required: {
+              depends: function (element) {
+                  return $("#include_excluded_snp").is(":checked");
+              }
+          }
         }
     };
 
@@ -172,11 +179,15 @@ $(function () {
         email: {
             required: "An E-Mail address is required",
             email: "Enter a valid E-Mail address"
+        },
+        excluded_snp: {
+            required: "When the Excluded SNP File button is checked an Exclued SNP File is required."
         }
+
     };
 
-   
-   
+
+
     jQuery.validator.setDefaults({
         ignore: ".custom-combobox-input",
         focusInvalid: false,
@@ -189,7 +200,7 @@ $(function () {
             $(element).addClass("error");
         },
         showErrors: function (errorMap, errorList) {
-           
+
             var errors = this.numberOfInvalids();
             if (errors > 0 && errorList.length > 0) {
                 var grammar = errors == 1 ? "is " + errors + " error" : "are " + errors + " errors";
@@ -204,7 +215,7 @@ $(function () {
         }
     });
 
-   
+
     $(pathForm).validate({
         ignore: ".custom-combobox *",
         rules: validationElements,
@@ -288,20 +299,20 @@ var population_labels = {
 };
 
 function pre_request() {
-   
+
     $("#spinner").show();
 
-   
+
     $(pathForm).find(":input").prop("disabled",true);
     $('button.ui-button').button("disable");
 }
 
 function post_request() {
-   
+
     $("button#calculate").show();
     $("progress, #spinner").hide();
 
-   
+
     $('button.ui-button').button("enable");
     $(pathForm).find(":input").removeAttr("disabled");
 }
@@ -356,7 +367,7 @@ function submission_result(response) {
     if(response.success){
         resetForm();
 
-       
+
         $( "#successBox #message" ).text(response.message);
         $( "#successBox").show();
         document.querySelector("#successBox").scrollIntoView(true);
@@ -430,13 +441,15 @@ function get_options_error(option_type) {
 }
 
 $(function() {
+
+    $("#tabs").tabs();
     $("button").button();
     var count = 2;
     var hold = function() {
         count--;
         if (count <= 0) post_request();
     };
-   
+
     retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).then(function(){
         if(pathways_list.length > 0){
             $("#pop-list").addClass("termToDefine");
@@ -468,10 +481,10 @@ $(function() {
 
 
 function addStudy() {
-   
+
     var studyTemplate = $("#snippets").find(".studies").clone();
 
-   
+
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
@@ -494,7 +507,7 @@ function addStudy() {
     var numId = studyTemplate.find("#num_resource");
     numId.attr("name",numId.attr("id")+"_"+studyIndex).attr("id",numId.attr("id")+"_"+studyIndex);
 
-   
+
     $("#studyEntry").append(studyTemplate);
     firstResource.find('input').rules("add", {
         required: true,
@@ -522,7 +535,7 @@ function addStudy() {
             min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
         }
     });
-    
+
     numId.rules("add", {
         required: true,
         number: true,
@@ -534,7 +547,7 @@ function addStudy() {
         }
     });
 
-   
+
     var activeIndex = $("#studyEntry").accordion("refresh").accordion({
         active: studyCount
     }).accordion("option", "active");
@@ -557,8 +570,8 @@ function addStudy() {
                   el.value = '';
                 });
                 for (var i = resourceList.children().length+1; i <= this.value; i++) {
-                   
-                   
+
+
                     var studyResource = addStudyResource(id.substr(13), i);
                     resourceList.append(studyResource);
 
@@ -774,10 +787,10 @@ function clickCalculate(e) {
       el.name.indexOf("population") > -1 &&
       el.id.indexOf("database_pathway") > -1) { return true;}
 
-     
+
       if(el.id.indexOf("study") > -1) numStudies++;
 
-     
+
       if(el.type == "checkbox"){
         if(el.checked && el.id)
         formData.append(el.id, el.checked);
@@ -802,8 +815,8 @@ function retrieveMultiselects(selectedItems) {
     var groupCode = $('#population').find("option[value='" + item + "']")
     .parent().attr("label");
 
-   
-   
+
+
     if(!valuesContainer[groupCode])
     valuesContainer[groupCode] = [item];
     else
@@ -831,7 +844,7 @@ function apply_multiselect_options(element, group){
       element.append($("<option />", { value: group + "|" + subCode, text: '(' + subCode + ') ' + text }));
     });
 
-   
+
     element.multipleSelect({
       name: element.prop('id'),
       width: 400,
@@ -859,7 +872,7 @@ function changeRadioSelection() {
 
 $(function() {
   $(pathForm).on('keyup keypress', function(e) {
-   
+
     var code = e.keyCode || e.which;
     if (code == 13) {
       e.preventDefault();
@@ -876,7 +889,7 @@ $(function() {
     header: ".studyTitle"
   });
 
- 
+
   $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
 
   $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
@@ -888,3 +901,30 @@ $(function() {
   $("#studyEntry").accordion("option", "active", 0);
   addStudy();// add first element by default, function declaration in template-manager
 });
+
+/**
+ * CheckBox Checked then Choose File Button should appear
+ * Checkbox Unchecked then Choose File Button should disapper
+ */
+ // function clickCheckBox() {
+ //   var queryElement =  $('include_excluded_snp');
+ //   var actionElement = $('excluded_snp');
+ //
+ //   if ( queryElement.is(':visible') === true ) {
+ //     actionElement.show();
+ //   } else {
+ //     actionElement.hide();
+ //   }
+ // }
+
+function clickCheckBox() {
+  var selectedCheckBox = document.getElementById('include_excluded_snp');
+  var guiElement = document.getElementById('excluded_snp');
+
+  if ( selectedCheckBox.checked )
+  {
+    guiElement.style.visibility = 'visible';
+  } else {
+    guiElement.style.visibility = 'hidden';
+  }
+}
