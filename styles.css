@@ -291,6 +291,11 @@ footer ul li a {
     width: 93%;
     font: 0.9em "Verdana", "Geneva", "sans-serif";
   }
+
+  #home-tab, #study-tab, #help-tab {
+    height: 129em;
+    max-height:129em;
+  }
 }
 @media (max-width: 990px) {
   .tooltip {
@@ -362,9 +367,24 @@ header p {
   margin-bottom:0px;
 }
 
-.ui-tabs-nav {
+/*
+/* CSS for the navigation bar ( Has the Home, Study, Help Tabs )              */
+#tabs .ui-tabs-nav {
   display: flex;
-  background: grey;
+  background: transparent;
+}
+
+#home-tab, #study-tab, #help-tab {
+  border: 1px solid black;
+  margin-bottom :-2px;
+}
+
+#tabs .ui-widget-header {
+  border:initial;
+}
+
+#tabs.ui-widget-content {
+  border: initial;
 }
 
 /* The Style.css forces most ( excepct checkbox or radio ) input elements to  */
@@ -374,4 +394,18 @@ header p {
 #excluded_snp {
   width: auto !important;
   padding-left: 4px;
+}
+
+/* Styles for the Family Selection which selects either Bionominal or Gausian */
+#Family_Selection {
+  display: inline-flex;
+  padding-bottom: 5em;
+}
+
+#Family_Selection label {
+  padding-right : 5em;
+}
+
+#Family_Selection div {
+  padding-right : 5em;
 }
