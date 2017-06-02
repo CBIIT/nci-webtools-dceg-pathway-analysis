@@ -56,12 +56,10 @@
                 <legend data-term="study" class="termToDefine">Summary Data</legend>
                 <div id="Family_Selection">
                     <label>Family:</label>
-                    <div>
-                      <input type="radio" name="family" value="binomial" /> Bionominal
-                    </div>
-                    <div>
-                      <input type="radio" name="family" value="gausian" />Gausian
-                    </div>
+                    <input id="binomial" type="radio" name="family" value="binomial" checked="checked" />
+                    <label for="binomial">Binomial</label>
+                    <input id="gaussian" type="radio" name="family" value="gausian" />
+                    <label for="gaussian">Gaussian</label>
                 </div>
                 <div id="studyEntry"></div>
                 <button title="study" class="addControl">Add Study</button>
@@ -260,9 +258,11 @@
           <li>
             <label for="study">Browse and select study file:</label>
             <div class="input">
-              <!-- <input id="study" type="file" name="study" required=""/> -->
               <input id="study" type="file" name="study" />
-              <!-- <button id="LoadAndCheck"type="button">Load &amp; Check</button> -->
+            </div>
+            <div class="input">
+              <input id="loadAndCheckButton" type="button" name="loadAndCheck" value="Load &amp; Check" />
+              <label> No file loaded</label>
             </div>
           </li>
           <li>
@@ -271,6 +271,8 @@
               <input id="lambda" type="text" name="lambda" value="1.0" required=""/>
             </div>
           </li>
+
+        <!--
           <li>
             <label for="num_resource">Number of data resources in this study:</label>
             <div class="input">
@@ -279,13 +281,17 @@
             <ul class="resource-list"></ul>
           </li>
         </ul>
+      -->
       </div>
+
+      <!--
       <li class="studyResources">
         <label for="sample_size">Enter the sample size for resource</label>
         <div class="input">
           <input id="sample_size" type="number" name="sample_size" min="1" value=""/>
         </div>
       </li>
+    -->
     </div>
   </body>
 </html>
