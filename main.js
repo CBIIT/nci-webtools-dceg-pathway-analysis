@@ -490,6 +490,7 @@ function addStudy() {
 
     //var firstResource = addStudyResource(studyIndex,1);
     //studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
+
     studyTemplate.find(".studyTitle").append(studyIndex);
 
     var studyLabel = studyTemplate.find('[for="study"]');
@@ -497,10 +498,27 @@ function addStudy() {
     var studyId = studyTemplate.find("#study");
     studyId.attr("name",studyId.attr("id")+"_"+studyIndex).attr("id",studyId.attr("id")+"_"+studyIndex);
 
+
+    // Add the Id, name, on click attributes to the new LoadAndCheckButton
+    var loadAndStudyButton = studyTemplate.find('#loadAndCheckButton');
+    var idButton1 = loadAndStudyButton.attr("id") + "_" + studyIndex;
+    loadAndStudyButton.
+      attr("id", idButton1).
+      attr("name", idButton1).
+      on("click", loadAndValidate);
+
     var lambdaLabel = studyTemplate.find('[for="lambda"]');
     lambdaLabel.attr("for",lambdaLabel.attr("for")+"_"+studyIndex);
     var lambdaId = studyTemplate.find("#lambda");
     lambdaId.attr("name",lambdaId.attr("id")+"_"+studyIndex).attr("id",lambdaId.attr("id")+"_"+studyIndex);
+
+    var resetButton = studyTemplate.find("#resetStudy");
+    var idButton2 = resetButton.attr("id") + "_" + studyIndex;
+    resetButton.
+      attr("id", idButton2).
+      attr("name", idButton2).
+
+      on("click", resetStudy);
 
     //var numLabel = studyTemplate.find('[for="num_resource"]');
     //numLabel.attr("for",numLabel.attr("for")+"_"+studyIndex);
@@ -927,4 +945,47 @@ function clickCheckBox() {
   } else {
     guiElement.style.visibility = 'hidden';
   }
+}
+
+/*
+ * Code that will reset a study
+ */
+ function resetStudy(e) {
+   var uniquePartOfVariable = e.target.id.split("_")[1];
+
+   var studyFilename = "study_" + uniquePartOfVariable;
+   var lamdaName = "lambda_" + uniquePartOfVariable;
+
+   $("#" + studyFilename).val("");
+   $("#" + lamdaName).val("1.0");
+ }
+
+ /*
+  * Code that will load and validate
+  */
+function loadAndValidate(e) {
+      alert("Made it into the function")
+      alert("e --> " + e.target.id);
+      alert("yippie --> " + $('#' + e.target.id).parent().html());
+
+      // return $.ajax({
+      //     //beforeSend: pre_request,
+      //     type: "POST",
+      //     url: "/loadAndCheck_summaryData",
+      //     data: formData,
+      //     cache: false,
+      //     processData: false,
+      //     contentType: false,
+      //     xhr: function() {
+      //         var myXhr = $.ajaxSettings.xhr();
+      //         if (myXhr.upload) {
+      //             myXhr.upload.addEventListener("progress", function(other) {
+      //                 if (other.lengthComputable) {
+      //                     $("progress").attr({value:other.loaded,max:other.total});
+      //                 }
+      //             }, false);
+      //         }
+      //         return myXhr;
+      //     },
+      //     dataType: "json"
 }

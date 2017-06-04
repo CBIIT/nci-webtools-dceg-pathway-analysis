@@ -10,6 +10,8 @@ import RequestProcessor
 from stompest.config import StompConfig
 from stompest.sync import Stomp
 import threading
+import logging
+import request
 
 app = Flask(__name__)
 
@@ -37,6 +39,32 @@ def buildSuccess(message):
   response.mimetype = 'application/json'
   response.status_code = 200
   return response
+
+@app.route('/loadAndCheck_summaryData', methods = ['POST'])
+def loadAndCheck_summaryData():
+
+    response = { 'errorMessage': '', 'numberOfRecords': 0 }
+
+    try:
+        requestData = request.get_json(force=True);
+        logging.info("request data = " + str(requestData))
+
+        response['numberOfRecords'] = r.FormatCheckWrapper(requestData["filename"])
+
+    except Exception as e:
+        logging.error(str(type(e)))
+        logging.error(str(e))
+
+        partsOfErrorMessage = str(e).split(':')
+        logging.debug("len = " + str(partsOfErrorMessage))
+        if ( len(partsOfErrorMessage) == 1 ):
+            response['errorMessage'] = str(e)
+        else:
+            response['errorMessage'] = partsOfErrorMessage[1].strip()
+
+    logging.info("response data " + str(response))
+    return jsonify(response)
+
 
 @app.route('/calculate', methods=['POST'])
 @app.route('/calculate/', methods=['POST'])
@@ -120,11 +148,11 @@ def calculate():
     parameters['outdir'] = app.config['OUT_FOLDER']
     parameters['refinep'] = parameters.get('refinep',"").lower() in ['true','t','1']
     parameters['gene_subset'] = parameters.get('gene_subset',"").lower() in ['true','t','1']
-    
+
     jsonout = {"submittedTime": parameters['idstr'], "payload": parameters}
     with open(os.path.join(app.config['OUT_FOLDER'],str(parameters['idstr'])+'.json'),'w') as outfile:
       json.dump(jsonout,outfile)
-    
+
     client = Stomp(pathwayConfig[QUEUE_CONFIG])
     client.connect()
     client.send(pathwayConfig.getAsString(QUEUE_NAME), json.dumps(parameters))
@@ -145,7 +173,7 @@ def main():
   app.config['UPLOAD_FOLDER'] = os.path.join(pathwayConfig.getAsString(FOLDERROOT), pathwayConfig.getAsString(UPLOAD_FOLDER))
   app.config['OUT_FOLDER'] = os.path.join(pathwayConfig.getAsString(FOLDERROOT),pathwayConfig.getAsString(OUT_FOLDER))
   app.config['PLINK_PATTERN'] = os.path.join(pathwayConfig.getAsString(FOLDERROOT),pathwayConfig.getAsString(PLINK_PATTERN))
-  
+
   if not os.path.exists(app.config['OUT_FOLDER']):
     os.makedirs(app.config['OUT_FOLDER'])
   if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -154,5 +182,3 @@ def main():
   OptionGenerator()
 
 main()
-
-

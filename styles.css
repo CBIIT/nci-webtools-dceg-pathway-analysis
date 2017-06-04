@@ -416,17 +416,15 @@ header p {
 }
 
 
-/* Styles the load & Check button.  The buttons are part of them template so  */
-/* the id will have an _<number> attached to each id.  The class will be added*/
-/* dynamically using jquery                                                   */
-/* #content .studies [id^=loadAndCheckButton]                                 */
-/* {                                                                          */
-/*  width: 10em;                                                              */
-/*  height: initial;                                                          */
-/* }                                                                          */
-
+/* Styles the load & Check button and the Reset Study Button                  */
+/* The buttons are part of them template so the id will have                  */
+/* an _<number> attached to each id.                                          */
 #content .studies [id^=loadAndCheckButton] {
   margin-right:.1em;
   width:initial;
   height: initial;
+}
+
+#content .studies [id^=resetStudy]{
+  width: auto;
 }
