@@ -67,7 +67,6 @@ $(function () {
         maf: {
             required: true,
             scientific_notation_check: true,
-            range: [0, 0.5]
         },
         chr: {
             required: true,
@@ -496,28 +495,46 @@ function addStudy() {
     var studyLabel = studyTemplate.find('[for="study"]');
     studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
     var studyId = studyTemplate.find("#study");
-    studyId.attr("name",studyId.attr("id")+"_"+studyIndex).attr("id",studyId.attr("id")+"_"+studyIndex);
+    studyId.
+      attr("name",studyId.attr("id")+"_"+studyIndex).
+      attr("id",studyId.attr("id")+"_"+studyIndex);
 
 
     // Add the Id, name, on click attributes to the new LoadAndCheckButton
+    // Added a data attribute data-sample_size_id since I needed an integer
+    // that would provide me with the number for the sample size of each
+    // resource.  I put here it so that each template could have it own
+    // attribute.
     var loadAndStudyButton = studyTemplate.find('#loadAndCheckButton');
     var idButton1 = loadAndStudyButton.attr("id") + "_" + studyIndex;
     loadAndStudyButton.
       attr("id", idButton1).
       attr("name", idButton1).
-      on("click", loadAndValidate);
+      on("click", loadAndValidate).
+      attr("data-total_number_of_resources","0");
+
+    var loadAndStudyLabel = studyTemplate.find('#loadAndCheckLabel');
+    var idButtonLabel1 = loadAndStudyLabel.attr("id") + "_" + studyIndex;
+
+    // Add the Id, name to the new load and study label.  This will be place
+    // where all message about validation of the study files will be placed.
+    loadAndStudyLabel.
+      attr("id", idButtonLabel1).
+      attr("name", idButtonLabel1);
 
     var lambdaLabel = studyTemplate.find('[for="lambda"]');
     lambdaLabel.attr("for",lambdaLabel.attr("for")+"_"+studyIndex);
     var lambdaId = studyTemplate.find("#lambda");
-    lambdaId.attr("name",lambdaId.attr("id")+"_"+studyIndex).attr("id",lambdaId.attr("id")+"_"+studyIndex);
+    lambdaId.
+      attr("name",lambdaId.attr("id")+"_"+studyIndex).
+      attr("id",lambdaId.attr("id")+"_"+studyIndex).
+      change(test);
 
     var resetButton = studyTemplate.find("#resetStudy");
     var idButton2 = resetButton.attr("id") + "_" + studyIndex;
     resetButton.
       attr("id", idButton2).
       attr("name", idButton2).
-
       on("click", resetStudy);
 
     //var numLabel = studyTemplate.find('[for="num_resource"]');
@@ -608,6 +625,8 @@ function addStudy() {
 }
 
 function addStudyResource(study, ind) {
+
+
     var resource_element = $("#snippets").children(".studyResources").clone();
     var elementLabel = resource_element.find("label");
     var elementInput = resource_element.find("input");
@@ -949,15 +968,21 @@ function clickCheckBox() {
 
 /*
  * Code that will reset a study
+ *
+ * TODO : Currently the definition of study filename and the lambda name is
+ *        in
  */
  function resetStudy(e) {
    var uniquePartOfVariable = e.target.id.split("_")[1];
 
-   var studyFilename = "study_" + uniquePartOfVariable;
-   var lamdaName = "lambda_" + uniquePartOfVariable;
+   var studyFilenameInput = "study_" + uniquePartOfVariable;
+   var lamdaNameInput = "lambda_" + uniquePartOfVariable;
+   var loadAndCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
 
-   $("#" + studyFilename).val("");
-   $("#" + lamdaName).val("1.0");
+
+   $("#" + studyFilenameInput).val("");
+   $("#" + lamdaNameInput).val("1.0");
+   $("#" + loadAndCheckButton).attr("data-total_number_of_resources","0");
  }
 
  /*
@@ -965,27 +990,54 @@ function clickCheckBox() {
   */
 function loadAndValidate(e) {
       alert("Made it into the function")
-      alert("e --> " + e.target.id);
-      alert("yippie --> " + $('#' + e.target.id).parent().html());
 
-      // return $.ajax({
-      //     //beforeSend: pre_request,
-      //     type: "POST",
-      //     url: "/loadAndCheck_summaryData",
-      //     data: formData,
-      //     cache: false,
-      //     processData: false,
-      //     contentType: false,
-      //     xhr: function() {
-      //         var myXhr = $.ajaxSettings.xhr();
-      //         if (myXhr.upload) {
-      //             myXhr.upload.addEventListener("progress", function(other) {
-      //                 if (other.lengthComputable) {
-      //                     $("progress").attr({value:other.loaded,max:other.total});
-      //                 }
-      //             }, false);
-      //         }
-      //         return myXhr;
-      //     },
-      //     dataType: "json"
+      // Create the unique id that will retrieve the data from the form.
+      var uniquePartOfVariable = e.target.id.split("_")[1];
+      var studyFilenameInput = "study_" + uniquePartOfVariable;
+      var loadAnCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
+      var loadAnCheckLabel = "loadAndCheckLabel_" + uniquePartOfVariable;
+
+      // Retreive the data from the form and add the variable containing the
+      // filename of the study
+      var formData = new FormData(pathForm);
+      formData.append('currentStudy', studyFilenameInput);
+
+      //return $.ajax({
+      var result = $.ajax({
+           //beforeSend: pre_request,
+           type: "POST",
+           url: "/loadAndCheck_summaryData/",
+           data: formData,
+           cache: false,
+           processData: false,
+           contentType: false,
+           //xhr: function() {
+           //     var myXhr = $.ajaxSettings.xhr();
+           //     if (myXhr.upload) {
+           //         myXhr.upload.addEventListener("progress", function(other) {
+           //             if (other.lengthComputable) {
+           //                 $("progress").attr({value:other.loaded,max:other.total});
+           //             }
+           //         }, false);
+           //     }
+           //     return myXhr;
+           //},
+           dataType: "json",
+           success: function(data) {
+             if ( data.errorMessage.length > 0 ) {
+               $('#loadAndCheckLabel').text(data.errorMessage);
+             }
+             else {
+               var numberOfRows = parseInt(data.numberOfRecords);
+               $("#"+loadAnCheckLabel).text("Validation Successful");
+               $("#"+loadAnCheckButton).attr("data-total_number_of_resources",data.numberOfRecords);
+             }
+           }
+        });
+}
+
+function test(ev)
+{
+  alert("Inside Change Fucntion");
+
 }

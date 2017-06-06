@@ -428,3 +428,19 @@ header p {
 #content .studies [id^=resetStudy]{
   width: auto;
 }
+
+/*
+ * Styles for the Titles of the resources ( case and control)
+ */
+ #caseTitleSize {
+   align: left;
+   width: 2em;
+   display: inline;
+ }
+
+ #caseTitleControl {
+   align: left;
+   width: 2em;
+   display: inline;
+
+ }
