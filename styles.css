@@ -206,12 +206,15 @@ progress {
   height: 16px;
   margin-left: 5px;
 }
+
+/*
 .studyResources {
   float: right;
 }
 .studyResources label {
   padding: 0 5px;
 }
+*/
 #refinep input[type="checkbox"] {
   display: inline-block;
 }
@@ -432,15 +435,59 @@ header p {
 /*
  * Styles for the Titles of the resources ( case and control)
  */
- #caseTitleSize {
-   align: left;
-   width: 2em;
+li div #caseTitleSize p{
+   float: left;
+   width: 14em;
    display: inline;
+   font-size: 10;
+   padding: 0px;
+   font-weight: bold;
  }
 
- #caseTitleControl {
-   align: left;
-   width: 2em;
+ li div #caseTitleControl p {
+   float: left;
+   width: 16em;
    display: inline;
+   font-size:10;
+   padding: 0px;
+   font-weight: bold;
+ }
 
+ /**
+  * Styles for the resource label and text fields to put the sample sizes in
+  */
+#sample_size_label {
+  font-size: 10;
+  float:left;
+  margin-left: 21.5em;
+  padding-right: 1em;
+  font-weight: bold;
+}
+
+#sample_size {
+  width: 10em;
+  height: auto;
+  float: right;
+
+}
+
+/*
+ * Styles for the text fields to enter the sample sizes
+ */
+ #content .studies [id^=sample_size_input_],
+ #content .studies [id^=control_size_input_] {
+   width: 8em;
+   height: initial;
+   margin-right: .8em;
+   display: block;
+ }
+
+ #content .studies [id^=sample_size_input_].single {
+   width: 17em;
+   height: initial;
+   display:block;
+ }
+
+ #content .studies [id^=control_size_input_].single {
+   display:none;
  }

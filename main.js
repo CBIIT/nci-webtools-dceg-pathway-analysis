@@ -530,6 +530,12 @@ function addStudy() {
       attr("id",lambdaId.attr("id")+"_"+studyIndex).
       change(test);
 
+    var placeHolderForStudyResources = studyTemplate.find("#place_holder_for_study_resources");
+    var placeHolderId = placeHolderForStudyResources.attr('id') + "_" + studyIndex;
+    placeHolderForStudyResources.
+      attr("name", placeHolderId).
+      attr("id", placeHolderId);
+
     var resetButton = studyTemplate.find("#resetStudy");
     var idButton2 = resetButton.attr("id") + "_" + studyIndex;
     resetButton.
@@ -624,23 +630,59 @@ function addStudy() {
     }); */
 }
 
+/*
+ * Creates a row where the user can enter the size of the sample or the size
+ * of the sample and the control
+ */
 function addStudyResource(study, ind) {
 
 
     var resource_element = $("#snippets").children(".studyResources").clone();
     var elementLabel = resource_element.find("label");
-    var elementInput = resource_element.find("input");
+    var elementInputSampleSize = resource_element.find("#sample_size_input");
+    var elementInputControlSize = resource_element.find("#control_size_input");
 
     var LabelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
     var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
 
-    var inputId = elementInput.attr("id") + "_" + study + "_" + ind;
+    var commonPart = "_" + study + "_" + ind;
+    var inputSampleSizeId  = elementInputSampleSize.attr("id") + commonPart;
+    var inputControlSizeId = elementInputControlSize.attr("id") + commonPart;
 
     elementLabel.attr("for", LabelFor);
     elementLabel.text(labelText);
-    elementInput.attr("id", inputId).attr("name", inputId);
+    elementInputSampleSize.attr("id", inputSampleSizeId).attr("name", inputSampleSizeId);
+    elementInputControlSize.attr("id", inputControlSizeId).attr("name", inputControlSizeId);
 
     return resource_element;
+}
+
+/*
+ * Updates a part of the GUI that handles a specific study
+ */
+function updateSpecificStudy(data, loadAndCheckLabel, loadAndCheckButton, placeHolder, uniquePartOfVariable)
+{
+  clearAllSampleSizeResources(placeHolder)
+  if ( data.errorMessage.length > 0 ) {
+    $('#loadAndCheckLabel').text(data.errorMessage);
+  }
+  else {
+    var numberOfRows = parseInt(data.numberOfRecords);
+    $("#"+loadAndCheckLabel).text("Validation Successful");
+    $("#"+loadAndCheckButton).attr("data-total_number_of_resources",data.numberOfRecords);
+    for ( var index = 1; index <= parseInt(data.numberOfRecords); index++)
+    {
+      var studyResource = addStudyResource(uniquePartOfVariable, index)
+      $("#"+placeHolder).append(studyResource)
+    }
+  }
+}
+
+/*
+ * Removes all Resource Set Size Input Rows from the GUI
+ */
+function clearAllSampleSizeResources(placeHolder) {
+  $("#"+placeHolder).empty();
 }
 
 function createConfirmationBox(messageText) {
@@ -978,11 +1020,13 @@ function clickCheckBox() {
    var studyFilenameInput = "study_" + uniquePartOfVariable;
    var lamdaNameInput = "lambda_" + uniquePartOfVariable;
    var loadAndCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
+   var placeHolder = "place_holder_for_study_resources_" + uniquePartOfVariable;
 
 
    $("#" + studyFilenameInput).val("");
    $("#" + lamdaNameInput).val("1.0");
    $("#" + loadAndCheckButton).attr("data-total_number_of_resources","0");
+   clearAllSampleSizeResources(placeHolder)
  }
 
  /*
@@ -994,8 +1038,9 @@ function loadAndValidate(e) {
       // Create the unique id that will retrieve the data from the form.
       var uniquePartOfVariable = e.target.id.split("_")[1];
       var studyFilenameInput = "study_" + uniquePartOfVariable;
-      var loadAnCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
-      var loadAnCheckLabel = "loadAndCheckLabel_" + uniquePartOfVariable;
+      var loadAndCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
+      var loadAndCheckLabel = "loadAndCheckLabel_" + uniquePartOfVariable;
+      var placeHolder = "place_holder_for_study_resources_" + uniquePartOfVariable;
 
       // Retreive the data from the form and add the variable containing the
       // filename of the study
@@ -1024,17 +1069,37 @@ function loadAndValidate(e) {
            //},
            dataType: "json",
            success: function(data) {
-             if ( data.errorMessage.length > 0 ) {
-               $('#loadAndCheckLabel').text(data.errorMessage);
-             }
-             else {
-               var numberOfRows = parseInt(data.numberOfRecords);
-               $("#"+loadAnCheckLabel).text("Validation Successful");
-               $("#"+loadAnCheckButton).attr("data-total_number_of_resources",data.numberOfRecords);
-             }
+             updateSpecificStudy(data, loadAndCheckLabel, loadAndCheckButton, placeHolder, uniquePartOfVariable);
            }
         });
 }
+
+/**
+ * Show the title if the Family Selection is Bionominal
+ * Does not show the title if the Family Selection is not Gausain
+ */
+function showTitle(visible)
+{
+  if ( visible === false )
+    $("#size_titles").hide();
+  else {
+    $("#size_titles").show();
+  }
+}
+
+/**
+ * Shows both sample size input and control size input when Bionominal is selected
+ * Shows only the sample size if gaussian is selected
+ */
+function showSizeInput(bionominalSelected)
+{
+    if ( bionominalSelected ) {
+      $("input[id*=_size_input_]").removeClass("single")
+    } else {
+      $("input[id*=_size_input_]").addClass("single");
+    }
+}
+
 
 function test(ev)
 {

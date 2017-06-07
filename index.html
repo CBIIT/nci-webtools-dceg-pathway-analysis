@@ -54,11 +54,11 @@
             <form name="pathForm" action="calculate/" method="POST" enctype="multipart/form-data">
               <fieldset>
                 <legend data-term="study" class="termToDefine">Summary Data</legend>
-                <div id="Family_Selection">
+                <div id="Family_Selection" data-family-type="binomial">
                     <label>Family:</label>
-                    <input id="binomial" type="radio" name="family" value="binomial" checked="checked" />
+                    <input id="binomial" type="radio" name="family" value="binomial" checked="checked" onclick="showTitle(true);showSizeInput(true);" />
                     <label for="binomial">Binomial</label>
-                    <input id="gaussian" type="radio" name="family" value="gausian" />
+                    <input id="gaussian" type="radio" name="family" value="gausian" onclick="showTitle(false);showSizeInput(false)"/>
                     <label for="gaussian">Gaussian</label>
                 </div>
                 <div id="studyEntry"></div>
@@ -272,7 +272,7 @@
             </div>
           </li>
           <li>
-            <div class="input">
+            <div id="size_titles" class="input">
               <div id="caseTitleSize">
                  <p>Sample size of case</p>
               </div>
@@ -280,6 +280,10 @@
               <div id="caseTitleControl">
                 <p>Sample size of Control</p>
               </div>
+            </div>
+          </li>
+          <li>
+            <div id="place_holder_for_study_resources"></div>
           </li>
 
         <!--
@@ -299,14 +303,11 @@
 
       </div>
 
-      <!--
       <li class="studyResources">
-        <label for="sample_size">Enter the sample size for resource</label>
-        <div class="input">
-          <input id="sample_size" type="number" name="sample_size" min="1" value=""/>
-        </div>
+        <label id="sample_size_label" for="sample_size_input">Enter the sample size for resource</label>
+        <input id="sample_size_input" class="test" type="number" name="sample_size" min="1" value=""/>
+        <input id="control_size_input" class=type="number" name="control_size" min="1" value="" />
       </li>
-    -->
     </div>
   </body>
 </html>
