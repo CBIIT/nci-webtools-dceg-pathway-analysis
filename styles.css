@@ -423,9 +423,30 @@ header p {
 /* The buttons are part of them template so the id will have                  */
 /* an _<number> attached to each id.                                          */
 #content .studies [id^=loadAndCheckButton] {
-  margin-right:.1em;
-  width:initial;
-  height: initial;
+  width:7em;
+  height:initial;
+  margin-right: 2.0em;
+  display:inline;
+}
+
+#content .studies [id^=loadAndCheckLabel].errorColor {
+  color: red;
+}
+
+#content .studies [id^=loadAndCheckLabel].successColor {
+  color: #9FC4E4;
+}
+
+#content .studies [id^=loadAndCheckLabel].normalColor {
+  color: black;
+}
+
+#content .studies [id^=studyProxy] {
+  width:7em;
+  height:initial;
+  margin-right: 2.0em;
+  display:inline;
+
 }
 
 #content .studies [id^=resetStudy]{
@@ -459,7 +480,7 @@ li div #caseTitleSize p{
 #sample_size_label {
   font-size: 10;
   float:left;
-  margin-left: 21.5em;
+  margin-left: 20.2em;
   padding-right: 1em;
   font-weight: bold;
 }
@@ -491,3 +512,19 @@ li div #caseTitleSize p{
  #content .studies [id^=control_size_input_].single {
    display:none;
  }
+
+/*
+ * Handle the study button.  Make it invisible another button can be click and
+ * the button that was clicked will clock the button starting with study_
+ */
+[id^=study_] {
+  display:none;
+}
+
+/*
+ * Whej the load and validate has returned an error need some way of showing that
+ * the caclulate button is disabled.
+ */
+#calculate.errorColor {
+  color: grey;
+}

@@ -56,9 +56,9 @@
                 <legend data-term="study" class="termToDefine">Summary Data</legend>
                 <div id="Family_Selection" data-family-type="binomial">
                     <label>Family:</label>
-                    <input id="binomial" type="radio" name="family" value="binomial" checked="checked" onclick="showTitle(true);showSizeInput(true);" />
+                    <input id="binomial" type="radio" name="family" value="binomial" checked="checked" />
                     <label for="binomial">Binomial</label>
-                    <input id="gaussian" type="radio" name="family" value="gausian" onclick="showTitle(false);showSizeInput(false)"/>
+                    <input id="gaussian" type="radio" name="family" value="gausian" />
                     <label for="gaussian">Gaussian</label>
                 </div>
                 <div id="studyEntry"></div>
@@ -259,9 +259,10 @@
             <label for="study">Browse and select study file:</label>
             <div class="input">
               <input id="study" type="file" name="study" />
+              <input id="studyProxy" type="button" name="studyProxy" value="Choose File"></input>
+              <input id="loadAndCheckButton" type="button" name="loadAndCheck" value="Load &amp; Check" />
             </div>
             <div class="input">
-              <input id="loadAndCheckButton" type="button" name="loadAndCheck" value="Load &amp; Check" />
               <label id="loadAndCheckLabel"> No file loaded</label>
             </div>
           </li>
@@ -305,8 +306,8 @@
 
       <li class="studyResources">
         <label id="sample_size_label" for="sample_size_input">Enter the sample size for resource</label>
-        <input id="sample_size_input" class="test" type="number" name="sample_size" min="1" value=""/>
-        <input id="control_size_input" class=type="number" name="control_size" min="1" value="" />
+        <input id="sample_size_input"  type="number" name="sample_size" min="1" value=""/>
+        <input id="control_size_input" type="number" name="control_size" min="1" value="" />
       </li>
     </div>
   </body>

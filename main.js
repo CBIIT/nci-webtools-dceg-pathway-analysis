@@ -441,7 +441,11 @@ function get_options_error(option_type) {
 
 $(function() {
 
-    $("#tabs").tabs();
+    $("#tabs").tabs({
+      activate : function(event, ui) {
+        $("#size_titles").hide();
+      }
+    });
     $("button").button();
     var count = 2;
     var hold = function() {
@@ -481,6 +485,8 @@ $(function() {
 
 function addStudy() {
 
+    console.log("We are in add Study");
+
     var studyTemplate = $("#snippets").find(".studies").clone();
 
 
@@ -497,7 +503,18 @@ function addStudy() {
     var studyId = studyTemplate.find("#study");
     studyId.
       attr("name",studyId.attr("id")+"_"+studyIndex).
-      attr("id",studyId.attr("id")+"_"+studyIndex);
+      attr("id",studyId.attr("id")+"_"+studyIndex).
+      on("change", insertMessageWhenFileIsLoadedButNotValidated);
+
+    // The Study Button will be made invisible so that we can display the file
+    // name as we want to.  By making this vislbe the selected filename will
+    // not be display by the input type=file.
+    var studyLabelVisibleButtonLabel = studyTemplate.find("#studyProxy");
+    var studyLabelVisibleId = studyLabelVisibleButtonLabel.attr("id") + "_" + studyIndex;
+    studyLabelVisibleButtonLabel.
+      attr("name", studyLabelVisibleId).
+      attr("id", studyLabelVisibleId).
+      on("click", proxyClickForHtmlInputFileType);
 
 
     // Add the Id, name, on click attributes to the new LoadAndCheckButton
@@ -512,6 +529,7 @@ function addStudy() {
       attr("name", idButton1).
       on("click", loadAndValidate).
       attr("data-total_number_of_resources","0");
+    insertMessageWhenFileIsNotLoaded(studyIndex);
 
     var loadAndStudyLabel = studyTemplate.find('#loadAndCheckLabel');
     var idButtonLabel1 = loadAndStudyLabel.attr("id") + "_" + studyIndex;
@@ -660,28 +678,43 @@ function addStudyResource(study, ind) {
 /*
  * Updates a part of the GUI that handles a specific study
  */
-function updateSpecificStudy(data, loadAndCheckLabel, loadAndCheckButton, placeHolder, uniquePartOfVariable)
+function updateSpecificStudy(data, filename, event)
 {
-  clearAllSampleSizeResources(placeHolder)
+  var uniquePartOfVariable = event.target.id.split("_")[1];
+  var loadAndCheckLabelElement = $("#" + "loadAndCheckLabel_" + uniquePartOfVariable);
+  var placeHolderElement = $("#" + "place_holder_for_study_resources_" + uniquePartOfVariable);
+
+  removeClassAboutColor(loadAndCheckLabelElement);
+  clearAllSampleSizeResources(event);
+
   if ( data.errorMessage.length > 0 ) {
-    $('#loadAndCheckLabel').text(data.errorMessage);
+    loadAndCheckLabelElement.addClass("errorColor");
+    loadAndCheckLabelElement.text(data.errorMessage);
   }
   else {
-    var numberOfRows = parseInt(data.numberOfRecords);
-    $("#"+loadAndCheckLabel).text("Validation Successful");
-    $("#"+loadAndCheckButton).attr("data-total_number_of_resources",data.numberOfRecords);
-    for ( var index = 1; index <= parseInt(data.numberOfRecords); index++)
+    loadAndCheckLabelElement.addClass("successColor");
+    loadAndCheckLabelElement.text(filename);
+    var numberOfRecords = parseInt(data.numberOfRecords);
+
+    for ( var index = 0; index < numberOfRecords; index++)
     {
-      var studyResource = addStudyResource(uniquePartOfVariable, index)
-      $("#"+placeHolder).append(studyResource)
+      var studyResource = addStudyResource(uniquePartOfVariable, index+1)
+      placeHolderElement.append(studyResource)
     }
   }
+
+  showTitle(data);
+  disableCalculateButton(data);
 }
 
 /*
  * Removes all Resource Set Size Input Rows from the GUI
  */
-function clearAllSampleSizeResources(placeHolder) {
+function clearAllSampleSizeResources(event) {
+
+  var uniquePartOfVariable = event.target.id.split("_")[1];
+  var placeHolder = "place_holder_for_study_resources_" + uniquePartOfVariable;
+
   $("#"+placeHolder).empty();
 }
 
@@ -968,9 +1001,6 @@ $(function() {
     header: ".studyTitle"
   });
 
-
-  $(pathForm).find("[type='checkbox']").on("change", checkedStateToValue);
-
   $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
 
   $("select#super_population").on('change', function() {
@@ -1014,8 +1044,8 @@ function clickCheckBox() {
  * TODO : Currently the definition of study filename and the lambda name is
  *        in
  */
- function resetStudy(e) {
-   var uniquePartOfVariable = e.target.id.split("_")[1];
+ function resetStudy(event) {
+   var uniquePartOfVariable = event.target.id.split("_")[1];
 
    var studyFilenameInput = "study_" + uniquePartOfVariable;
    var lamdaNameInput = "lambda_" + uniquePartOfVariable;
@@ -1026,21 +1056,17 @@ function clickCheckBox() {
    $("#" + studyFilenameInput).val("");
    $("#" + lamdaNameInput).val("1.0");
    $("#" + loadAndCheckButton).attr("data-total_number_of_resources","0");
-   clearAllSampleSizeResources(placeHolder)
+   insertMessageWhenFileIsNotLoaded(uniquePartOfVariable);
+   clearAllSampleSizeResources(event)
  }
 
  /*
   * Code that will load and validate
   */
-function loadAndValidate(e) {
-      alert("Made it into the function")
-
+function loadAndValidate(event) {
       // Create the unique id that will retrieve the data from the form.
-      var uniquePartOfVariable = e.target.id.split("_")[1];
+      var uniquePartOfVariable = event.target.id.split("_")[1];
       var studyFilenameInput = "study_" + uniquePartOfVariable;
-      var loadAndCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
-      var loadAndCheckLabel = "loadAndCheckLabel_" + uniquePartOfVariable;
-      var placeHolder = "place_holder_for_study_resources_" + uniquePartOfVariable;
 
       // Retreive the data from the form and add the variable containing the
       // filename of the study
@@ -1069,40 +1095,98 @@ function loadAndValidate(e) {
            //},
            dataType: "json",
            success: function(data) {
-             updateSpecificStudy(data, loadAndCheckLabel, loadAndCheckButton, placeHolder, uniquePartOfVariable);
+             updateSpecificStudy(data, formData.get(studyFilenameInput).name, event);
            }
         });
 }
 
-/**
- * Show the title if the Family Selection is Bionominal
- * Does not show the title if the Family Selection is not Gausain
+/*
+ * Determines if the title for the sample size and control size should be shown.
  */
-function showTitle(visible)
-{
-  if ( visible === false )
+function showTitle(data) {
+
+  var sizeTitlesElements = $("#size_titles");
+
+  // Rule: Show title if binomial is selected
+  if ( $("#binomial").checked === false )
     $("#size_titles").hide();
   else {
     $("#size_titles").show();
   }
+
+  // Rule: Show title if the number of rows for the size is greater than 0
+  if ( data === undefined || data.numberOfRecords == '0') {
+    $("#size_titles").hide();
+  }
+}
+
+
+/**
+ * This routine will execute a click that will execute the onClick() of another
+ * button
+ */
+function proxyClickForHtmlInputFileType() {
+  $("input[id^=study_]").click();
 }
 
 /**
- * Shows both sample size input and control size input when Bionominal is selected
- * Shows only the sample size if gaussian is selected
+ * Inserts message when no file is load
  */
-function showSizeInput(bionominalSelected)
-{
-    if ( bionominalSelected ) {
-      $("input[id*=_size_input_]").removeClass("single")
-    } else {
-      $("input[id*=_size_input_]").addClass("single");
-    }
+function insertMessageWhenFileIsNotLoaded(id) {
+  $("#" + "loadAndCheckLabel_" + id).text("No File Loaded");
 }
+
+/**
+ * Inserts a message when the file has been successfully Loaded.
+ *
+ * If length of the files list is 0 we can assume that no files were selected.
+ * then the previous state will remain the same.
+ *
+ */
+function insertMessageWhenFileIsLoadedButNotValidated(event) {
+  var uniquePartOfVariable = event.target.id.split("_")[1];
+
+  if ( event.target.files.length != 0 ) {
+    var filename = event.target.files[0].name;
+    var domObject =   $("#" + "loadAndCheckLabel_" + uniquePartOfVariable);
+
+    removeClassAboutColor(domObject);
+    domObject.addClass("normalColor");
+    domObject.text(filename + " loaded, but not validated");
+  }
+}
+
+/**
+ * Remove all Message classes from an DOM Object
+ */
+function removeClassAboutColor(htmlObject) {
+  htmlObject.removeClass("errorColor");
+  htmlObject.removeClass("successColor");
+  htmlObject.removeClass("normalColor");
+}
+
+/*
+ * if there was an error in validating the form and then the calculate button
+ * should be disabled
+ */
+function disableCalculateButton(data)
+{
+  // Start with the assumption that the button is not disabled
+  $("#calculate").removeClass("errorColor");
+  $("#calculate").attr("disabled", false);
+
+  // Determine if the button is disabled and modify accordingly
+  if ( data.errorMessage.length != 0 ) {
+    $("#calculate").attr("disabled", true);
+    $("#calculate").addClass("errorColor");
+  }
+
+}
+
 
 
 function test(ev)
 {
-  alert("Inside Change Fucntion");
+    alert("Inside Change Fucntion");
 
 }
