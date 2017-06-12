@@ -485,13 +485,12 @@ $(function() {
 
 function addStudy() {
 
-    console.log("We are in add Study");
-
     var studyTemplate = $("#snippets").find(".studies").clone();
-
 
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
+
+    showTitle();
 
     //var firstResource = addStudyResource(studyIndex,1);
     //studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
@@ -548,6 +547,11 @@ function addStudy() {
       attr("id",lambdaId.attr("id")+"_"+studyIndex).
       change(test);
 
+    var sizeTitlesId = studyTemplate.find("size_titles") + "_" + studyIndex;
+    sizeTitles.
+      attr("name", sizeTitlesId).
+      attr("id", sizeTitlesId);
+      
     var placeHolderForStudyResources = studyTemplate.find("#place_holder_for_study_resources");
     var placeHolderId = placeHolderForStudyResources.attr('id') + "_" + studyIndex;
     placeHolderForStudyResources.
@@ -577,7 +581,8 @@ function addStudy() {
     //     }
     // });
 
-    studyId.rules("add", {
+    //studyId.rules("add", {
+    studyLabelVisibleButtonLabel.rules("add", {
         required: true,
         messages: {
             required: "The " + studyId.attr('id') + " field is required",
@@ -657,8 +662,8 @@ function addStudyResource(study, ind) {
 
     var resource_element = $("#snippets").children(".studyResources").clone();
     var elementLabel = resource_element.find("label");
-    var elementInputSampleSize = resource_element.find("#sample_size_input");
-    var elementInputControlSize = resource_element.find("#control_size_input");
+    var elementInputSampleSize = resource_element.find("#sample_size");
+    var elementInputControlSize = resource_element.find("#control_size");
 
     var LabelFor = elementLabel.attr("for") + "_" + study + "_" + ind;
     var labelText = elementLabel[0].innerHTML + " #" + ind + ":";
@@ -899,8 +904,8 @@ function clickCalculate(e) {
       el.name.indexOf("population") > -1 &&
       el.id.indexOf("database_pathway") > -1) { return true;}
 
-
-      if(el.id.indexOf("study") > -1) numStudies++;
+      //alert(el.id);
+      //if(el.id.indexOf("study") > -1) numStudies++;
 
 
       if(el.type == "checkbox"){
@@ -910,13 +915,31 @@ function clickCalculate(e) {
     });
 
     formData.append('populations', $('#population').val());
-    formData.append('num_studies', numStudies);
+    formData.append('num_studies', $("#studyEntry").size());
+    insertNumberOfResourcePerStudy(formData, $("#studyEntry").size());
 
-    sendForm(formData).then(submission_result, submission_error)
-    .always(post_request);
+    // Business Rule: If the include_excluded_snp is not chekced then
+    // the execluded_snp filename should not be include in the form data
+    var includeExcludedSnp = $('#include_excluded_snp');
+    if ( ! includeExcludedSnp.is(':checked')) {
+      formData.delete("excluded_snp");
+    }
+
+    sendForm(formData).then(submission_result, submission_error).always(post_request);
   }
   else {
     document.querySelector("#errorDisplay").scrollIntoView(true);
+  }
+}
+
+/**
+ * For each study insert the number of resources
+ */
+function insertNumberOfResourcePerStudy(formData, numStudies) {
+  for ( var index = 0;  index < numStudies; index++ ) {
+    var numStudiesStr = (index + 1).toString();
+    var resourceDivChildren = $('#place_holder_for_study_resources_' + numStudiesStr).size()
+    formData.append("num_resource_" + numStudiesStr, resourceDivChildren);
   }
 }
 
@@ -1026,6 +1049,10 @@ $(function() {
  //   }
  // }
 
+/*
+ * If the radio button to include the excluded snp file is selected then
+ * make the file input button appear
+ */
 function clickCheckBox() {
   var selectedCheckBox = document.getElementById('include_excluded_snp');
   var guiElement = document.getElementById('excluded_snp');
@@ -1035,14 +1062,12 @@ function clickCheckBox() {
     guiElement.style.visibility = 'visible';
   } else {
     guiElement.style.visibility = 'hidden';
+    guiElement.value = "";
   }
 }
 
 /*
  * Code that will reset a study
- *
- * TODO : Currently the definition of study filename and the lambda name is
- *        in
  */
  function resetStudy(event) {
    var uniquePartOfVariable = event.target.id.split("_")[1];

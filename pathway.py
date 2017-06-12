@@ -108,6 +108,7 @@ def calculate():
     studyList = []
 
     num_studies = int(parameters['num_studies'])
+    logging.debug("num_stuides = " + str(num_studies));
 
     for i in xrange(1,num_studies+1):
       studyKey = "study_" + str(i)
@@ -175,6 +176,11 @@ def calculate():
     parameters['outdir'] = app.config['OUT_FOLDER']
     parameters['refinep'] = parameters.get('refinep',"").lower() in ['true','t','1']
     parameters['gene_subset'] = parameters.get('gene_subset',"").lower() in ['true','t','1']
+
+    if "excluded_snp" in parameters:
+        parameters.excluded_snp = createFilename(fileToBeValidated.filename)
+        fileToBeValidated.save(parameters.excluded_snp)
+
 
     jsonout = {"submittedTime": parameters['idstr'], "payload": parameters}
     with open(os.path.join(app.config['OUT_FOLDER'],str(parameters['idstr'])+'.json'),'w') as outfile:

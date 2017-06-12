@@ -477,7 +477,7 @@ li div #caseTitleSize p{
  /**
   * Styles for the resource label and text fields to put the sample sizes in
   */
-#sample_size_label {
+#size_label {
   font-size: 10;
   float:left;
   margin-left: 20.2em;
@@ -485,31 +485,33 @@ li div #caseTitleSize p{
   font-weight: bold;
 }
 
+/*
 #sample_size {
   width: 10em;
   height: auto;
   float: right;
 
 }
+*/
 
 /*
  * Styles for the text fields to enter the sample sizes
  */
- #content .studies [id^=sample_size_input_],
- #content .studies [id^=control_size_input_] {
+ #content .studies [id^=sample_size_],
+ #content .studies [id^=control_size_] {
    width: 8em;
    height: initial;
    margin-right: .8em;
    display: block;
  }
 
- #content .studies [id^=sample_size_input_].single {
+ #content .studies [id^=sample_size_].single {
    width: 17em;
    height: initial;
    display:block;
  }
 
- #content .studies [id^=control_size_input_].single {
+ #content .studies [id^=control_size_].single {
    display:none;
  }
 

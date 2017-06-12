@@ -182,7 +182,7 @@
                   <li>
                     <label data-term="Excluded SNPs File" for="excluded_snp_file" class="termToDefine">Excluded SNP File</label>
                     <div class="input">
-                      <input id="include_excluded_snp" type="checkbox" name="included_excluded_snp" value="false" onclick="clickCheckBox("/>
+                      <input id="include_excluded_snp" type="checkbox" name="include_excluded_snp" value="false" onclick="clickCheckBox()"/>
                       <input id="excluded_snp" type="file" name="excluded_snp" class="inputElementsOnSameLine" style="visibility:hidden;"/>
                     </div>
                   </li>
@@ -305,9 +305,9 @@
       </div>
 
       <li class="studyResources">
-        <label id="sample_size_label" for="sample_size_input">Enter the sample size for resource</label>
-        <input id="sample_size_input"  type="number" name="sample_size" min="1" value=""/>
-        <input id="control_size_input" type="number" name="control_size" min="1" value="" />
+        <label id="size_label" for="sample_siz">Enter the sample size for resource</label>
+        <input id="sample_size"  type="number" name="sample_size" min="1" value=""/>
+        <input id="control_size" type="number" name="control_size" min="1" value="" />
       </li>
     </div>
   </body>
