@@ -443,7 +443,8 @@ $(function() {
 
     $("#tabs").tabs({
       activate : function(event, ui) {
-        $("#size_titles").hide();
+        var activeIndex = $("#studyEntry").accordion("option", "active");
+        showTitle(undefined, undefined, activeIndex);
       }
     });
     $("button").button();
@@ -478,19 +479,12 @@ $(function() {
 
 });
 
-
-
-
-
-
 function addStudy() {
 
     var studyTemplate = $("#snippets").find(".studies").clone();
 
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
-
-    showTitle();
 
     //var firstResource = addStudyResource(studyIndex,1);
     //studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
@@ -500,10 +494,12 @@ function addStudy() {
     var studyLabel = studyTemplate.find('[for="study"]');
     studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
     var studyId = studyTemplate.find("#study");
+    var attributeName = createStudyName(studyIndex);
     studyId.
-      attr("name",studyId.attr("id")+"_"+studyIndex).
-      attr("id",studyId.attr("id")+"_"+studyIndex).
-      on("change", insertMessageWhenFileIsLoadedButNotValidated);
+      attr("name", createStudyName(studyIndex)).
+      attr("id", createStudyName(studyIndex)).
+      on("change", insertMessageWhenFileIsLoadedButNotValidated).
+      attr( createDataSizeStudyAttributeName(studyIndex), 0);
 
     // The Study Button will be made invisible so that we can display the file
     // name as we want to.  By making this vislbe the selected filename will
@@ -520,7 +516,8 @@ function addStudy() {
     // Added a data attribute data-sample_size_id since I needed an integer
     // that would provide me with the number for the sample size of each
     // resource.  I put here it so that each template could have it own
-    // attribute.
+    // attribute.                    <input id="gaussian" type="radio" name="family" value="gausian" onclick="setupOneEntryFieldForSizes(); showTitle();"/>
+
     var loadAndStudyButton = studyTemplate.find('#loadAndCheckButton');
     var idButton1 = loadAndStudyButton.attr("id") + "_" + studyIndex;
     loadAndStudyButton.
@@ -544,14 +541,14 @@ function addStudy() {
     var lambdaId = studyTemplate.find("#lambda");
     lambdaId.
       attr("name",lambdaId.attr("id")+"_"+studyIndex).
-      attr("id",lambdaId.attr("id")+"_"+studyIndex).
-      change(test);
+      attr("id",lambdaId.attr("id")+"_"+studyIndex);
 
-    var sizeTitlesId = studyTemplate.find("size_titles") + "_" + studyIndex;
+    var sizeTitlesId = createSizeTitleName(studyIndex);
+    var sizeTitles = studyTemplate.find("#size_titles");
     sizeTitles.
       attr("name", sizeTitlesId).
       attr("id", sizeTitlesId);
-      
+
     var placeHolderForStudyResources = studyTemplate.find("#place_holder_for_study_resources");
     var placeHolderId = placeHolderForStudyResources.attr('id') + "_" + studyIndex;
     placeHolderForStudyResources.
@@ -615,6 +612,9 @@ function addStudy() {
     var activeIndex = $("#studyEntry").accordion("refresh").accordion({
         active: studyCount
     }).accordion("option", "active");
+
+     showTitle(undefined, 0, studyIndex);
+
 
 /*    studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
         var id = $(this).prop('id');
@@ -701,6 +701,8 @@ function updateSpecificStudy(data, filename, event)
     loadAndCheckLabelElement.text(filename);
     var numberOfRecords = parseInt(data.numberOfRecords);
 
+    $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(index), numberOfRecords);
+
     for ( var index = 0; index < numberOfRecords; index++)
     {
       var studyResource = addStudyResource(uniquePartOfVariable, index+1)
@@ -708,8 +710,21 @@ function updateSpecificStudy(data, filename, event)
     }
   }
 
-  showTitle(data);
+  showTitle(data, undefined, uniquePartOfVariable);
   disableCalculateButton(data);
+}
+
+/* A function that creates the name of the object that contains the attribute */
+/* for how many sizes rows have been recorded                                 */
+function createDataSizeStudyAttributeName(index) {
+  return "data-study-size-count" + "_" + index;
+}
+
+
+function createStudyName(index)
+{
+  var studyId = $(document).find("#study");
+  return studyId.attr("id") + "_" + index;
 }
 
 /*
@@ -950,8 +965,6 @@ function retrieveMultiselects(selectedItems) {
     var groupCode = $('#population').find("option[value='" + item + "']")
     .parent().attr("label");
 
-
-
     if(!valuesContainer[groupCode])
     valuesContainer[groupCode] = [item];
     else
@@ -1021,7 +1034,8 @@ $(function() {
   $("#studyEntry").accordion({
     collapsible: true,
     heightStyle: "content",
-    header: ".studyTitle"
+    header: ".studyTitle",
+    activate: setupTab
   });
 
   $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
@@ -1033,21 +1047,6 @@ $(function() {
   $("#studyEntry").accordion("option", "active", 0);
   addStudy();// add first element by default, function declaration in template-manager
 });
-
-/**
- * CheckBox Checked then Choose File Button should appear
- * Checkbox Unchecked then Choose File Button should disapper
- */
- // function clickCheckBox() {
- //   var queryElement =  $('include_excluded_snp');
- //   var actionElement = $('excluded_snp');
- //
- //   if ( queryElement.is(':visible') === true ) {
- //     actionElement.show();
- //   } else {
- //     actionElement.hide();
- //   }
- // }
 
 /*
  * If the radio button to include the excluded snp file is selected then
@@ -1127,22 +1126,40 @@ function loadAndValidate(event) {
 
 /*
  * Determines if the title for the sample size and control size should be shown.
+ *
+ * parameters
+ *  data :            The number of records that were loaded
+ *  currentSizeCount: The number of records loaded into the study
+ *  index:            The index of the active study.
  */
-function showTitle(data) {
+function showTitle(data, currentSizeCount, index) {
 
-  var sizeTitlesElements = $("#size_titles");
+  var isBinomial = $("#binomial").is(':checked');
 
   // Rule: Show title if binomial is selected
-  if ( $("#binomial").checked === false )
-    $("#size_titles").hide();
-  else {
-    $("#size_titles").show();
+  var show = ( isBinomial ) ? true : false;
+
+  // From this point on the rules will only concern binomial
+  if ( isBinomial )
+  {
+    if ( data !== undefined && parseInt(data.numberOfRecords) > 0) {
+      // Rule: Show title if the number of rows for the size is greater than 0
+      show = true;
+    } else if ( currentSizeCount !== undefined && parseInt(currentSizeCount) > 0 ) {
+      // Rule: If the data-study-size-count > 0 then the study already had data
+      // entered into the study.
+      show = true;
+    } else {
+      show = false
+    }
   }
 
-  // Rule: Show title if the number of rows for the size is greater than 0
-  if ( data === undefined || data.numberOfRecords == '0') {
-    $("#size_titles").hide();
-  }
+  // Show or hide the Titles
+  var sizeTitlesElement = $("#" + createSizeTitleName(index));
+  if ( show )
+    $("#" + createSizeTitleName(index)).show();
+  else
+    $("#" + createSizeTitleName(index)).hide();
 }
 
 
@@ -1151,7 +1168,10 @@ function showTitle(data) {
  * button
  */
 function proxyClickForHtmlInputFileType() {
-  $("input[id^=study_]").click();
+  console.log("button clicked = " + event.target.name);
+  var uniqueId = retrieveUniqueId(event.target.name);
+  var name = createStudyName(uniqueId);
+  $("#" + name).click();
 }
 
 /**
@@ -1208,10 +1228,68 @@ function disableCalculateButton(data)
 
 }
 
+/**
+ * Purpose : To setup the tab after the user cliked the tab to be activated
+ */
+function setupTab(event, ui) {
 
+  var specificStudyIndex = $("#studyEntry").accordion("option", "active");
+  var objectName = createStudyName(specificStudyIndex);
+  var name = createDataSizeStudyAttributeName(specificStudyIndex + 1);
+  var numberOfSizes = $("#" + objectName).attr(name);
 
-function test(ev)
+  showTitle(undefined, numberOfSizes, specificStudyIndex + 1);
+}$("#studyEntry").accordion("option", "active")
+
+/* A function that retrieves the name containing the number of sizes stored in the study */
+/* since it will be used in multiple places                                              */
+function createDataSizeStudyAttributeName(index) {
+  return "data-study-size-count" + "_" + index;
+}
+
+/* A function that creates the name of the object that contains the attribute */
+/* for how many sizes rows have been recorded                                 */
+function createStudyName(index)
 {
-    alert("Inside Change Fucntion");
+  var studyId = $(document).find("#study");
+  return studyId.attr("id") + "_" + index;
+}
 
+/* A function to crate the name for the object that contains the title for the */
+/* size columns.                                                               */
+function createSizeTitleName(index) {
+  return $(document).find("#size_titles").attr("id") + "_" + index;
+}
+
+/* Handles selction of a binomial                                             */
+function handleBinomial() {
+  $("[id^='sample_size_']").removeClass("single");
+  $("[id^='control_size_']").removeClass("single");
+
+  $("[id^='size_titles_']").each(function(index, value) {
+    var numberOfCurrentEntries = $("#" + createStudyName(index+1)).attr(createDataSizeStudyAttributeName());
+    showTitle(undefined, numberOfCurrentEntries, index + 1);
+  });
+
+}
+
+/* Handles selection of a Gaussian                                            */
+function handleGaussian() {
+  $("[id^='sample_size_']").addClass("single");
+  $("[id^='control_size_']").addClass("single");
+
+  $("[id^='size_titles_']").each(function(index, value) {
+    var numberOfCurrentEntries = $("#" + createStudyName(index+1)).attr(createDataSizeStudyAttributeName());
+    showTitle(undefined, numberOfCurrentEntries, index + 1);
+  });
+
+}
+
+/* Retrieves the unique id from the variable name                             */
+/* The routine will assume that the variable contain a _ followed by a number */
+/* at the end                                                                 */
+function retrieveUniqueId(variable) {
+  var uniqueIdArray = variable.split("_");
+  var index = uniqueIdArray.length - 1;
+  return uniqueIdArray[ index ];
 }

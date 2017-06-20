@@ -458,7 +458,7 @@ header p {
  */
 li div #caseTitleSize p{
    float: left;
-   width: 14em;
+   width: 12.6em;
    display: inline;
    font-size: 10;
    padding: 0px;
@@ -480,19 +480,9 @@ li div #caseTitleSize p{
 #size_label {
   font-size: 10;
   float:left;
-  margin-left: 20.2em;
-  padding-right: 1em;
+  margin-left: 15.0em;
   font-weight: bold;
 }
-
-/*
-#sample_size {
-  width: 10em;
-  height: auto;
-  float: right;
-
-}
-*/
 
 /*
  * Styles for the text fields to enter the sample sizes
@@ -503,12 +493,14 @@ li div #caseTitleSize p{
    height: initial;
    margin-right: .8em;
    display: block;
+   height: 2.2em;
  }
 
  #content .studies [id^=sample_size_].single {
    width: 17em;
    height: initial;
    display:block;
+   height: 2.2em;
  }
 
  #content .studies [id^=control_size_].single {

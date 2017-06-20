@@ -56,9 +56,9 @@
                 <legend data-term="study" class="termToDefine">Summary Data</legend>
                 <div id="Family_Selection" data-family-type="binomial">
                     <label>Family:</label>
-                    <input id="binomial" type="radio" name="family" value="binomial" checked="checked" />
+                    <input id="binomial" type="radio" name="family" value="binomial" checked="checked" onclick="handleBinomial()" />
                     <label for="binomial">Binomial</label>
-                    <input id="gaussian" type="radio" name="family" value="gausian" />
+                    <input id="gaussian" type="radio" name="family" value="gausian" onclick="handleGaussian()"/>
                     <label for="gaussian">Gaussian</label>
                 </div>
                 <div id="studyEntry"></div>
@@ -305,9 +305,13 @@
       </div>
 
       <li class="studyResources">
-        <label id="size_label" for="sample_siz">Enter the sample size for resource</label>
-        <input id="sample_size"  type="number" name="sample_size" min="1" value=""/>
-        <input id="control_size" type="number" name="control_size" min="1" value="" />
+        <div style="text-align:center;">
+          <label id="size_label" for="sample_siz">Enter the sample size for resource</label>
+        </div>
+        <div class="input">
+          <input id="sample_size"  type="number" name="sample_size" min="1" value=""/>
+          <input id="control_size" type="number" name="control_size" min="1" value="" />
+        </div>
       </li>
     </div>
   </body>
