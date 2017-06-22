@@ -609,6 +609,8 @@ function addStudy() {
     //     }
     // });
 
+    //add(20);
+
     var activeIndex = $("#studyEntry").accordion("refresh").accordion({
         active: studyCount
     }).accordion("option", "active");
@@ -624,7 +626,7 @@ function addStudy() {
             var choice;
             if (this.value > 20)
                 choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
-            else
+            else:
                 choice = true;
 
             if (choice) {
@@ -1042,9 +1044,11 @@ $(function() {
 
   $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
 
-  $("select#super_population").on('change', function() {
-    apply_multiselect_options($('#population'), this.value);
-  });
+  $("select#super_population").
+    on('change', function() {
+      apply_multiselect_options($('#population'), this.value);
+    }).
+    on('change', enableSubpopulationComboBox);
 
   $("#studyEntry").accordion("option", "active", 0);
   addStudy();// add first element by default, function declaration in template-manager
@@ -1098,6 +1102,8 @@ function loadAndValidate(event) {
       // filename of the study
       var formData = new FormData(pathForm);
       formData.append('currentStudy', studyFilenameInput);
+
+
 
       //return $.ajax({
       var result = $.ajax({
@@ -1293,4 +1299,11 @@ function retrieveUniqueId(variable) {
   var uniqueIdArray = variable.split("_");
   var index = uniqueIdArray.length - 1;
   return uniqueIdArray[ index ];
+}
+
+/**
+ * Enameble the sub population drop down combo box
+ */
+function enableSubpopulationComboBox() {
+  $('#population').removeAttr('disabled');
 }
