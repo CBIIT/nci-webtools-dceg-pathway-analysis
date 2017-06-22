@@ -295,10 +295,11 @@ footer ul li a {
     font: 0.9em "Verdana", "Geneva", "sans-serif";
   }
 
-  #home-tab, #study-tab, #help-tab {
-    height: 128em;
-    max-height:128em;
-  }
+ /*  #home-tab, #study-tab, #help-tab { //
+    /* Instead of using em, I used px to make the calculation easier */
+    /* height: 1800px;   */
+    /* max-height:1800px;  */
+/*   } */
 }
 @media (max-width: 990px) {
   .tooltip {
@@ -380,6 +381,7 @@ header p {
 #home-tab, #study-tab, #help-tab {
   border: 1px solid black;
   margin-bottom :-2px;
+  min-height: 1500px;
 }
 
 #tabs .ui-widget-header {
@@ -480,8 +482,9 @@ li div #caseTitleSize p{
 #size_label {
   font-size: 10;
   float:left;
-  margin-left: 15.0em;
+  margin-left: 14.0em;
   font-weight: bold;
+  padding-right:3.2em;
 }
 
 /*
@@ -516,9 +519,17 @@ li div #caseTitleSize p{
 }
 
 /*
- * Whej the load and validate has returned an error need some way of showing that
+ * When the load and validate has returned an error need some way of showing that
  * the caclulate button is disabled.
  */
 #calculate.errorColor {
   color: grey;
+}
+
+/*
+ * The Text between the Browse and Select Study file were a little cramped so
+ * so I provided some breathing room
+ */
+.spaceBetweenChooseFileButtonAndText {
+    margin-top: .5em;
 }

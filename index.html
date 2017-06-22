@@ -263,7 +263,7 @@
               <input id="loadAndCheckButton" type="button" name="loadAndCheck" value="Load &amp; Check" />
             </div>
             <div class="input">
-              <label id="loadAndCheckLabel"> No file loaded</label>
+              <label id="loadAndCheckLabel" class="spaceBetweenChooseFileButtonAndText"> No file loaded</label>
             </div>
           </li>
           <li>
@@ -286,18 +286,6 @@
           <li>
             <div id="place_holder_for_study_resources"></div>
           </li>
-
-        <!--
-          <li>
-            <label for="num_resource">Number of data resources in this study:</label>
-            <div class="input">
-              <input id="num_resource" type="text" name="num_resource" value="1" required=""/>
-            </div>
-            <ul class="resource-list"></ul>
-          </li>
-        </ul>
-      -->
-
       <li>
         <input id="resetStudy" type="button" class="resetStudyButton" name="resetStudy" value="Reset Study" />
       </li>
@@ -305,12 +293,12 @@
       </div>
 
       <li class="studyResources">
-        <div style="text-align:center;">
+        <div style="display:flex; align-items: center">
           <label id="size_label" for="sample_siz">Enter the sample size for resource</label>
-        </div>
-        <div class="input">
-          <input id="sample_size"  type="number" name="sample_size" min="1" value=""/>
-          <input id="control_size" type="number" name="control_size" min="1" value="" />
+          <div class="input">
+            <input id="sample_size"  type="number" name="sample_size" min="1" value=""/>
+            <input id="control_size" type="number" name="control_size" min="1" value="" />
+          </div>
         </div>
       </li>
     </div>

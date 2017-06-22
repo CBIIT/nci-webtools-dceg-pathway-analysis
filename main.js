@@ -443,10 +443,11 @@ $(function() {
 
     $("#tabs").tabs({
       activate : function(event, ui) {
+
         var activeIndex = $("#studyEntry").accordion("option", "active");
         showTitle(undefined, undefined, activeIndex);
       }
-    });
+    })
     $("button").button();
     var count = 2;
     var hold = function() {
@@ -608,7 +609,6 @@ function addStudy() {
     //     }
     // });
 
-
     var activeIndex = $("#studyEntry").accordion("refresh").accordion({
         active: studyCount
     }).accordion("option", "active");
@@ -695,6 +695,8 @@ function updateSpecificStudy(data, filename, event)
   if ( data.errorMessage.length > 0 ) {
     loadAndCheckLabelElement.addClass("errorColor");
     loadAndCheckLabelElement.text(data.errorMessage);
+
+    $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(index), 0);
   }
   else {
     loadAndCheckLabelElement.addClass("successColor");
@@ -1168,7 +1170,6 @@ function showTitle(data, currentSizeCount, index) {
  * button
  */
 function proxyClickForHtmlInputFileType() {
-  console.log("button clicked = " + event.target.name);
   var uniqueId = retrieveUniqueId(event.target.name);
   var name = createStudyName(uniqueId);
   $("#" + name).click();
