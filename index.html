@@ -8,6 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css" rel="stylesheet" type="text/css"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet" type="text/css"/>
     <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <!-- popover -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.webui-popover/1.2.1/jquery.webui-popover.min.css">
     <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
@@ -15,8 +17,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js" type="application/javascript"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="application/javascript"></script>
+    <!-- popover -->
+    <script src="https://cdn.jsdelivr.net/jquery.webui-popover/1.2.1/jquery.webui-popover.min.js"></script>
+
+<!--
     <script src="/common/js/popover-functions.js" type="application/javascript"></script>
+-->
     <script src="main.js" type="application/javascript"></script>
+    <!-- <script>
+      $( function() {
+        $( document ).tooltip();
+      } );
+    </script> -->
   </head>
   <body>
     <header>
@@ -108,7 +120,7 @@
                 <legend>Set the following options:</legend>
                 <ul>
                   <li>
-                    <label data-term="nperm" for="nperm" class="termToDefine">nperm:</label>
+                    <label data-term="nperm" for="nperm" class="termToDefine" data-title="nperm" data-content="# of permutations">nperm:</label>
                     <div class="input">
                       <input id="nperm" type="text" name="nperm" value="1e+5"/>
                     </div>

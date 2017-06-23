@@ -1,3 +1,9 @@
+$(document).ready(function() {
+  setTimeout(function() {
+    $('.termToDefine').webuiPopover();
+  }, 0);
+})
+
 $(function () {
     var errors_div = $("#errorDisplay");
     $.validator.addMethod("boundedMax", function (value, element, params) {
@@ -858,8 +864,8 @@ var terms = {
 };
 
 $(function() {
-    $.extend($_Glossary, terms);
-    $(document).on("click", ".termToDefine", termDisplay);
+//    $.extend($_Glossary, terms);
+//    $(document).on("click", ".termToDefine", termDisplay);
 });
 
 function checkedStateToValue(e) {
