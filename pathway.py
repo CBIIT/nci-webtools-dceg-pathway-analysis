@@ -14,7 +14,6 @@ import logging
 import requests
 from rpy2.robjects import r;
 
-
 app = Flask(__name__)
 
 r.source('FormatCheckWrapper.R')
@@ -256,4 +255,3 @@ if __name__ == '__main__':
             return send_from_directory(os.getcwd(),path)
     #end remove
     app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)
-
