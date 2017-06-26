@@ -11,8 +11,9 @@ from stompest.config import StompConfig
 from stompest.sync import Stomp
 import threading
 import logging
-import requests
-from rpy2.robjects import r;
+#import requests
+from rpy2.robjects import r
+
 
 app = Flask(__name__)
 
@@ -43,8 +44,7 @@ def buildSuccess(message):
   response.status_code = 200
   return response
 
-@app.route('/loadAndCheck_summaryData', methods = ['POST'])
-@app.route('/loadAndCheck_summaryData/', methods = ['POST'])
+@app.route('/loadAndCheck_summaryData', methods = ['POST'], strict_slashes = False)
 def loadAndCheck_summaryData():
 
     logging.debug("Entering loadAndCheck_summaryData");
@@ -92,8 +92,7 @@ def loadAndCheck_summaryData():
     return jsonify(response)
 
 
-@app.route('/calculate', methods=['POST'])
-@app.route('/calculate/', methods=['POST'])
+@app.route('/calculate', methods = ['POST'], strict_slashes = False)
 def calculate():
   pathwayConfig = app.config[CONFIG]
   try:
@@ -128,7 +127,7 @@ def calculate():
         studyObj['filename'] = filename
         studyFile.save(filename)
       else:
-        return buildFailure("The file seems to be missing from Study #" + i + ".")
+        return buildFailure("The file seems to be missing from Study #" + str(i) + ".")
       studyList.append(studyObj)
     del parameters['num_studies']
     parameters['studies'] = studyList
@@ -176,10 +175,12 @@ def calculate():
     parameters['refinep'] = parameters.get('refinep',"").lower() in ['true','t','1']
     parameters['gene_subset'] = parameters.get('gene_subset',"").lower() in ['true','t','1']
 
-    if "excluded_snp" in parameters:
-        parameters.excluded_snp = createFilename(fileToBeValidated.filename)
-        fileToBeValidated.save(parameters.excluded_snp)
-
+    if 'excluded_snp' in request.files:
+      excluded_snps_file = request.files['excluded_snp']
+      logging.debug("attaching excluded snps file: " + excluded_snps_file.filename)
+      filename = os.path.join(app.config['UPLOAD_FOLDER'], ts + excluded_snps_file.filename)
+      parameters['excluded.snps'] = filename
+      excluded_snps_file.save(filename)
 
     jsonout = {"submittedTime": parameters['idstr'], "payload": parameters}
     with open(os.path.join(app.config['OUT_FOLDER'],str(parameters['idstr'])+'.json'),'w') as outfile:
@@ -231,7 +232,7 @@ def main():
   if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-  #OptionGenerator()
+  OptionGenerator()
 
 main()
 
@@ -255,5 +256,3 @@ if __name__ == '__main__':
             return send_from_directory(os.getcwd(),path)
     #end remove
     app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)
-
-#refresh
