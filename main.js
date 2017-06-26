@@ -4,6 +4,49 @@ $(function () {
         return value < params;
     });
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Validation all studies should have at least one case
+    ////////////////////////////////////////////////////////////////////////////
+    $.validator.addMethod("each_study_needs_at_least_one_size", function(value, element, params) {
+       var uniqueId =  retrieveUniqueId($(element).attr("name"));
+       var numberOfSizes = $(element).attr(createDataSizeStudyAttributeName(uniqueId));
+
+       return (numberOfSizes > 0 ) ? true : false;
+    });
+
+    ////////////////////////////////////////////////////////////////////////////
+    // For each case there should be a sample size and if the family is Binomial
+    // then there should be a sample and control size.
+    ////////////////////////////////////////////////////////////////////////////
+    $.validator.addMethod("each_study_should_have_all_sizes_recorded", function(value,element,params) {
+      var uniqueId = retrieveUniqueId($(element).attr("name"));
+      var numberOfSizes = $(element).attr(createDataSizeStudyAttributeName(uniqueId));
+
+      // If the number of Size is 0 then there is no sizes to check and this
+      // validation should not be used
+      if ( numberOfSizes == 0 ) {
+         return true;
+      }
+
+      var binomialSelected = isBinomialSelected();
+
+      for ( var index = 1; index <= numberOfSizes; index++) {
+        var sampleSizeTextField = createSampleSizeTextFieldName(uniqueId, index);
+        if ( $("#" + sampleSizeTextField).val().length === 0 ) {
+          return false;
+        }
+
+        if ( binomialSelected ) {
+           var controlSizeTextField = createControlSizeTextFieldName(uniqueId, index);
+           if ( $("#" + controlSizeTextField).val().length === 0) {
+              return false;
+           }
+        }
+      }
+
+      return true;
+
+    }, "If the study is Gausian the Sample needs to be recorded and if the study is Binomial the Sample and Control Size needs to be recorded.");
 
     jQuery.validator.addMethod('scientific_notation_check', function (value, el) {
         return (typeof Number(value) === "number");
@@ -33,7 +76,6 @@ $(function () {
         population: {
             required: {
                 depends: function (element) {
-
                     return element.value.length === 0 && document.getElementById("super_population").value.length > 0;
                 }
             }
@@ -185,8 +227,6 @@ $(function () {
 
     };
 
-
-
     jQuery.validator.setDefaults({
         ignore: ".custom-combobox-input",
         focusInvalid: false,
@@ -317,6 +357,15 @@ function post_request() {
 }
 
 function sendForm(formData) {
+
+    // If the Family is Gaussian then the control sizes should not be sent to
+    // the backend.
+    if ( !isBinomialSelected() ) {
+      $("input[name^='control_size_']").each(function(index,element) {
+        formData.delete(element.id);
+      });
+    }
+
     return $.ajax({
         beforeSend: pre_request,
         type: pathForm.method,
@@ -445,7 +494,7 @@ $(function() {
       activate : function(event, ui) {
 
         var activeIndex = $("#studyEntry").accordion("option", "active");
-        showTitle(undefined, undefined, activeIndex);
+        showTitle(undefined, undefined, activeIndex +1);
       }
     })
     $("button").button();
@@ -487,9 +536,6 @@ function addStudy() {
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
-    //var firstResource = addStudyResource(studyIndex,1);
-    //studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
-
     studyTemplate.find(".studyTitle").append(studyIndex);
 
     var studyLabel = studyTemplate.find('[for="study"]');
@@ -503,8 +549,9 @@ function addStudy() {
       attr( createDataSizeStudyAttributeName(studyIndex), 0);
 
     // The Study Button will be made invisible so that we can display the file
-    // name as we want to.  By making this vislbe the selected filename will
-    // not be display by the input type=file.
+    // name as we want to.  By making this visible the selected filename will
+    // not be displayed by the input type=file.  However, it can be be displayed
+    // using another HTML Object.
     var studyLabelVisibleButtonLabel = studyTemplate.find("#studyProxy");
     var studyLabelVisibleId = studyLabelVisibleButtonLabel.attr("id") + "_" + studyIndex;
     studyLabelVisibleButtonLabel.
@@ -512,20 +559,12 @@ function addStudy() {
       attr("id", studyLabelVisibleId).
       on("click", proxyClickForHtmlInputFileType);
 
-
-    // Add the Id, name, on click attributes to the new LoadAndCheckButton
-    // Added a data attribute data-sample_size_id since I needed an integer
-    // that would provide me with the number for the sample size of each
-    // resource.  I put here it so that each template could have it own
-    // attribute.                    <input id="gaussian" type="radio" name="family" value="gausian" onclick="setupOneEntryFieldForSizes(); showTitle();"/>
-
     var loadAndStudyButton = studyTemplate.find('#loadAndCheckButton');
     var idButton1 = loadAndStudyButton.attr("id") + "_" + studyIndex;
     loadAndStudyButton.
       attr("id", idButton1).
       attr("name", idButton1).
-      on("click", loadAndValidate).
-      attr("data-total_number_of_resources","0");
+      on("click", loadAndValidate);
     insertMessageWhenFileIsNotLoaded(studyIndex);
 
     var loadAndStudyLabel = studyTemplate.find('#loadAndCheckLabel');
@@ -563,57 +602,41 @@ function addStudy() {
       attr("name", idButton2).
       on("click", resetStudy);
 
-    //var numLabel = studyTemplate.find('[for="num_resource"]');
-    //numLabel.attr("for",numLabel.attr("for")+"_"+studyIndex);
-    //var numId = studyTemplate.find("#num_resource");
-    //numId.attr("name",numId.attr("id")+"_"+studyIndex).attr("id",numId.attr("id")+"_"+studyIndex);
-
-
     $("#studyEntry").append(studyTemplate);
-    // firstResource.find('input').rules("add", {
-    //     required: true,
-    //     digits: true,
-    //     messages: {
-    //         required: "The sample size value is required",
-    //         digits: "The sample size value must be an integer"
-    //     }
-    // });
+
+    studyId.rules("add", {
+        each_study_needs_at_least_one_size: true,
+        messages: {
+          each_study_needs_at_least_one_size: "Study #" + studyIndex + " must have a file that been checked and loaded"
+        }
+    });
 
     //studyId.rules("add", {
-    studyLabelVisibleButtonLabel.rules("add", {
-        required: true,
-        messages: {
-            required: "The " + studyId.attr('id') + " field is required",
-        }
-    });
+    //  each_study_should_have_all_sizes_recorded: true,
+    //  messages: {
+    //    each_study_should_have_all_sizes_recorded: "Study #" + studyIndex + " must have all sizes field initialized"
+    //  }
+    //});
+
+    //var validation = { each_study_needs_at_least_one_size: true};
+    //var specificValidation = { studyId.attr("id"), validation };
 
     lambdaId.rules("add", {
-        required: true,
-        number: true,
-        min: 1,
-        messages: {
-            required: "The " + lambdaId.attr('id') + " field is required",
-            number: "The " + lambdaId.attr('id') + " value must be a number",
-            min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
-        }
+      required: true,
+      number: true,
+      min: 1,
+      messages: {
+        required: "The " + lambdaId.attr('id') + " field is required",
+        number: "The " + lambdaId.attr('id') + " value must be a number",
+        min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
+      }
     });
-
-    // numId.rules("add", {
-    //     required: true,
-    //     number: true,
-    //     min: 1,
-    //     messages: {
-    //         required: "The " + numId.attr('id') + " field is required",
-    //         number: "The " + numId.attr('id') + " value must be a number",
-    //         min: "The " + numId.attr('id') + " value must be greater than or equal to 1"
-    //     }
-    // });
 
     var activeIndex = $("#studyEntry").accordion("refresh").accordion({
         active: studyCount
     }).accordion("option", "active");
 
-     showTitle(undefined, 0, studyIndex);
+    showTitle(undefined, 0, studyIndex);
 
 
 /*    studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
@@ -624,7 +647,7 @@ function addStudy() {
             var choice;
             if (this.value > 20)
                 choice = createConfirmationBox("Are you sure you want to specify " + this.value + " study resources for this study?");
-            else
+            else:
                 choice = true;
 
             if (choice) {
@@ -685,7 +708,7 @@ function addStudyResource(study, ind) {
  */
 function updateSpecificStudy(data, filename, event)
 {
-  var uniquePartOfVariable = event.target.id.split("_")[1];
+  var uniquePartOfVariable = retrieveUniqueId(event.target.id);
   var loadAndCheckLabelElement = $("#" + "loadAndCheckLabel_" + uniquePartOfVariable);
   var placeHolderElement = $("#" + "place_holder_for_study_resources_" + uniquePartOfVariable);
 
@@ -703,7 +726,7 @@ function updateSpecificStudy(data, filename, event)
     loadAndCheckLabelElement.text(filename);
     var numberOfRecords = parseInt(data.numberOfRecords);
 
-    $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(index), numberOfRecords);
+    $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(uniquePartOfVariable), numberOfRecords);
 
     for ( var index = 0; index < numberOfRecords; index++)
     {
@@ -734,7 +757,7 @@ function createStudyName(index)
  */
 function clearAllSampleSizeResources(event) {
 
-  var uniquePartOfVariable = event.target.id.split("_")[1];
+  var uniquePartOfVariable = retrieveUniqueId(event.target.id);
   var placeHolder = "place_holder_for_study_resources_" + uniquePartOfVariable;
 
   $("#"+placeHolder).empty();
@@ -1042,9 +1065,11 @@ $(function() {
 
   $("select[name='database_pathway'], input[name='file_pathway']").on("change", changeRadioSelection);
 
-  $("select#super_population").on('change', function() {
-    apply_multiselect_options($('#population'), this.value);
-  });
+  $("select#super_population").
+    on('change', function() {
+      apply_multiselect_options($('#population'), this.value);
+    }).
+    on('change', enableSubpopulationComboBox);
 
   $("#studyEntry").accordion("option", "active", 0);
   addStudy();// add first element by default, function declaration in template-manager
@@ -1071,7 +1096,7 @@ function clickCheckBox() {
  * Code that will reset a study
  */
  function resetStudy(event) {
-   var uniquePartOfVariable = event.target.id.split("_")[1];
+   var uniquePartOfVariable = retrieveUniqueId(event.target.id);
 
    var studyFilenameInput = "study_" + uniquePartOfVariable;
    var lamdaNameInput = "lambda_" + uniquePartOfVariable;
@@ -1080,10 +1105,11 @@ function clickCheckBox() {
 
 
    $("#" + studyFilenameInput).val("");
+   $("#" + studyFilenameInput).attr(createDataSizeStudyAttributeName(uniquePartOfVariable), "0");
    $("#" + lamdaNameInput).val("1.0");
-   $("#" + loadAndCheckButton).attr("data-total_number_of_resources","0");
    insertMessageWhenFileIsNotLoaded(uniquePartOfVariable);
    clearAllSampleSizeResources(event)
+   showTitle(undefined, 0, uniquePartOfVariable);
  }
 
  /*
@@ -1091,15 +1117,14 @@ function clickCheckBox() {
   */
 function loadAndValidate(event) {
       // Create the unique id that will retrieve the data from the form.
-      var uniquePartOfVariable = event.target.id.split("_")[1];
+      var uniquePartOfVariable = retrieveUniqueId(event.target.id);
       var studyFilenameInput = "study_" + uniquePartOfVariable;
 
       // Retreive the data from the form and add the variable containing the
-      // filename of the study
+      // filename of the study.  We may not need the stuydFileNameInput
       var formData = new FormData(pathForm);
       formData.append('currentStudy', studyFilenameInput);
 
-      //return $.ajax({
       var result = $.ajax({
            //beforeSend: pre_request,
            type: "POST",
@@ -1122,6 +1147,10 @@ function loadAndValidate(event) {
            dataType: "json",
            success: function(data) {
              updateSpecificStudy(data, formData.get(studyFilenameInput).name, event);
+             if ( isBinomialSelected() ) {
+               handleBinomial();
+             } else
+               handleGaussian();
            }
         });
 }
@@ -1190,7 +1219,7 @@ function insertMessageWhenFileIsNotLoaded(id) {
  *
  */
 function insertMessageWhenFileIsLoadedButNotValidated(event) {
-  var uniquePartOfVariable = event.target.id.split("_")[1];
+  var uniquePartOfVariable = retrieveUniqueId(event.target.id);
 
   if ( event.target.files.length != 0 ) {
     var filename = event.target.files[0].name;
@@ -1234,12 +1263,12 @@ function disableCalculateButton(data)
  */
 function setupTab(event, ui) {
 
-  var specificStudyIndex = $("#studyEntry").accordion("option", "active");
+  var specificStudyIndex = $("#studyEntry").accordion("option", "active"); + 1;
   var objectName = createStudyName(specificStudyIndex);
-  var name = createDataSizeStudyAttributeName(specificStudyIndex + 1);
+  var name = createDataSizeStudyAttributeName(specificStudyIndex);
   var numberOfSizes = $("#" + objectName).attr(name);
 
-  showTitle(undefined, numberOfSizes, specificStudyIndex + 1);
+  showTitle(undefined, numberOfSizes, specificStudyIndex);
 }$("#studyEntry").accordion("option", "active")
 
 /* A function that retrieves the name containing the number of sizes stored in the study */
@@ -1268,7 +1297,7 @@ function handleBinomial() {
   $("[id^='control_size_']").removeClass("single");
 
   $("[id^='size_titles_']").each(function(index, value) {
-    var numberOfCurrentEntries = $("#" + createStudyName(index+1)).attr(createDataSizeStudyAttributeName());
+    var numberOfCurrentEntries = $("#" + createStudyName(index+1)).attr(createDataSizeStudyAttributeName(index+1));
     showTitle(undefined, numberOfCurrentEntries, index + 1);
   });
 
@@ -1280,17 +1309,43 @@ function handleGaussian() {
   $("[id^='control_size_']").addClass("single");
 
   $("[id^='size_titles_']").each(function(index, value) {
-    var numberOfCurrentEntries = $("#" + createStudyName(index+1)).attr(createDataSizeStudyAttributeName());
+    var numberOfCurrentEntries = $("#" + createStudyName(index+1)).attr(createDataSizeStudyAttributeName(index+1));
     showTitle(undefined, numberOfCurrentEntries, index + 1);
   });
 
 }
 
-/* Retrieves the unique id from the variable name                             */
-/* The routine will assume that the variable contain a _ followed by a number */
-/* at the end                                                                 */
-function retrieveUniqueId(variable) {
-  var uniqueIdArray = variable.split("_");
-  var index = uniqueIdArray.length - 1;
-  return uniqueIdArray[ index ];
+/**
+ * Enameble the sub population drop down combo box
+ */
+function enableSubpopulationComboBox() {
+  $('#population').removeAttr('disabled');
+}
+
+/**
+ * Retrieves the value that make an Id unique.
+ */
+function retrieveUniqueId(name) {
+  return name.split("_")[1];
+}
+
+/**
+ * creates the name for sample size text field
+ */
+function createSampleSizeTextFieldName(study_id, index) {
+  return "sample_size" + "_" + study_id.toString() + "_" + index.toString();
+}
+
+/**
+ * creates the name for the control size text field
+ */
+function createControlSizeTextFieldName(study_id, index) {
+  return "control_size" + "_" + study_id.toString() + "_" + index.toString();
+}
+
+/**
+ * Returns true if the binomial radio button is checked.
+ */
+function isBinomialSelected() {
+  return $("#binomial").is(':checked');
 }
