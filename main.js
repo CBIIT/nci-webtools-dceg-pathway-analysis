@@ -12,7 +12,7 @@ $(function () {
        var numberOfSizes = $(element).attr(createDataSizeStudyAttributeName(uniqueId));
 
        return (numberOfSizes > 0 ) ? true : false;
-    }, "Each Study must have a file that has been checked and loaded");
+    });
 
     ////////////////////////////////////////////////////////////////////////////
     // For each case there should be a sample size and if the family is Binomial
@@ -357,6 +357,15 @@ function post_request() {
 }
 
 function sendForm(formData) {
+
+    // If the Family is Gaussian then the control sizes should not be sent to
+    // the backend.
+    if ( !isBinomialSelected() ) {
+      $("input[name^='control_size_']").each(function(index,element) {
+        formData.delete(element.id);
+      });
+    }
+
     return $.ajax({
         beforeSend: pre_request,
         type: pathForm.method,
@@ -527,9 +536,6 @@ function addStudy() {
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
-    //var firstResource = addStudyResource(studyIndex,1);
-    //studyTemplate.children('ul').children('li').last().children('ul').append(firstResource);
-
     studyTemplate.find(".studyTitle").append(studyIndex);
 
     var studyLabel = studyTemplate.find('[for="study"]');
@@ -605,12 +611,15 @@ function addStudy() {
         }
     });
 
-    studyId.rules("add", {
-      each_study_should_have_all_sizes_recorded: true,
-      messages: {
-        each_study_should_have_all_sizes_recorded: "Study #" + studyIndex + " must have all sizes field initialized"
-      }
-    });
+    //studyId.rules("add", {
+    //  each_study_should_have_all_sizes_recorded: true,
+    //  messages: {
+    //    each_study_should_have_all_sizes_recorded: "Study #" + studyIndex + " must have all sizes field initialized"
+    //  }
+    //});
+
+    //var validation = { each_study_needs_at_least_one_size: true};
+    //var specificValidation = { studyId.attr("id"), validation };
 
     lambdaId.rules("add", {
       required: true,
@@ -1112,13 +1121,10 @@ function loadAndValidate(event) {
       var studyFilenameInput = "study_" + uniquePartOfVariable;
 
       // Retreive the data from the form and add the variable containing the
-      // filename of the study
+      // filename of the study.  We may not need the stuydFileNameInput
       var formData = new FormData(pathForm);
       formData.append('currentStudy', studyFilenameInput);
 
-
-
-      //return $.ajax({
       var result = $.ajax({
            //beforeSend: pre_request,
            type: "POST",
@@ -1141,6 +1147,10 @@ function loadAndValidate(event) {
            dataType: "json",
            success: function(data) {
              updateSpecificStudy(data, formData.get(studyFilenameInput).name, event);
+             if ( isBinomialSelected() ) {
+               handleBinomial();
+             } else
+               handleGaussian();
            }
         });
 }
