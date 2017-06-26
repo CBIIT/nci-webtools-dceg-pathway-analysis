@@ -207,7 +207,6 @@ def calculate():
 # The accepted approach for this code is to create a new file and copy the
 # data into that file and have the R programs call taht file
 #
-
 def createFilename(originalFilename):
     ts = str(time.time())
     newFilename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + originalFilename + '.study')
@@ -256,7 +255,5 @@ if __name__ == '__main__':
             return send_from_directory(os.getcwd(),path)
     #end remove
     app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)
-
-
 
 #refresh
