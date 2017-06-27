@@ -101,7 +101,8 @@ form .warning {
   display: block;
   width: 100%;
   margin: 0px auto;
-  max-width: 800px;
+  min-width: 750px;
+  max-width: 1200px;
 }
 #mainTitle {
   text-align: center;
