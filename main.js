@@ -1134,7 +1134,7 @@ function loadAndValidate(event) {
       var result = $.ajax({
            //beforeSend: pre_request,
            type: "POST",
-           url: "/loadAndCheck_summaryData/",
+           url: "loadAndCheck_summaryData/",
            data: formData,
            cache: false,
            processData: false,
