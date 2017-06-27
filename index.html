@@ -58,7 +58,7 @@
                     <label>Family:</label>
                     <input id="binomial" type="radio" name="family" value="binomial" checked="checked" onclick="handleBinomial()" />
                     <label for="binomial">Binomial</label>
-                    <input id="gaussian" type="radio" name="family" value="gausian" onclick="handleGaussian()"/>
+                    <input id="gaussian" type="radio" name="family" value="gaussian" onclick="handleGaussian()"/>
                     <label for="gaussian">Gaussian</label>
                 </div>
                 <div id="studyEntry"></div>
@@ -182,7 +182,7 @@
                   <li>
                     <label data-term="Excluded SNPs File" for="excluded_snp_file" class="termToDefine">Excluded SNP File</label>
                     <div class="input">
-                      <input id="include_excluded_snp" type="checkbox" name="include_excluded_snp" value="false" onclick="clickCheckBox()"/>
+                      <input id="include_excluded_snp" type="checkbox" name="include_excluded_snp" onclick="clickCheckBox()"/>
                       <input id="excluded_snp" type="file" name="excluded_snp" class="inputElementsOnSameLine" style="visibility:hidden;"/>
                     </div>
                   </li>
