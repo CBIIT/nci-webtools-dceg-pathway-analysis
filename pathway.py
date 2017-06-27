@@ -44,8 +44,7 @@ def buildSuccess(message):
   response.status_code = 200
   return response
 
-@app.route('/loadAndCheck_summaryData', methods = ['POST'])
-@app.route('/loadAndCheck_summaryData/', methods = ['POST'])
+@app.route('/loadAndCheck_summaryData', methods = ['POST'], strict_slashes = False)
 def loadAndCheck_summaryData():
 
     logging.debug("Entering loadAndCheck_summaryData");
@@ -93,8 +92,7 @@ def loadAndCheck_summaryData():
     return jsonify(response)
 
 
-@app.route('/calculate', methods = ['POST'])
-@app.route('/calculate/', methods = ['POST'])
+@app.route('/calculate', methods = ['POST'], strict_slashes = False)
 def calculate():
   pathwayConfig = app.config[CONFIG]
   try:
@@ -238,23 +236,24 @@ def main():
 
 main()
 
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser()
-
-    # Default port is 9200
-    parser.add_argument('-p', '--port', type = int, dest = 'port', default = 9200, help = 'Sets the Port')
-    parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
-    args = parser.parse_args()
-    if (args.debug):
-        @app.route('/common/<path:path>')
-        def common_folder(path):
-            return send_from_directory("C:\\Shared\common\\",path)
-
-        @app.route('/<path:path>')
-        def static_files(path):
-            if (path.endswith('/')):
-                path += 'index.html'
-            return send_from_directory(os.getcwd(),path)
-    #end remove
-    app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)
+-if __name__ == '__main__':
+-    import argparse
+-    parser = argparse.ArgumentParser()
+-
+-    # Default port is 9200
+-    parser.add_argument('-p', '--port', type = int, dest = 'port', default = 9200, help = 'Sets the Port')
+-    parser.add_argument('-d', '--debug', action = 'store_true', help = 'Enables debugging')
+-    args = parser.parse_args()
+-    if (args.debug):
+-        @app.route('/common/<path:path>')
+-        def common_folder(path):
+-            return send_from_directory("C:\\Shared\common\\",path)
+-
+-        @app.route('/<path:path>')
+-        def static_files(path):
+-            if (path.endswith('/')):
+-                path += 'index.html'
+-            return send_from_directory(os.getcwd(),path)
+-    #end remove
+-    app.run(host = '0.0.0.0', port = args.port, debug = args.debug, use_evalex = False)
+-
