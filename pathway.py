@@ -44,7 +44,8 @@ def buildSuccess(message):
   response.status_code = 200
   return response
 
-@app.route('/loadAndCheck_summaryData', methods = ['POST'], strict_slashes = False)
+@app.route('/loadAndCheck_summaryData', methods = ['POST'])
+@app.route('/loadAndCheck_summaryData/', methods = ['POST'])
 def loadAndCheck_summaryData():
 
     logging.debug("Entering loadAndCheck_summaryData");
@@ -92,7 +93,8 @@ def loadAndCheck_summaryData():
     return jsonify(response)
 
 
-@app.route('/calculate', methods = ['POST'], strict_slashes = False)
+@app.route('/calculate', methods = ['POST'])
+@app.route('/calculate/', methods = ['POST'])
 def calculate():
   pathwayConfig = app.config[CONFIG]
   try:
