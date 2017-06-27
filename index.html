@@ -8,6 +8,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/multiple-select.min.css" rel="stylesheet" type="text/css"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.1/css/select2.min.css" rel="stylesheet" type="text/css"/>
     <link href="https://code.jquery.com/ui/1.11.4/themes/blitzer/jquery-ui.css" rel="stylesheet" type="text/css"/>
+    <!-- popover -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.webui-popover/1.2.1/jquery.webui-popover.min.css">
     <link href="/common/css/style.css" rel="stylesheet" type="text/css"/>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js" type="application/javascript"></script>
@@ -15,8 +17,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.14.0/additional-methods.js" type="application/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/multiple-select/1.1.0/jquery.multiple.select.js" type="application/javascript"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" type="application/javascript"></script>
+    <!-- popover -->
+    <script src="https://cdn.jsdelivr.net/jquery.webui-popover/1.2.1/jquery.webui-popover.min.js"></script>
+
+<!--
     <script src="/common/js/popover-functions.js" type="application/javascript"></script>
+-->
     <script src="main.js" type="application/javascript"></script>
+    <!-- <script>
+      $( function() {
+        $( document ).tooltip();
+      } );
+    </script> -->
   </head>
   <body>
     <header>
@@ -53,7 +65,7 @@
             <div id="dialogElm"></div>
             <form name="pathForm" action="calculate/" method="POST" enctype="multipart/form-data">
               <fieldset>
-                <legend data-term="study" class="termToDefine">Summary Data</legend>
+                <legend data-term="study" class="termToDefine" data-title="Summary Data" data-content="ADD DESCRIPTION">Summary Data</legend>
                 <div id="Family_Selection" data-family-type="binomial">
                     <label>Family:</label>
                     <input id="binomial" type="radio" name="family" value="binomial" checked="checked" onclick="handleBinomial()" />
@@ -65,7 +77,7 @@
                 <button title="study" class="addControl">Add Study</button>
               </fieldset>
               <fieldset>
-                <legend data-term="file_pathway" class="termToDefine">Select or upload the pathway file:</legend>
+                <legend data-term="file_pathway" class="termToDefine" data-title="Select or upload the pathway file:" data-content="ADD DESCRIPTION">Select or upload the pathway file:</legend>
                 <ul>
                   <li>
                     <input id="database_pathway_option" type="radio" name="pathway_type" value="database_pathway" checked=""/>
@@ -86,7 +98,7 @@
                 </ul>
               </fieldset>
               <fieldset>
-                <legend data-term="population" class="termToDefine">Select the population:</legend>
+                <legend data-term="population" class="termToDefine" data-title="Select the population:" data-content="ADD DESCRIPTION">Select the population:</legend>
                 <ul>
                   <li>
                     <label for="super_population">Super Population:</label>
@@ -108,7 +120,7 @@
                 <legend>Set the following options:</legend>
                 <ul>
                   <li>
-                    <label data-term="nperm" for="nperm" class="termToDefine">nperm:</label>
+                    <label data-term="nperm" for="nperm" class="termToDefine" data-title="nperm" data-content="ADD DESCRIPTION">nperm:</label>
                     <div class="input">
                       <input id="nperm" type="text" name="nperm" value="1e+5"/>
                     </div>
@@ -120,67 +132,67 @@
                     </div>
                   </li>
                   <li>
-                    <label data-term="miss_rate" for="miss_rate" class="termToDefine">snp.miss.rate:</label>
+                    <label data-term="miss_rate" for="miss_rate" class="termToDefine" data-title="snp.miss.rate" data-content="ADD DESCRIPTION">snp.miss.rate:</label>
                     <div class="input">
                       <input id="miss_rate" type="number" name="miss_rate" value="0.05" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="maf" for="maf" class="termToDefine">maf:</label>
+                    <label data-term="maf" for="maf" class="termToDefine" data-title="maf" data-content="ADD DESCRIPTION">maf:</label>
                     <div class="input">
                       <input id="maf" type="number" name="maf" value="0.05" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="hwep" for="hwep" class="termToDefine">HWE.p:</label>
+                    <label data-term="hwep" for="hwep" class="termToDefine" data-title="HWE.p" data-content="ADD DESCRIPTION">HWE.p:</label>
                     <div class="input">
                       <input id="hwep" type="text" name="hwep" value="1e-5" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="gene" for="gene" class="termToDefine">Gene.R2:</label>
+                    <label data-term="gene" for="gene" class="termToDefine" data-title="Gene.R2" data-content="ADD DESCRIPTION">Gene.R2:</label>
                     <div class="input">
                       <input id="gene" type="number" name="gene" value="0.95" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="chr" for="chr" class="termToDefine">Chr.R2:</label>
+                    <label data-term="chr" for="chr" class="termToDefine" data-title="Chr.R2" data-content="ADD DESCRIPTION">Chr.R2:</label>
                     <div class="input">
                       <input id="chr" type="number" name="chr" value="0.95" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="gene_subset" for="gene_subset" class="termToDefine">rm.gene.subset:</label>
+                    <label data-term="gene_subset" for="gene_subset" class="termToDefine" data-title="rm.gene.subset" data-content="ADD DESCRIPTION">rm.gene.subset:</label>
                     <div class="input">
                       <input id="gene_subset" type="checkbox" name="gene_subset"/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="snp_n" for="snp_n" class="termToDefine">inspect.snp.n:</label>
+                    <label data-term="snp_n" for="snp_n" class="termToDefine" data-title="inspect.snp.n" data-content="ADD DESCRIPTION">inspect.snp.n:</label>
                     <div class="input">
                       <input id="snp_n" type="number" name="snp_n" value="5" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="snp_percent" for="snp_percent" class="termToDefine">inspect.snp.percent:</label>
+                    <label data-term="snp_percent" for="snp_percent" class="termToDefine" data-title="inspect.snp.percent" data-content="ADD DESCRIPTION">inspect.snp.percent:</label>
                     <div class="input">
                       <input id="snp_percent" type="number" name="snp_percent" value="0" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="gene_n" for="gene_n" class="termToDefine">inspect.gene.n:</label>
+                    <label data-term="gene_n" for="gene_n" class="termToDefine" data-title="inspect.gene.n" data-content="ADD DESCRIPTION">inspect.gene.n:</label>
                     <div class="input">
                       <input id="gene_n" type="number" name="gene_n" value="10" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="gene_percent" for="gene_percent" class="termToDefine">inspect.gene.percent:</label>
+                    <label data-term="gene_percent" for="gene_percent" class="termToDefine" data-title="inspect.gene.percent" data-content="ADD DESCRIPTION">inspect.gene.percent:</label>
                     <div class="input">
                       <input id="gene_percent" type="number" name="gene_percent" step=".01" value="0.05" required=""/>
                     </div>
                   </li>
                   <li>
-                    <label data-term="Excluded SNPs File" for="excluded_snp_file" class="termToDefine">Excluded SNP File</label>
+                    <label data-term="Excluded SNPs File" for="excluded_snp_file" class="termToDefine" data-title="Excluded SNP File" data-content="ADD DESCRIPTION">Excluded SNP File</label>
                     <div class="input">
                       <input id="include_excluded_snp" type="checkbox" name="include_excluded_snp" onclick="clickCheckBox()"/>
                       <input id="excluded_snp" type="file" name="excluded_snp" class="inputElementsOnSameLine" style="visibility:hidden;"/>
@@ -267,7 +279,7 @@
             </div>
           </li>
           <li>
-            <label data-term="lambda" for="lambda" class="termToDefine">Lambda (&lambda;):</label>
+            <label data-term="lambda" for="lambda" class="termToDefine" data-title="Lambda" data-content="ADD DESCRIPTION">Lambda (&lambda;):</label>
             <div class="input">
               <input id="lambda" type="text" name="lambda" value="1.0" required=""/>
             </div>
@@ -284,7 +296,7 @@
             </div>
           </li>
           <li>
-            <div id="place_holder_for_study_resources"></div>
+            <div id="place_holder_for_study_resources" class="inputSizes"></div>
           </li>
       <li>
         <input id="resetStudy" type="button" class="resetStudyButton" name="resetStudy" value="Reset Study" />

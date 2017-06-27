@@ -534,3 +534,13 @@ li div #caseTitleSize p{
 .spaceBetweenChooseFileButtonAndText {
     margin-top: .5em;
 }
+
+/*
+ * Input defined for the sample sizes
+ */
+.inputSizes {
+  position: relative;
+  float: right;
+  clear: right;
+  text-align: left;
+}
