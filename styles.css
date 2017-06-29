@@ -345,6 +345,8 @@ header div {
 .title {
   color: white;
   padding-left: 2em;
+  font-weight: bold;
+  font-size: large;
 }
 
 header p {
