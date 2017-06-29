@@ -114,16 +114,9 @@ header {
   margin-top: 0;
 }
 header hr {
-  width: 100%;
   float: right;
   margin: 0;
   border: 0;
-  height: 6px;
-  background-image: -webkit-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-image: -moz-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-image: -o-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-imageheader: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-image: linear-gradient(to right, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
 }
 
 .subHeading {
@@ -351,17 +344,12 @@ header div {
 /* The way the title of the application should be representated */
 .title {
   color: white;
-  font-size: x-large;
   padding-left: 2em;
 }
 
 header p {
-  padding-top: 1em;
-  padding-bottom: 1em;
-  padding-left:0em;
-  padding-right:0em;
-  margin-top:0px;
-  margin-bottom:0px;
+  -webkit-padding-before: .25em;
+  -webkit-padding-after: .25em;
 }
 
 /*
