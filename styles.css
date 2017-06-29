@@ -128,15 +128,7 @@ header hr {
 
 .subHeading {
   font-size: medium;
-  border: 3px ridge rgba(0,66,118,0.47);
   text-align: center;
-  padding: 1%;
-  clear: both;
-  background-color: #789;
-  color: #fff;
-}
-.subHeading a {
-  color: #fff;
 }
 .subHeading p {
   padding: 0px 20px;

@@ -1162,7 +1162,8 @@ function loadAndValidate(event) {
 }
 
 /*
- * Determines if the title for the sample size and control size should be shown.
+ * Determines if the title for the sample size and control size should be shown
+ * or just the sample size or none if no record has been selected yet.
  *
  * parameters
  *  data :            The number of records that were loaded
@@ -1171,32 +1172,51 @@ function loadAndValidate(event) {
  */
 function showTitle(data, currentSizeCount, index) {
 
-  var isBinomial = $("#binomial").is(':checked');
+  // Default Case is to show no title if data is undefined or 0 and
+  // the currentSizeCount is undefined or 0.  Note due to my inexperience
+  // with fron end programming, I made sure to hide everything
+  var dataNotPresent =
+    data === undefined || ( data !== undefined && parseInt(data.numberOfRecords) == 0 );
+  var currentSizeCountNotPresent =
+    currentSizeCount === undefined || ( currentSizeCount !== undefined && parseInt(currentSizeCount) == 0);
+  if ( dataNotPresent && currentSizeCountNotPresent) {
+    $("#" + createSizeTitleName(index) ).hide();
+    $("#" + createSizeTitleName(index) + "> #caseTitleSize").hide();
+    $("#" + createSizeTitleName(index) + "> #caseTitleControl").hide();
+    return;
+  }
 
-  // Rule: Show title if binomial is selected
-  var show = ( isBinomial ) ? true : false;
+
+  // Rule: Show both titles if binomial is selected
+  var isBinomial = $("#binomial").is(':checked');
+  var showBoth = ( isBinomial ) ? true : false;
 
   // From this point on the rules will only concern binomial
   if ( isBinomial )
   {
     if ( data !== undefined && parseInt(data.numberOfRecords) > 0) {
-      // Rule: Show title if the number of rows for the size is greater than 0
-      show = true;
+      // Rule: Show both titles if the number of rows for the size is greater than 0
+      showBoth = true;
     } else if ( currentSizeCount !== undefined && parseInt(currentSizeCount) > 0 ) {
       // Rule: If the data-study-size-count > 0 then the study already had data
       // entered into the study.
-      show = true;
+      showBoth = true;
     } else {
-      show = false
+      showBoth = false
     }
   }
 
-  // Show or hide the Titles
-  var sizeTitlesElement = $("#" + createSizeTitleName(index));
-  if ( show )
-    $("#" + createSizeTitleName(index)).show();
-  else
-    $("#" + createSizeTitleName(index)).hide();
+  // Show both or hide the control size
+  if ( showBoth ) {
+    $("#" + createSizeTitleName(index) ).show();
+    $("#" + createSizeTitleName(index) + "> #caseTitleSize").show();
+    $("#" + createSizeTitleName(index) + "> #caseTitleControl").show();
+  }
+  else {
+    $("#" + createSizeTitleName(index) ).show();
+    $("#" + createSizeTitleName(index) + "> #caseTitleSize").show();
+    $("#" + createSizeTitleName(index) + "> #caseTitleControl").hide();    
+  }
 }
 
 
