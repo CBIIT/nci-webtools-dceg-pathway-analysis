@@ -408,7 +408,7 @@ header p {
 /* The buttons are part of them template so the id will have                  */
 /* an _<number> attached to each id.                                          */
 #content .studies [id^=loadAndCheckButton] {
-  width:7em;
+  width:7.9em;
   height:initial;
   margin-right: 2.0em;
   display:inline;
