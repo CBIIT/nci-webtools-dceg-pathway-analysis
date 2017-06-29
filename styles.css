@@ -362,7 +362,7 @@ header p {
 }
 
 #home-tab, #study-tab, #help-tab {
-  border: 1px solid black;
+  border: 1px solid lightgray;
   margin-bottom :-2px;
   min-height: 1500px;
 }
