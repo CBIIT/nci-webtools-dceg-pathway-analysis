@@ -526,3 +526,23 @@ li div #caseTitleSize p{
   clear: right;
   text-align: left;
 }
+
+/*****************************************************************************/
+/* Handling Links                                                            */
+/*****************************************************************************/
+
+/* Requirements for link : always blue and when the user hover over the link */
+/* then it will underlined                                                   */
+.ui-widget-content a {
+  color: blue;
+}
+
+/* When the user is not hovering over the link */
+a:-webkit-any-link {
+  text-decoration: none;
+}
+
+/* When the user is hovering over the link */
+a:hover {
+    text-decoration: underline;
+}
