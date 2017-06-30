@@ -961,7 +961,7 @@ function clickCalculate(e) {
     });
 
     formData.append('populations', $('#population').val());
-    formData.append('num_studies', $("#studyEntry").size());
+    formData.append('num_studies', $("#studyEntry").children().length);
     insertNumberOfResourcePerStudy(formData, $("#studyEntry").size());
 
     // Business Rule: If the include_excluded_snp is not chekced then
@@ -984,7 +984,7 @@ function clickCalculate(e) {
 function insertNumberOfResourcePerStudy(formData, numStudies) {
   for ( var index = 0;  index < numStudies; index++ ) {
     var numStudiesStr = (index + 1).toString();
-    var resourceDivChildren = $('#place_holder_for_study_resources_' + numStudiesStr).size()
+    var resourceDivChildren = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
     formData.append("num_resource_" + numStudiesStr, resourceDivChildren);
   }
 }
@@ -1215,7 +1215,7 @@ function showTitle(data, currentSizeCount, index) {
   else {
     $("#" + createSizeTitleName(index) ).show();
     $("#" + createSizeTitleName(index) + "> #caseTitleSize").show();
-    $("#" + createSizeTitleName(index) + "> #caseTitleControl").hide();    
+    $("#" + createSizeTitleName(index) + "> #caseTitleControl").hide();
   }
 }
 

@@ -17,7 +17,7 @@ FormatCheckWrapper <- function(file.path){
   st <- read.table(file.path, header = TRUE, as.is = TRUE, nrows = 1e4)
   header <- toupper(colnames(st))
   id <- ifelse('DIRECTION' %in% header, which(header == 'DIRECTION'), 0)
-  nstudy <- 1 #hard-coded
+  nstudy <- 5 #hard-coded
   if(id){
     col.class <- rep('NULL', length(header))
     names(col.class) <- colnames(st)
