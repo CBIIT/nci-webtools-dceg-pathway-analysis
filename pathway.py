@@ -121,10 +121,11 @@ def calculate():
         del parameters['sample_size_' + str(i) + '_' + str(resourceInd)]
     #   del parameters['num_resource_' + str(i)]
     # add control_sizes list to studies list in JSON
-      studyObj['control_sizes'] = []
-      for resourceInd in range(1,int(parameters['num_resource_' + str(i)])+1):
-        studyObj['control_sizes'].append(parameters['control_size_' + str(i) + '_' + str(resourceInd)])
-        del parameters['control_size_' + str(i) + '_' + str(resourceInd)]
+      if parameters['family'] == "binomial":
+          studyObj['control_sizes'] = []
+          for resourceInd in range(1,int(parameters['num_resource_' + str(i)])+1):
+            studyObj['control_sizes'].append(parameters['control_size_' + str(i) + '_' + str(resourceInd)])
+            del parameters['control_size_' + str(i) + '_' + str(resourceInd)]
       del parameters['num_resource_' + str(i)]
 
       studyFile = filelist[studyKey]
