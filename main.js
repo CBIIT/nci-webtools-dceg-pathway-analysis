@@ -984,7 +984,7 @@ function clickCalculate(e) {
 function insertNumberOfResourcePerStudy(formData, numStudies) {
   for ( var index = 0;  index < numStudies; index++ ) {
     var numStudiesStr = (index + 1).toString();
-    var resourceDivChildren = $('#place_holder_for_study_resources_' + numStudiesStr).children.length()
+    var resourceDivChildren = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
     formData.append("num_resource_" + numStudiesStr, resourceDivChildren);
   }
 }
