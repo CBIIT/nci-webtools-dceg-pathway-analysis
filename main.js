@@ -962,7 +962,7 @@ function clickCalculate(e) {
 
     formData.append('populations', $('#population').val());
     formData.append('num_studies', $("#studyEntry").children().length);
-    insertNumberOfResourcePerStudy(formData, $("#studyEntry").size());
+    insertNumberOfResourcePerStudy(formData, $("#studyEntry").children().length);
 
     // Business Rule: If the include_excluded_snp is not chekced then
     // the execluded_snp filename should not be include in the form data
