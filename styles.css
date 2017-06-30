@@ -114,16 +114,9 @@ header {
   margin-top: 0;
 }
 header hr {
-  width: 100%;
   float: right;
   margin: 0;
   border: 0;
-  height: 6px;
-  background-image: -webkit-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-image: -moz-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-image: -o-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-imageheader: -ms-linear-gradient(left, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
-  background-image: linear-gradient(to right, rgba(0,0,0,0) 8%, #bb0e3d, rgba(0,0,0,0) 100%);
 }
 
 .subHeading {
@@ -351,17 +344,14 @@ header div {
 /* The way the title of the application should be representated */
 .title {
   color: white;
-  font-size: x-large;
   padding-left: 2em;
+  font-weight: bold;
+  font-size: large;
 }
 
 header p {
-  padding-top: 1em;
-  padding-bottom: 1em;
-  padding-left:0em;
-  padding-right:0em;
-  margin-top:0px;
-  margin-bottom:0px;
+  -webkit-padding-before: .25em;
+  -webkit-padding-after: .25em;
 }
 
 /*
@@ -372,7 +362,7 @@ header p {
 }
 
 #home-tab, #study-tab, #help-tab {
-  border: 1px solid black;
+  border: 1px solid lightgray;
   margin-bottom :-2px;
   min-height: 1500px;
 }
@@ -418,7 +408,7 @@ header p {
 /* The buttons are part of them template so the id will have                  */
 /* an _<number> attached to each id.                                          */
 #content .studies [id^=loadAndCheckButton] {
-  width:7em;
+  width:7.9em;
   height:initial;
   margin-right: 2.0em;
   display:inline;
@@ -535,4 +525,24 @@ li div #caseTitleSize p{
   float: right;
   clear: right;
   text-align: left;
+}
+
+/*****************************************************************************/
+/* Handling Links                                                            */
+/*****************************************************************************/
+
+/* Requirements for link : always blue and when the user hover over the link */
+/* then it will underlined                                                   */
+.ui-widget-content a {
+  color: blue;
+}
+
+/* When the user is not hovering over the link */
+a:-webkit-any-link {
+  text-decoration: none;
+}
+
+/* When the user is hovering over the link */
+a:hover {
+    text-decoration: underline;
 }
