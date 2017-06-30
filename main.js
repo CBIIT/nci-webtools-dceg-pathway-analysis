@@ -961,7 +961,7 @@ function clickCalculate(e) {
     });
 
     formData.append('populations', $('#population').val());
-    formData.append('num_studies', $("#studyEntry").size());
+    formData.append('num_studies', $("#studyEntry").children().length);
     insertNumberOfResourcePerStudy(formData, $("#studyEntry").size());
 
     // Business Rule: If the include_excluded_snp is not chekced then
@@ -1215,7 +1215,7 @@ function showTitle(data, currentSizeCount, index) {
   else {
     $("#" + createSizeTitleName(index) ).show();
     $("#" + createSizeTitleName(index) + "> #caseTitleSize").show();
-    $("#" + createSizeTitleName(index) + "> #caseTitleControl").hide();    
+    $("#" + createSizeTitleName(index) + "> #caseTitleControl").hide();
   }
 }
 
