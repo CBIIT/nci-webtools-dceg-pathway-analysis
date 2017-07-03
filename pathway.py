@@ -197,6 +197,7 @@ def calculate():
     client.connect()
     client.send(pathwayConfig.getAsString(QUEUE_NAME), json.dumps(parameters))
     client.disconnect()
+    # returns parameters in json form if calculate button is working
     return buildSuccess(json.dumps(parameters))
 #   return buildSuccess("The request has been received. An email will be sent when the calculation has completed.")
   except Exception as e:
