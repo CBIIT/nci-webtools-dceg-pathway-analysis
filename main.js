@@ -602,7 +602,8 @@ function addStudy() {
     loadAndStudyButton.rules("add", {
         doesStudyHaveResources: true,
         messages: {
-          doesStudyHaveResources: "The " + loadAndStudyButton.attr('id') + " has not pressed so their is no size entry fields.            "
+          doesStudyHaveResources: "The " + loadAndStudyButton.attr('id') + " has not been pressed.            "
+          // doesStudyHaveResources: "A 'Load & Check' button has not been pressed. Make sure all resources are filled."
         }
     });
 
@@ -714,8 +715,14 @@ function updateSpecificStudy(data, filename, event)
         studyResource = addStudyResource(uniquePartOfVariable, index+1)
         placeHolderElement.append(studyResource)
       }
-
-      var elements = [ "[id^='sample_size_']", "[id^='control_size_']" ];
+      var elements = [];
+      console.log("Is Binomial selected? " + isBinomialSelected().toString());
+      if ( isBinomialSelected() )
+        elements = [ "[id^='sample_size_']", "[id^='control_size_']" ];
+      else {
+        elements = [ "[id^='sample_size_']" ];
+      }
+      console.log(elements);
       elements.forEach(function(element) {
              placeHolderElement.find(element).each( function(i, element) {
                $("#" + element.id).rules("add", {
@@ -804,8 +811,8 @@ $(function () {
             });
 
             console.log("The number of invalid fields are " + validator.numberOfInvalids());
-
-            if (validator.numberOfInvalids == 0 )
+            //
+            if (parseInt(validator.numberOfInvalids()) == 0 )
                 addStudy();
         });
 });
@@ -922,6 +929,7 @@ function resetForm() {
   $(pathForm).validate().resetForm();
   $('#population').parent().addClass('hide');
   $(pathForm).find("button,input,select,div,span").removeClass("error");
+  // must reset # of invalids
 }
 
 function clickCalculate(e) {
@@ -1407,9 +1415,18 @@ function isBinomialSelected() {
  * the file has been checked and loaded.
  */
  function doesStudyHaveResources( value, element ) {
-   var studyName = createStudyName(retrieveUniqueId(element.id))
-   var resourceCount = $("#" + studyName).find("li[class='studyResources']").length;
-   return (length > 0) ? true : false;
+  //  var studyName = createStudyName(retrieveUniqueId(element.id));
+  //  console.log(studyName);
+  //  var resourceCount = $("#" + studyName).find("li[class='studyResources']").children().length;
+  //  var resourceCount = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
+   var resourceCount = 0;
+   var numStudies = $("#studyEntry").children().length;
+   for ( var index = 0;  index < numStudies; index++ ) {
+     var numStudiesStr = (index + 1).toString();
+     resourceCount = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
+   }
+   console.log("resourceCount: " + resourceCount.toString());
+   return (resourceCount > 0) ? true : false;
  }
 
 /**
