@@ -162,6 +162,11 @@ def calculate():
     subpop = {}
     for population in parameters['populations'].split(","):
       population = population.split('|')
+      logging.debug(os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt'))
+      logging.debug(app.config['POPULATION_FOLDER'])
+      logging.debug(population[0])
+      logging.debug(population[1])
+      logging.debug(os.path.isfile(os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')))
       if os.path.isfile(os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')):
         superpop[population[0]] = 1
         subpop_file = os.path.join(app.config['POPULATION_FOLDER'],population[0],population[1]+'.txt')
@@ -170,6 +175,8 @@ def calculate():
             subpop[line.strip()] = 1
       else:
         return buildFailure("An invalid population was submitted.")
+    logging.debug(superpop)
+    logging.debug(len(superpop))
     if (len(superpop) > 1):
       return buildFailure("An invalid population was submitted.")
     del parameters['populations']
@@ -242,7 +249,7 @@ def main():
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
   OptionGenerator()
-# 
+#
 main()
 
 if __name__ == '__main__':

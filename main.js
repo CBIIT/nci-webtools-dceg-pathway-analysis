@@ -110,7 +110,7 @@ $(function () {
           }
         }
     };
-    
+
 
     var validationMessages = {
         study: {
@@ -841,23 +841,23 @@ var terms = {
     },
     "miss_rate": {
         fullName:"SNP Miss Rate",
-        definition:"any SNP with missing rate greater than snp.miss.rate will be removed from the analysis. The default is 0.05."
+        definition:"Any SNP with missing rate greater than snp.miss.rate will be removed from the analysis. The default is 0.05."
     },
     "maf": {
         fullName:"maf",
-        definition:"any SNP with minor allele frequency less than maf will be removed from the analysis. The default is 0.05."
+        definition:"Any SNP with minor allele frequency less than maf will be removed from the analysis. The default is 0.05."
     },
     "hwep": {
         fullName:"HWE.p",
-        definition:"any SNP with HWE exact p-value less than HWE.p will be removed from the analysis. The test is applied to the reference data. The default is 1E-5."
+        definition:"Any SNP with HWE exact p-value less than HWE.p will be removed from the analysis. The test is applied to the reference data. The default is 1E-5."
     },
     "gene": {
         fullName:"Gene.R2",
-        definition:"a number between 0 and 1 to filter out SNPs that are highly correlated within each gene. The cor function will be called to compute the R^2 values between each pair of SNPs and remove one SNP with lower MAF in each pair with R^2 greater than gene.R2. The default is 0.95."
+        definition:"A number between 0 and 1 to filter out SNPs that are highly correlated within each gene. The cor function will be called to compute the R^2 values between each pair of SNPs and remove one SNP with lower MAF in each pair with R^2 greater than gene.R2. The default is 0.95."
     },
     "chr": {
         fullName:"Chr.R2",
-        definition:"a number between 0 and 1 to filter out SNPs that are highly correlated within each chromosome. The cor function will be called to compute the R^2 values between each pair of SNPs and remove one SNP with lower MAF in each pair with R^2 greater than chr.R2. The default is 0.95."
+        definition:"A number between 0 and 1 to filter out SNPs that are highly correlated within each chromosome. The cor function will be called to compute the R^2 values between each pair of SNPs and remove one SNP with lower MAF in each pair with R^2 greater than chr.R2. The default is 0.95."
     },
     "gene_subset": {
         fullName:"rm.gene.subset",
@@ -877,13 +877,22 @@ var terms = {
     },
     "gene_percent": {
         fullName: "inspect.gene.percent",
-        definition: "a value x between 0 and 1 such that a truncation point will be defined at every x percent of the top genes. If 0 then the truncation points will be 1:inspect.gene.n. The default is 0.05."
+        definition: "A value x between 0 and 1 such that a truncation point will be defined at every x percent of the top genes. If 0 then the truncation points will be 1:inspect.gene.n. The default is 0.05."
+    },
+    "Excluded SNPs File": {
+        fullName: "Excluded SNP File",
+        definition: "Upload one a file containing the excluded SNPs."
     }
 };
 
 $(function() {
-//    $.extend($_Glossary, terms);
-//    $(document).on("click", ".termToDefine", termDisplay);
+  for (key in terms) {
+    var value = terms[key];
+    var element = $('[data-term="' + key + '"][class="termToDefine"]')
+    // console.log(key, value, element)
+    element.attr("data-title", value.fullName)
+    element.attr("data-content", value.definition)
+  }
 });
 
 function checkedStateToValue(e) {
@@ -897,6 +906,10 @@ function resetForm() {
     } else {
       $('#lambda_1').val("1.0");
       $('#study_1').val("");
+      $('#place_holder_for_study_resources_1').empty();
+      $('#size_titles_1').parent().empty();
+      $('#loadAndCheckLabel_1').empty();
+      $("#study_1").attr(createDataSizeStudyAttributeName(1), "0");
       $('#study_1').wrap("<form>").closest("form").get(0).reset();
       $('#study_1').unwrap();
       $('#num_resource_1').val("1");
@@ -904,7 +917,6 @@ function resetForm() {
       $(pathForm).find(".studyResources input").val("");
     }
   });
-
   $('#database_pathway_option').attr("checked", "checked");
   $('#nperm').val((1e5).toExponential());
   $('#miss_rate').val(0.05);
@@ -1107,6 +1119,8 @@ function clickCheckBox() {
  * Code that will reset a study
  */
  function resetStudy(event) {
+   console.log("reached reset study function");
+   console.log("evevnt)");
    var uniquePartOfVariable = retrieveUniqueId(event.target.id);
 
    var studyFilenameInput = "study_" + uniquePartOfVariable;
