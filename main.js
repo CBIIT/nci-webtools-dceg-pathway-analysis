@@ -10,53 +10,11 @@ $(function () {
         return value < params;
     });
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Validation all studies should have at least one case
-    ////////////////////////////////////////////////////////////////////////////
-    $.validator.addMethod("each_study_needs_at_least_one_size", function(value, element, params) {
-       var uniqueId =  retrieveUniqueId($(element).attr("name"));
-       var numberOfSizes = $(element).attr(createDataSizeStudyAttributeName(uniqueId));
-
-       return (numberOfSizes > 0 ) ? true : false;
-    });
-
-    ////////////////////////////////////////////////////////////////////////////
-    // For each case there should be a sample size and if the family is Binomial
-    // then there should be a sample and control size.
-    ////////////////////////////////////////////////////////////////////////////
-    $.validator.addMethod("each_study_should_have_all_sizes_recorded", function(value,element,params) {
-      var uniqueId = retrieveUniqueId($(element).attr("name"));
-      var numberOfSizes = $(element).attr(createDataSizeStudyAttributeName(uniqueId));
-
-      // If the number of Size is 0 then there is no sizes to check and this
-      // validation should not be used
-      if ( numberOfSizes == 0 ) {
-         return true;
-      }
-
-      var binomialSelected = isBinomialSelected();
-
-      for ( var index = 1; index <= numberOfSizes; index++) {
-        var sampleSizeTextField = createSampleSizeTextFieldName(uniqueId, index);
-        if ( $("#" + sampleSizeTextField).val().length === 0 ) {
-          return false;
-        }
-
-        if ( binomialSelected ) {
-           var controlSizeTextField = createControlSizeTextFieldName(uniqueId, index);
-           if ( $("#" + controlSizeTextField).val().length === 0) {
-              return false;
-           }
-        }
-      }
-
-      return true;
-
-    }, "If the study is Gausian the Sample needs to be recorded and if the study is Binomial the Sample and Control Size needs to be recorded.");
-
     jQuery.validator.addMethod('scientific_notation_check', function (value, el) {
         return (typeof Number(value) === "number");
     });
+
+    jQuery.validator.addMethod('doesStudyHaveResources', doesStudyHaveResources);
 
     var validationElements = {
         study: {
@@ -273,6 +231,12 @@ $(function () {
                 $("#population").next().find('.ms-choice').children()
                     .andSelf().addClass(errorClass);
             }
+
+            var pattern = new RegExp("study_");
+            if ( pattern.test(el.id)) {
+              var highlightedElementName = createStudyProxy(retrieveUniqueId(el.id));
+              $("#" + highlightedElementName).addClass(errorClass);
+            }
         },
         unhighlight: function (el, errorClass, validClass) {
             if (el.id != "population" && el.name != "selectItempopulation" &&
@@ -282,6 +246,13 @@ $(function () {
             else {
                 $("#population").next().find('.ms-choice').children().andSelf().removeClass(errorClass);
             }
+
+            var pattern = new RegExp("study_");
+            if ( pattern.test(el.id)) {
+              var highlightedElementName = createStudyProxy(retrieveUniqueId(el.id));
+              $("#" + highlightedElementName).removeClass(errorClass);
+            }
+
         }
     });
 });
@@ -552,6 +523,7 @@ function addStudy() {
       attr("name", createStudyName(studyIndex)).
       attr("id", createStudyName(studyIndex)).
       on("change", insertMessageWhenFileIsLoadedButNotValidated).
+      on("change", ifFilenamePresentRemoveSizes).
       attr( createDataSizeStudyAttributeName(studyIndex), 0);
 
     // The Study Button will be made invisible so that we can display the file
@@ -559,25 +531,24 @@ function addStudy() {
     // not be displayed by the input type=file.  However, it can be be displayed
     // using another HTML Object.
     var studyLabelVisibleButtonLabel = studyTemplate.find("#studyProxy");
-    var studyLabelVisibleId = studyLabelVisibleButtonLabel.attr("id") + "_" + studyIndex;
+    var studyLabelVisibleId = createStudyProxy(studyIndex);
     studyLabelVisibleButtonLabel.
       attr("name", studyLabelVisibleId).
       attr("id", studyLabelVisibleId).
       on("click", proxyClickForHtmlInputFileType);
 
-    var loadAndStudyButton = studyTemplate.find('#loadAndCheckButton');
-    var idButton1 = loadAndStudyButton.attr("id") + "_" + studyIndex;
+    var loadAndStudyButton = studyTemplate.find("#loadAndCheckButton");
+    var button1Name = createLoadAndStudyButtonName(studyIndex);
     loadAndStudyButton.
-      attr("id", idButton1).
-      attr("name", idButton1).
+      attr("id", button1Name).
+      attr("name", button1Name).
       on("click", loadAndValidate);
     insertMessageWhenFileIsNotLoaded(studyIndex);
 
-    var loadAndStudyLabel = studyTemplate.find('#loadAndCheckLabel');
-    var idButtonLabel1 = loadAndStudyLabel.attr("id") + "_" + studyIndex;
-
     // Add the Id, name to the new load and study label.  This will be place
     // where all message about validation of the study files will be placed.
+    var loadAndStudyLabel = studyTemplate.find('#loadAndCheckLabel');
+    var idButtonLabel1 = loadAndStudyLabel.attr("id") + "_" + studyIndex;
     loadAndStudyLabel.
       attr("id", idButtonLabel1).
       attr("name", idButtonLabel1);
@@ -611,21 +582,11 @@ function addStudy() {
     $("#studyEntry").append(studyTemplate);
 
     studyId.rules("add", {
-        each_study_needs_at_least_one_size: true,
+        required: true,
         messages: {
-          each_study_needs_at_least_one_size: "Study #" + studyIndex + " must have a file that been checked and loaded"
+          required: "Study #" + studyIndex + " must have a file that been checked."
         }
     });
-
-    //studyId.rules("add", {
-    //  each_study_should_have_all_sizes_recorded: true,
-    //  messages: {
-    //    each_study_should_have_all_sizes_recorded: "Study #" + studyIndex + " must have all sizes field initialized"
-    //  }
-    //});
-
-    //var validation = { each_study_needs_at_least_one_size: true};
-    //var specificValidation = { studyId.attr("id"), validation };
 
     lambdaId.rules("add", {
       required: true,
@@ -636,6 +597,13 @@ function addStudy() {
         number: "The " + lambdaId.attr('id') + " value must be a number",
         min: "The " + lambdaId.attr('id') + " value must be greater than or equal to 1"
       }
+    });
+
+    loadAndStudyButton.rules("add", {
+        doesStudyHaveResources: true,
+        messages: {
+          doesStudyHaveResources: "The " + loadAndStudyButton.attr('id') + " has not pressed so their is no size entry fields.            "
+        }
     });
 
     var activeIndex = $("#studyEntry").accordion("refresh").accordion({
@@ -662,7 +630,8 @@ function addStudy() {
                 resourceList.find('input').each(function(i,el) {
                   el.value = '';
                 });
-                for (var i = resourceList.children().length+1; i <= this.value; i++) {
+                for (var i = resourceList.children().l    var loadAndStudyButton = studyTemplate.find('#loadAndCheckButton');
+ength+1; i <= this.value; i++) {
 
 
                     var studyResource = addStudyResource(id.substr(13), i);
@@ -710,39 +679,61 @@ function addStudyResource(study, ind) {
 }
 
 /*
- * Updates a part of the GUI that handles a specific study
+ * Updates a Specific Study.  The Function will either set up the study for an
+ * an error ( set the error color and message ) or produce the sample sizes for
+ * each resoruce.
  */
 function updateSpecificStudy(data, filename, event)
 {
-  var uniquePartOfVariable = retrieveUniqueId(event.target.id);
-  var loadAndCheckLabelElement = $("#" + "loadAndCheckLabel_" + uniquePartOfVariable);
-  var placeHolderElement = $("#" + "place_holder_for_study_resources_" + uniquePartOfVariable);
+    var uniquePartOfVariable = retrieveUniqueId(event.target.id);
+    var loadAndCheckLabelElement = $("#" + "loadAndCheckLabel_" + uniquePartOfVariable);
+    var placeHolderElement = $("#" + "place_holder_for_study_resources_" + uniquePartOfVariable);
 
-  removeClassAboutColor(loadAndCheckLabelElement);
-  clearAllSampleSizeResources(event);
+    removeClassAboutColor(loadAndCheckLabelElement);
+    clearAllSampleSizeResources(event);
 
-  if ( data.errorMessage.length > 0 ) {
-    loadAndCheckLabelElement.addClass("errorColor");
-    loadAndCheckLabelElement.text(data.errorMessage);
-
-    $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(index), 0);
-  }
-  else {
-    loadAndCheckLabelElement.addClass("successColor");
-    loadAndCheckLabelElement.text(filename);
-    var numberOfRecords = parseInt(data.numberOfRecords);
-
-    $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(uniquePartOfVariable), numberOfRecords);
-
-    for ( var index = 0; index < numberOfRecords; index++)
-    {
-      var studyResource = addStudyResource(uniquePartOfVariable, index+1)
-      placeHolderElement.append(studyResource)
+    if ( data.errorMessage.length > 0 ) {
+      loadAndCheckLabelElement.addClass("errorColor");
+      loadAndCheckLabelElement.text(data.errorMessage);
+    var uniquePartOfVariable = retrieveUniqueId(event.target.id);
+      $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(index), 0);
     }
-  }
+    else {
+      loadAndCheckLabelElement.addClass("successColor");
+      loadAndCheckLabelElement.text(filename);
+      var numberOfRecords = parseInt(data.numberOfRecords);
 
-  showTitle(data, undefined, uniquePartOfVariable);
-  disableCalculateButton(data);
+      $("#" + createStudyName(uniquePartOfVariable)).attr(createDataSizeStudyAttributeName(uniquePartOfVariable), numberOfRecords);
+
+      // The validations need to be set after begin appended to the form.  If
+      // html element is not attached to a form then an error message such as
+      // cannot read property nodeType will be issued.
+      var studyResource;
+      for ( var index = 0; index < numberOfRecords; index++)
+      {
+        studyResource = addStudyResource(uniquePartOfVariable, index+1)
+        placeHolderElement.append(studyResource)
+      }
+
+      var elements = [ "[id^='sample_size_']", "[id^='control_size_']" ];
+      elements.forEach(function(element) {
+             placeHolderElement.find(element).each( function(i, element) {
+               $("#" + element.id).rules("add", {
+                   required: true,
+                   number: true,
+                   min: 1,
+                   messages: {
+                       required: "The " + element.id + " field is required",
+                       number: "The " + element.id + " value must be a number",
+                       min: "The " + element.id + " value must be greater than or equal to 1"
+                     }
+                   });
+             });
+      });
+
+    showTitle(data, undefined, uniquePartOfVariable);
+    disableCalculateButton(data);
+  }
 }
 
 /* A function that creates the name of the object that contains the attribute */
@@ -803,14 +794,18 @@ $(function () {
         })
         .on("click", function (e) {
             e.preventDefault();
+            var validator = $(pathForm).validate();
+
 
             var previousValid = false;
             $(pathForm).find(".studies input").each(function (i, el) {
-                previousValid = $(el).validate().element("#" + el.id);
+                previousValid = validator.element("#" + el.id);
                 return previousValid;
             });
 
-            if (previousValid)
+            console.log("The number of invalid fields are " + validator.numberOfInvalids());
+
+            if (validator.numberOfInvalids == 0 )
                 addStudy();
         });
 });
@@ -1079,6 +1074,7 @@ $(function() {
 
   $("#studyEntry").accordion("option", "active", 0);
   addStudy();// add first element by default, function declaration in template-manager
+
 });
 
 /*
@@ -1122,9 +1118,12 @@ function clickCheckBox() {
   * Code that will load and validate
   */
 function loadAndValidate(event) {
+
       // Create the unique id that will retrieve the data from the form.
       var uniquePartOfVariable = retrieveUniqueId(event.target.id);
-      var studyFilenameInput = "study_" + uniquePartOfVariable;
+      var studyFilenameInput = createStudyName(uniquePartOfVariable);
+
+      clearButtonsOfErrors(uniquePartOfVariable);
 
       // Retreive the data from the form and add the variable containing the
       // filename of the study.  We may not need the stuydFileNameInput
@@ -1139,24 +1138,17 @@ function loadAndValidate(event) {
            cache: false,
            processData: false,
            contentType: false,
-           //xhr: function() {
-           //     var myXhr = $.ajaxSettings.xhr();
-           //     if (myXhr.upload) {
-           //         myXhr.upload.addEventListener("progress", function(other) {
-           //             if (other.lengthComputable) {
-           //                 $("progress").attr({value:other.loaded,max:other.total});
-           //             }
-           //         }, false);
-           //     }
-           //     return myXhr;
-           //},
            dataType: "json",
            success: function(data) {
              updateSpecificStudy(data, formData.get(studyFilenameInput).name, event);
-             if ( isBinomialSelected() ) {
-               handleBinomial();
-             } else
-               handleGaussian();
+             if ( data.numberOfRecords == 0 ) {
+               handleNoTitles(uniquePartOfVariable);
+             } else {
+               if ( isBinomialSelected() ) {
+                 handleBinomial();
+               } else
+                handleGaussian();
+               }
            }
         });
 }
@@ -1174,7 +1166,7 @@ function showTitle(data, currentSizeCount, index) {
 
   // Default Case is to show no title if data is undefined or 0 and
   // the currentSizeCount is undefined or 0.  Note due to my inexperience
-  // with fron end programming, I made sure to hide everything
+  // with front end programming, I made sure to hide everything
   var dataNotPresent =
     data === undefined || ( data !== undefined && parseInt(data.numberOfRecords) == 0 );
   var currentSizeCountNotPresent =
@@ -1226,6 +1218,9 @@ function showTitle(data, currentSizeCount, index) {
  */
 function proxyClickForHtmlInputFileType() {
   var uniqueId = retrieveUniqueId(event.target.name);
+
+  clearButtonsOfErrors(uniqueId);
+
   var name = createStudyName(uniqueId);
   $("#" + name).click();
 }
@@ -1234,8 +1229,16 @@ function proxyClickForHtmlInputFileType() {
  * Inserts message when no file is load
  */
 function insertMessageWhenFileIsNotLoaded(id) {
-  $("#" + "loadAndCheckLabel_" + id).text("No File Loaded");
+  $("#" + "loadAndCheckLabel_" + id).text(messageNoFileLoaded());
 }
+
+/**
+ * Message when no file is Loaded
+ */
+function messageNoFileLoaded() {
+  return "No File Loaded";
+}
+
 
 /**
  * Inserts a message when the file has been successfully Loaded.
@@ -1253,10 +1256,16 @@ function insertMessageWhenFileIsLoadedButNotValidated(event) {
 
     removeClassAboutColor(domObject);
     domObject.addClass("normalColor");
-    domObject.text(filename + " loaded, but not validated");
+    domObject.text(filename + messageLoadedNotChecked());
   }
 }
 
+/**
+ * Message when the file is loaded, but not checked
+ */
+function messageLoadedNotChecked() {
+  return " loaded, but not validated";
+}
 /**
  * Remove all Message classes from an DOM Object
  */
@@ -1311,6 +1320,15 @@ function createStudyName(index)
   return studyId.attr("id") + "_" + index;
 }
 
+/* A function that creates the name of object that is button cliked the       */
+/* invisible htmlIpnput type file will be clicik by the current button so     */
+/* so the file dialog can appear and the name file can be display somewhere   */
+/* else in the form                                                           */
+function createStudyProxy(index) {
+  var studyProxyId = $(document).find("#studyProxy");
+  return studyProxyId.attr("id") + "_" + index;
+}
+
 /* A function to crate the name for the object that contains the title for the */
 /* size columns.                                                               */
 function createSizeTitleName(index) {
@@ -1340,6 +1358,14 @@ function handleGaussian() {
   });
 
 }
+
+/* Handles the case where you do not want any titles.  I add this routine for */
+/* handling error condtions                                                   */
+function handleNoTitles(index) {
+  showTitle(undefined, undefined, index+1);
+}
+
+
 
 /**
  * Enameble the sub population drop down combo box
@@ -1374,4 +1400,48 @@ function createControlSizeTextFieldName(study_id, index) {
  */
 function isBinomialSelected() {
   return $("#binomial").is(':checked');
+}
+
+/**
+ * Validaes that the study has Size fields.  If the Study has size fields then
+ * the file has been checked and loaded.
+ */
+ function doesStudyHaveResources( value, element ) {
+   var studyName = createStudyName(retrieveUniqueId(element.id))
+   var resourceCount = $("#" + studyName).find("li[class='studyResources']").length;
+   return (length > 0) ? true : false;
+ }
+
+/**
+ * Create the unique name for a button that validates the file
+ */
+ function createLoadAndStudyButtonName(index) {
+   return $(document).find("#loadAndCheckButton").attr("id") + "_" + index;
+ }
+
+/**
+ * Clears the Choose File and Load & Check Button at the same time.  Jquery
+ * validationElements did not00 clear the checkbox when they were checked, so I
+ * did it automatically.
+ *
+ * look at the behavior of the text entry field.  Once a text entry field was
+ * changed the error messages disappeared.
+ */
+function clearButtonsOfErrors(uniquePartOfVariable) {
+  var loadAndCheckButtonName = createLoadAndStudyButtonName(uniquePartOfVariable);
+  var chooseFileNameButtonName = createStudyProxy(uniquePartOfVariable)
+
+  $("#" + loadAndCheckButtonName).removeClass('error');
+  $("#" + chooseFileNameButtonName).removeClass('error');
+
+  //$("#pathForm").resetForm();
+}
+
+/*
+ * Removes all sizes from form
+ */
+function ifFilenamePresentRemoveSizes(event) {
+  var uniquePartOfVariable = retrieveUniqueId(event.target.id);
+  clearAllSampleSizeResources(event)
+  showTitle(undefined, 0, uniquePartOfVariable);
 }
