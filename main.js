@@ -110,7 +110,7 @@ $(function () {
           }
         }
     };
-    
+
 
     var validationMessages = {
         study: {
