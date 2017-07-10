@@ -242,7 +242,7 @@ def main():
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
   OptionGenerator()
-
+# 
 main()
 
 if __name__ == '__main__':
