@@ -906,9 +906,9 @@ function resetForm() {
     } else {
       $('#lambda_1').val("1.0");
       $('#study_1').val("");
-      $('#place_holder_for_study_resources_1').empty();
-      $('#size_titles_1').parent().empty();
-      $('#loadAndCheckLabel_1').empty();
+      $('#place_holder_for_study_resources_1').empty()
+      $('#size_titles_1').hide();
+      $('#loadAndCheckLabel_1').text(messageNoFileLoaded());
       $("#study_1").attr(createDataSizeStudyAttributeName(1), "0");
       $('#study_1').wrap("<form>").closest("form").get(0).reset();
       $('#study_1').unwrap();
@@ -1119,8 +1119,6 @@ function clickCheckBox() {
  * Code that will reset a study
  */
  function resetStudy(event) {
-   console.log("reached reset study function");
-   console.log("evevnt)");
    var uniquePartOfVariable = retrieveUniqueId(event.target.id);
 
    var studyFilenameInput = "study_" + uniquePartOfVariable;
@@ -1141,7 +1139,6 @@ function clickCheckBox() {
   * Code that will load and validate
   */
 function loadAndValidate(event) {
-
       // Create the unique id that will retrieve the data from the form.
       var uniquePartOfVariable = retrieveUniqueId(event.target.id);
       var studyFilenameInput = createStudyName(uniquePartOfVariable);
@@ -1430,17 +1427,11 @@ function isBinomialSelected() {
  * the file has been checked and loaded.
  */
  function doesStudyHaveResources( value, element ) {
-  //  var studyName = createStudyName(retrieveUniqueId(element.id));
-  //  console.log(studyName);
-  //  var resourceCount = $("#" + studyName).find("li[class='studyResources']").children().length;
-  //  var resourceCount = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
+   var studyNum = element.name.substring(19);
+   console.log("study number: " + studyNum);
    var resourceCount = 0;
-   var numStudies = $("#studyEntry").children().length;
-   for ( var index = 0;  index < numStudies; index++ ) {
-     var numStudiesStr = (index + 1).toString();
-     resourceCount = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
-   }
-   console.log("resourceCount: " + resourceCount.toString());
+   resourceCount = $('#place_holder_for_study_resources_' + studyNum).children().length
+   console.log("resourceCount: " + resourceCount.toString() + " in study " + studyNum);
    return (resourceCount > 0) ? true : false;
  }
 
