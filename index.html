@@ -281,7 +281,7 @@
     <div id="snippets">
       <!-- dynamic template for a study entry-->
       <!-- display in accordion/collapsible manner-->
-      <div class="studies">
+      <div class="studies" id="studyclass_1">
         <div class="studyTitle">Study #</div>
         <ul>
           <li>
@@ -295,7 +295,7 @@
               <input id="loadAndCheckButton" type="button" name="loadAndCheck" value="Load &amp; Check" />
             </div>
             <div class="input">
-              <label id="loadAndCheckLabel" class="spaceBetweenChooseFileButtonAndText"> No file loaded</label>
+              <label id="loadAndCheckLabel" class="spaceBetweenChooseFileButtonAndText"> No File Loaded</label>
             </div>
           </li>
           <li>
@@ -319,7 +319,10 @@
             <div id="place_holder_for_study_resources" class="inputSizes"></div>
           </li>
       <li>
-        <input id="resetStudy" type="button" class="resetStudyButton" name="resetStudy" value="Reset Study" />
+        <div class="studyButtons">
+          <input id="resetStudy" type="button" class="resetStudyButton" name="resetStudy" value="Reset Study" />
+          <input id="deleteStudy" type="button" class="deleteStudyButton" name="deleteStudy" value="Delete Study" />
+        </div>
       </li>
 
       </div>

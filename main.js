@@ -509,15 +509,23 @@ $(function() {
 
 function addStudy() {
 
-    var studyTemplate = $("#snippets").find(".studies").clone();
+    // var studyTemplate = $("#snippets").find(".studies").clone();
 
     var studyCount = $(pathForm).find(".studies").length;
     var studyIndex = studyCount + 1;
 
+    var studyTemplate = $("#snippets").find(".studies").clone().prop('id', 'studyclass_'+studyIndex.toString() );;
+
     studyTemplate.find(".studyTitle").append(studyIndex);
 
     var studyLabel = studyTemplate.find('[for="study"]');
+    console.log(studyLabel);
+
     studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
+    console.log(studyLabel);
+
+    // $(".studies").attr('id',"study_"+studyIndex);
+
     var studyId = studyTemplate.find("#study");
     var attributeName = createStudyName(studyIndex);
     studyId.
@@ -526,6 +534,8 @@ function addStudy() {
       on("change", insertMessageWhenFileIsLoadedButNotValidated).
       on("change", ifFilenamePresentRemoveSizes).
       attr( createDataSizeStudyAttributeName(studyIndex), 0);
+
+    console.log(studyId);
 
     // The Study Button will be made invisible so that we can display the file
     // name as we want to.  By making this visible the selected filename will
@@ -579,6 +589,13 @@ function addStudy() {
       attr("id", idButton2).
       attr("name", idButton2).
       on("click", resetStudy);
+
+    var deleteButton = studyTemplate.find("#deleteStudy");
+    var idButton3 = deleteButton.attr("id") + "_" + studyIndex;
+    deleteButton.
+      attr("id", idButton3).
+      attr("name", idButton3).
+      on("click", deleteStudy);
 
     $("#studyEntry").append(studyTemplate);
 
@@ -812,7 +829,7 @@ $(function () {
             });
 
             console.log("The number of invalid fields are " + validator.numberOfInvalids());
-            //
+            //s
             if (parseInt(validator.numberOfInvalids()) == 0 )
                 addStudy();
         });
@@ -1134,6 +1151,28 @@ function clickCheckBox() {
    clearAllSampleSizeResources(event)
    showTitle(undefined, 0, uniquePartOfVariable);
  }
+
+/*
+* Code that will delete a study
+*/
+function deleteStudy(event) {
+  var uniquePartOfVariable = retrieveUniqueId(event.target.id);
+  var studyFilenameInput = "study_" + uniquePartOfVariable;
+  var lamdaNameInput = "lambda_" + uniquePartOfVariable;
+  // var loadAndCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
+  // var placeHolder = "place_holder_for_study_resources_" + uniquePartOfVariable;
+
+  clearAllSampleSizeResources(event)
+  $("#" + lamdaNameInput).val("99.0");
+  $("#" + studyFilenameInput).attr(createDataSizeStudyAttributeName(1), "0");
+  $("#" + studyFilenameInput).wrap("<form>").closest("form").get(0).reset();
+  $("#" + studyFilenameInput).unwrap();
+  $("#studyclass_" + uniquePartOfVariable).remove();
+  // $("#" + studyFilenameInput).attr(createDataSizeStudyAttributeName(uniquePartOfVariable), "0");
+  // $("#" + lamdaNameInput).val("1.0");
+  // insertMessageWhenFileIsNotLoaded(uniquePartOfVariable);
+  // showTitle(undefined, 0, uniquePartOfVariable);
+}
 
  /*
   * Code that will load and validate
