@@ -2,6 +2,11 @@ $(document).ready(function() {
   setTimeout(function() {
     $('.termToDefine').webuiPopover();
   }, 0);
+
+  $("#dialog").dialog({
+    autoOpen: false,
+    modal: true
+  });
 })
 
 $(function () {
@@ -594,8 +599,37 @@ function addStudy() {
     var idButton3 = deleteButton.attr("id") + "_" + studyIndex;
     deleteButton.
       attr("id", idButton3).
-      attr("name", idButton3).
-      on("click", deleteStudy);
+      attr("name", idButton3);
+      // on("click", deleteStudy);
+
+    // $(document).ready(function() {
+    //   $("#dialog").dialog({
+    //     autoOpen: false,
+    //     modal: true
+    //   });
+    // });
+
+    deleteButton.click(function(e) {
+      e.preventDefault();
+      var targetUrl = $(this).attr("href");
+      $("#dialog").dialog({
+        position: {
+            my: 'top',
+            at: 'top',
+            of: $('#snippets')
+          },
+          buttons : {
+            "Confirm" : function() {
+              deleteStudy(e);
+              $(this).dialog("close");
+            },
+            "Cancel" : function() {
+              $(this).dialog("close");
+            }
+          }
+      });
+      $("#dialog").dialog("open");
+    });
 
     $("#studyEntry").append(studyTemplate);
 
