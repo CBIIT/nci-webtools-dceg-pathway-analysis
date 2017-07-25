@@ -610,25 +610,43 @@ function addStudy() {
     // });
 
     deleteButton.click(function(e) {
+      var numStudies = $("#studyEntry").children().length;
+      // console.log(numStudies);
       e.preventDefault();
-      var targetUrl = $(this).attr("href");
-      $("#dialog").dialog({
-        position: {
-            my: 'top',
-            at: 'top',
-            of: $('#snippets')
-          },
-          buttons : {
-            "Confirm" : function() {
-              deleteStudy(e);
-              $(this).dialog("close");
+      // var targetUrl = $(this).attr("href");
+      if (numStudies > 1) {
+        $("#dialog").dialog({
+          position: {
+              my: 'center',
+              at: 'center',
+              of: $('#studyEntry')
             },
-            "Cancel" : function() {
-              $(this).dialog("close");
+            buttons : {
+              "Confirm" : function() {
+                deleteStudy(e);
+                $(this).dialog("close");
+              },
+              "Cancel" : function() {
+                $(this).dialog("close");
+              }
             }
-          }
-      });
-      $("#dialog").dialog("open");
+        });
+        $("#dialog").dialog("open");
+      } else {
+        $("#dialog-except").dialog({
+          position: {
+              my: 'center',
+              at: 'center',
+              of: $('#studyEntry')
+            },
+            buttons : {
+              "Close" : function() {
+                $(this).dialog("close");
+              }
+            }
+        });
+        $("#dialog-except").dialog("open");
+      }
     });
 
     $("#studyEntry").append(studyTemplate);
