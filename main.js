@@ -517,7 +517,13 @@ function addStudy() {
     // var studyTemplate = $("#snippets").find(".studies").clone();
 
     var studyCount = $(pathForm).find(".studies").length;
+    if ($(pathForm).find(".studies").last().attr("id") != undefined) {
+      console.log("TEST " + $(pathForm).find(".studies").last().attr("id").substring(11));
+      studyCount = parseInt($(pathForm).find(".studies").last().attr("id").substring(11));
+    }
     var studyIndex = studyCount + 1;
+    console.log("studyCount " + studyCount.toString());
+    console.log("studyIndex " + studyIndex.toString());
 
     var studyTemplate = $("#snippets").find(".studies").clone().prop('id', 'studyclass_'+studyIndex.toString() );;
 
