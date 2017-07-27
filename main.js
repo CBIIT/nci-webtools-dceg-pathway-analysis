@@ -700,6 +700,11 @@ function addStudy() {
 
     showTitle(undefined, 0, studyIndex);
 
+    setTimeout(function() {
+      $('.termToDefine').webuiPopover();
+    }, 0);
+
+
 
 /*    studyTemplate.find("input[id*='num_resource']").on("change", function (e) {
         var id = $(this).prop('id');
@@ -901,14 +906,6 @@ $(function () {
             //s
             if (parseInt(validator.numberOfInvalids()) == 0 )
                 addStudy();
-                setTimeout(function() {
-                  $('.termToDefine').webuiPopover();
-                }, 0);
-
-                $("#dialog").dialog({
-                  autoOpen: false,
-                  modal: true
-                });
                 // updateStudyTitles();
         });
 });
@@ -995,6 +992,8 @@ function checkedStateToValue(e) {
 }
 
 function resetForm() {
+
+  $('.termToDefine').webuiPopover('hide');
   $(pathForm).find(".studies").each(function(i, el) {
     // console.log($(this));
     $(this).remove();
@@ -1040,7 +1039,6 @@ function resetForm() {
   $(pathForm).validate().resetForm();
   $('#population').parent().addClass('hide');
   $(pathForm).find("button,input,select,div,span").removeClass("error");
-  // must reset # of invalids
 }
 
 function clickCalculate(e) {
