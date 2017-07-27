@@ -901,6 +901,14 @@ $(function () {
             //s
             if (parseInt(validator.numberOfInvalids()) == 0 )
                 addStudy();
+                setTimeout(function() {
+                  $('.termToDefine').webuiPopover();
+                }, 0);
+
+                $("#dialog").dialog({
+                  autoOpen: false,
+                  modal: true
+                });
                 // updateStudyTitles();
         });
 });
