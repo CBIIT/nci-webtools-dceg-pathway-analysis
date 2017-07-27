@@ -1,6 +1,7 @@
 
 <html lang="en">
   <head>
+    <script src="//assets.adobedtm.com/f1bfa9f7170c81b1a9a9ecdcc6c5215ee0b03c84/satelliteLib-4b219b82c4737db0e1797b6c511cf10c802c95cb.js"></script>
     <!-- Google Tag Manager -->
     <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -281,7 +282,13 @@
     <div id="snippets">
       <!-- dynamic template for a study entry-->
       <!-- display in accordion/collapsible manner-->
-      <div class="studies">
+      <div id="dialog" title="Confirmation Required">
+        Are you sure you want to delete this study?
+      </div>
+      <div id="dialog-except" title="Warning">
+        You need at least one study.
+      </div>
+      <div class="studies" id="studyclass_1">
         <div class="studyTitle">Study #</div>
         <ul>
           <li>
@@ -295,7 +302,7 @@
               <input id="loadAndCheckButton" type="button" name="loadAndCheck" value="Load &amp; Check" />
             </div>
             <div class="input">
-              <label id="loadAndCheckLabel" class="spaceBetweenChooseFileButtonAndText"> No file loaded</label>
+              <label id="loadAndCheckLabel" class="spaceBetweenChooseFileButtonAndText"> No File Loaded</label>
             </div>
           </li>
           <li>
@@ -319,7 +326,10 @@
             <div id="place_holder_for_study_resources" class="inputSizes"></div>
           </li>
       <li>
-        <input id="resetStudy" type="button" class="resetStudyButton" name="resetStudy" value="Reset Study" />
+        <div class="studyButtons">
+          <input id="resetStudy" type="button" class="resetStudyButton" name="resetStudy" value="Reset Study" />
+          <input id="deleteStudy" type="button" class="deleteStudyButton" name="deleteStudy" value="Delete Study" />
+        </div>
       </li>
 
       </div>
@@ -334,5 +344,6 @@
         </div>
       </li>
     </div>
+  <script type="text/javascript">_satellite.pageBottom();</script>
   </body>
 </html>

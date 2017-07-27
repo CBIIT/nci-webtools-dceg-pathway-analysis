@@ -107,8 +107,10 @@ def calculate():
 
     num_studies = int(parameters['num_studies'])
     logging.debug("num_stuides = " + str(num_studies));
-
-    for i in xrange(1,num_studies+1):
+    study_ids = []
+    study_ids = parameters['study_ids'].split(" ")
+    # for i in xrange(1,num_studies+1):
+    for i in study_ids:
       studyKey = "study_" + str(i)
       studyObj = {}
 
@@ -137,6 +139,7 @@ def calculate():
         return buildFailure("The file seems to be missing from Study #" + str(i) + ".")
       studyList.append(studyObj)
     del parameters['num_studies']
+    del parameters['study_ids']
     parameters['studies'] = studyList
 
     if parameters['pathway_type'] == 'file_pathway':

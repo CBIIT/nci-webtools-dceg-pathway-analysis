@@ -436,6 +436,11 @@ header p {
 
 #content .studies [id^=resetStudy]{
   width: auto;
+  margin-right: .5em;
+}
+
+#content .studies [id^=deleteStudy]{
+  width: auto;
 }
 
 /*

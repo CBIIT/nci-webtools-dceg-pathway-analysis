@@ -2,6 +2,11 @@ $(document).ready(function() {
   setTimeout(function() {
     $('.termToDefine').webuiPopover();
   }, 0);
+
+  $("#dialog").dialog({
+    autoOpen: false,
+    modal: true
+  });
 })
 
 $(function () {
@@ -507,17 +512,41 @@ $(function() {
 
 });
 
+// function updateStudyTitles() {
+//     var studyCount = $(pathForm).find(".studies").length;
+//     var studies = $(pathForm).find(".studies");
+//     studies.each(function(i, el) {
+//       var titleElement = $(el).find('.studyTitle')
+//       var titleHtml = titleElement.html();
+//       titleElement.html(titleHtml.replace(/Study #\d/, "Study #" + (parseInt(i) + 1).toString()));
+//     });
+// }
+
 function addStudy() {
 
-    var studyTemplate = $("#snippets").find(".studies").clone();
+    // var studyTemplate = $("#snippets").find(".studies").clone();
 
     var studyCount = $(pathForm).find(".studies").length;
+    if ($(pathForm).find(".studies").last().attr("id") != undefined) {
+      // console.log("TEST " + $(pathForm).find(".studies").last().attr("id").substring(11));
+      studyCount = parseInt($(pathForm).find(".studies").last().attr("id").substring(11));
+    }
     var studyIndex = studyCount + 1;
+    // console.log("studyCount " + studyCount.toString());
+    // console.log("studyIndex " + studyIndex.toString());
+
+    var studyTemplate = $("#snippets").find(".studies").clone().prop('id', 'studyclass_'+studyIndex.toString() );;
 
     studyTemplate.find(".studyTitle").append(studyIndex);
 
     var studyLabel = studyTemplate.find('[for="study"]');
+    // console.log(studyLabel);
+
     studyLabel.attr("for",studyLabel.attr("for")+"_"+studyIndex);
+    // console.log(studyLabel);
+
+    // $(".studies").attr('id',"study_"+studyIndex);
+
     var studyId = studyTemplate.find("#study");
     var attributeName = createStudyName(studyIndex);
     studyId.
@@ -526,6 +555,8 @@ function addStudy() {
       on("change", insertMessageWhenFileIsLoadedButNotValidated).
       on("change", ifFilenamePresentRemoveSizes).
       attr( createDataSizeStudyAttributeName(studyIndex), 0);
+
+    // console.log(studyId);
 
     // The Study Button will be made invisible so that we can display the file
     // name as we want to.  By making this visible the selected filename will
@@ -579,6 +610,61 @@ function addStudy() {
       attr("id", idButton2).
       attr("name", idButton2).
       on("click", resetStudy);
+
+    var deleteButton = studyTemplate.find("#deleteStudy");
+    var idButton3 = deleteButton.attr("id") + "_" + studyIndex;
+    deleteButton.
+      attr("id", idButton3).
+      attr("name", idButton3);
+      // on("click", deleteStudy);
+
+    // $(document).ready(function() {
+    //   $("#dialog").dialog({
+    //     autoOpen: false,
+    //     modal: true
+    //   });
+    // });
+
+    deleteButton.click(function(e) {
+      var numStudies = $("#studyEntry").children().length;
+      // console.log(numStudies);
+      e.preventDefault();
+      // var targetUrl = $(this).attr("href");
+      if (numStudies > 1) {
+        $("#dialog").dialog({
+          position: {
+              my: 'center',
+              at: 'center',
+              of: $('#studyEntry')
+            },
+            buttons : {
+              "Confirm" : function() {
+                deleteStudy(e);
+                // updateStudyTitles();
+                $(this).dialog("close");
+              },
+              "Cancel" : function() {
+                $(this).dialog("close");
+              }
+            }
+        });
+        $("#dialog").dialog("open");
+      } else {
+        $("#dialog-except").dialog({
+          position: {
+              my: 'center',
+              at: 'center',
+              of: $('#studyEntry')
+            },
+            buttons : {
+              "Close" : function() {
+                $(this).dialog("close");
+              }
+            }
+        });
+        $("#dialog-except").dialog("open");
+      }
+    });
 
     $("#studyEntry").append(studyTemplate);
 
@@ -717,13 +803,13 @@ function updateSpecificStudy(data, filename, event)
         placeHolderElement.append(studyResource)
       }
       var elements = [];
-      console.log("Is Binomial selected? " + isBinomialSelected().toString());
+      // console.log("Is Binomial selected? " + isBinomialSelected().toString());
       if ( isBinomialSelected() )
         elements = [ "[id^='sample_size_']", "[id^='control_size_']" ];
       else {
         elements = [ "[id^='sample_size_']" ];
       }
-      console.log(elements);
+      // console.log(elements);
       elements.forEach(function(element) {
              placeHolderElement.find(element).each( function(i, element) {
                $("#" + element.id).rules("add", {
@@ -811,10 +897,11 @@ $(function () {
                 return previousValid;
             });
 
-            console.log("The number of invalid fields are " + validator.numberOfInvalids());
-            //
+            // console.log("The number of invalid fields are " + validator.numberOfInvalids());
+            //s
             if (parseInt(validator.numberOfInvalids()) == 0 )
                 addStudy();
+                // updateStudyTitles();
         });
 });
 
@@ -901,22 +988,25 @@ function checkedStateToValue(e) {
 
 function resetForm() {
   $(pathForm).find(".studies").each(function(i, el) {
-    if(i !== 0) {
-      $(this).remove();
-    } else {
-      $('#lambda_1').val("1.0");
-      $('#study_1').val("");
-      $('#place_holder_for_study_resources_1').empty();
-      $('#size_titles_1').parent().empty();
-      $('#loadAndCheckLabel_1').empty();
-      $("#study_1").attr(createDataSizeStudyAttributeName(1), "0");
-      $('#study_1').wrap("<form>").closest("form").get(0).reset();
-      $('#study_1').unwrap();
-      $('#num_resource_1').val("1");
-      $(pathForm).find(".studyResources:not(:first)").remove();
-      $(pathForm).find(".studyResources input").val("");
-    }
+    // console.log($(this));
+    $(this).remove();
+    // if(i !== 0) {
+    //   $(this).remove();
+    // } else {
+    //   $('#lambda_1').val("1.0");
+    //   $('#study_1').val("");
+    //   $('#place_holder_for_study_resources_1').empty()
+    //   $('#size_titles_1').hide();
+    //   $('#loadAndCheckLabel_1').text(messageNoFileLoaded());
+    //   $("#study_1").attr(createDataSizeStudyAttributeName(1), "0");
+    //   $('#study_1').wrap("<form>").closest("form").get(0).reset();
+    //   $('#study_1').unwrap();
+    //   $('#num_resource_1').val("1");
+    //   $(pathForm).find(".studyResources:not(:first)").remove();
+    //   $(pathForm).find(".studyResources input").val("");
+    // }
   });
+  addStudy();
   $('#database_pathway_option').attr("checked", "checked");
   $('#nperm').val((1e5).toExponential());
   $('#miss_rate').val(0.05);
@@ -970,15 +1060,27 @@ function clickCalculate(e) {
       //if(el.id.indexOf("study") > -1) numStudies++;
 
 
-      if(el.type == "checkbox"){
+      if(el.type == "checkbox") {
         if(el.checked && el.id)
         formData.append(el.id, el.checked);
+        // console.log(el.id, el.checked);
       }
     });
 
+    var study_ids = [];
+    $(pathForm).find(".studies").each(function(i, el) {
+      study_ids.push(parseInt(el.id.toString().substring(11)));
+    });
+    // console.log(study_ids);
+    formData.append('study_ids', study_ids.join(" "));
+    // console.log(study_ids.join(" "));
+
     formData.append('populations', $('#population').val());
     formData.append('num_studies', $("#studyEntry").children().length);
-    insertNumberOfResourcePerStudy(formData, $("#studyEntry").children().length);
+    insertNumberOfResourcePerStudy(formData, study_ids);
+
+
+
 
     // Business Rule: If the include_excluded_snp is not chekced then
     // the execluded_snp filename should not be include in the form data
@@ -997,11 +1099,13 @@ function clickCalculate(e) {
 /**
  * For each study insert the number of resources
  */
-function insertNumberOfResourcePerStudy(formData, numStudies) {
-  for ( var index = 0;  index < numStudies; index++ ) {
-    var numStudiesStr = (index + 1).toString();
-    var resourceDivChildren = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
-    formData.append("num_resource_" + numStudiesStr, resourceDivChildren);
+function insertNumberOfResourcePerStudy(formData, study_ids) {
+  for ( var index = 0;  index < study_ids.length; index++ ) {
+    var value = study_ids[index];
+    // var numStudiesStr = (index + 1).toString();
+    var idStr = value.toString();
+    var resourceDivChildren = $('#place_holder_for_study_resources_' + idStr).children().length;
+    formData.append("num_resource_" + idStr, resourceDivChildren);
   }
 }
 
@@ -1119,8 +1223,6 @@ function clickCheckBox() {
  * Code that will reset a study
  */
  function resetStudy(event) {
-   console.log("reached reset study function");
-   console.log("evevnt)");
    var uniquePartOfVariable = retrieveUniqueId(event.target.id);
 
    var studyFilenameInput = "study_" + uniquePartOfVariable;
@@ -1137,11 +1239,36 @@ function clickCheckBox() {
    showTitle(undefined, 0, uniquePartOfVariable);
  }
 
+/*
+* Code that will delete a study
+*/
+function deleteStudy(event) {
+  var uniquePartOfVariable = retrieveUniqueId(event.target.id);
+  $("#studyclass_" + uniquePartOfVariable).remove();
+  // var studyFilenameInput = "study_" + uniquePartOfVariable;
+  // var lamdaNameInput = "lambda_" + uniquePartOfVariable;
+  // // var loadAndCheckButton = "loadAndCheckButton_" + uniquePartOfVariable;
+  // // var placeHolder = "place_holder_for_study_resources_" + uniquePartOfVariable;
+  // // $("#" + lamdaNameInput).rules( "remove" );
+  //
+  // clearAllSampleSizeResources(event)
+  // // $("#" + lamdaNameInput).val("1.0"); //.remove()?
+  // // $("#" + lamdaNameInput).remove();
+  // $("#" + studyFilenameInput).attr(createDataSizeStudyAttributeName(1), "0");
+  // $("#" + studyFilenameInput).wrap("<form>").closest("form").get(0).reset();
+  //
+  // $("#" + studyFilenameInput).unwrap();
+  // $("#studyclass_" + uniquePartOfVariable).remove();
+  // $("#" + studyFilenameInput).attr(createDataSizeStudyAttributeName(uniquePartOfVariable), "0");
+  // $("#" + lamdaNameInput).val("1.0");
+  // insertMessageWhenFileIsNotLoaded(uniquePartOfVariable);
+  // showTitle(undefined, 0, uniquePartOfVariable);
+}
+
  /*
   * Code that will load and validate
   */
 function loadAndValidate(event) {
-
       // Create the unique id that will retrieve the data from the form.
       var uniquePartOfVariable = retrieveUniqueId(event.target.id);
       var studyFilenameInput = createStudyName(uniquePartOfVariable);
@@ -1430,17 +1557,11 @@ function isBinomialSelected() {
  * the file has been checked and loaded.
  */
  function doesStudyHaveResources( value, element ) {
-  //  var studyName = createStudyName(retrieveUniqueId(element.id));
-  //  console.log(studyName);
-  //  var resourceCount = $("#" + studyName).find("li[class='studyResources']").children().length;
-  //  var resourceCount = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
+   var studyNum = element.name.substring(19);
+  //  console.log("study number: " + studyNum);
    var resourceCount = 0;
-   var numStudies = $("#studyEntry").children().length;
-   for ( var index = 0;  index < numStudies; index++ ) {
-     var numStudiesStr = (index + 1).toString();
-     resourceCount = $('#place_holder_for_study_resources_' + numStudiesStr).children().length
-   }
-   console.log("resourceCount: " + resourceCount.toString());
+   resourceCount = $('#place_holder_for_study_resources_' + studyNum).children().length
+  //  console.log("resourceCount: " + resourceCount.toString() + " in study " + studyNum);
    return (resourceCount > 0) ? true : false;
  }
 
