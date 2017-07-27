@@ -489,7 +489,7 @@ $(function() {
 
     retrieve_pathways().then(apply_options($(pathForm.database_pathway)), get_options_error("pathway")).then(function(){
         if(pathways_list.length > 0){
-            $("#pop-list").addClass("termToDefine");
+            // $("#pop-list").addClass("termToDefine");
             $('#dialogElm').html(pathways_list.join("<br />"));
 
             $('#dialogElm').dialog({
