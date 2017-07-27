@@ -512,23 +512,14 @@ $(function() {
 
 });
 
-// function updateStudies() {
+// function updateStudyTitles() {
 //     var studyCount = $(pathForm).find(".studies").length;
 //     var studies = $(pathForm).find(".studies");
-//     console.log("STUDIES");
-//     console.log(studies);
 //     studies.each(function(i, el) {
-//       // console.log(i);
-//       // console.log(i, $(el).html());
-//       // el.id = "studyclass_" + (parseInt(i) + 1).toString();
-//       // var titleElement = $(el).find('.studyTitle')
-//       // var titleHtml = titleElement.html();
-//       // console.log(titleHtml);
-//       // titleElement.html(titleHtml.replace(/Study #\d/, "Study #" + (parseInt(i) + 1).toString()));
+//       var titleElement = $(el).find('.studyTitle')
+//       var titleHtml = titleElement.html();
+//       titleElement.html(titleHtml.replace(/Study #\d/, "Study #" + (parseInt(i) + 1).toString()));
 //     });
-//     // console.log("NEW STUDIES");
-//     // var newStudies = $(pathForm).find(".studies");
-//     // console.log(newStudies);
 // }
 
 function addStudy() {
@@ -649,7 +640,7 @@ function addStudy() {
             buttons : {
               "Confirm" : function() {
                 deleteStudy(e);
-                // updateStudies();
+                // updateStudyTitles();
                 $(this).dialog("close");
               },
               "Cancel" : function() {
@@ -910,6 +901,7 @@ $(function () {
             //s
             if (parseInt(validator.numberOfInvalids()) == 0 )
                 addStudy();
+                // updateStudyTitles();
         });
 });
 
@@ -996,7 +988,7 @@ function checkedStateToValue(e) {
 
 function resetForm() {
   $(pathForm).find(".studies").each(function(i, el) {
-    console.log($(this));
+    // console.log($(this));
     $(this).remove();
     // if(i !== 0) {
     //   $(this).remove();
@@ -1071,7 +1063,7 @@ function clickCalculate(e) {
       if(el.type == "checkbox") {
         if(el.checked && el.id)
         formData.append(el.id, el.checked);
-        console.log(el.id, el.checked);
+        // console.log(el.id, el.checked);
       }
     });
 
@@ -1079,9 +1071,9 @@ function clickCalculate(e) {
     $(pathForm).find(".studies").each(function(i, el) {
       study_ids.push(parseInt(el.id.toString().substring(11)));
     });
-    console.log(study_ids);
+    // console.log(study_ids);
     formData.append('study_ids', study_ids.join(" "));
-    console.log(study_ids.join(" "));
+    // console.log(study_ids.join(" "));
 
     formData.append('populations', $('#population').val());
     formData.append('num_studies', $("#studyEntry").children().length);
