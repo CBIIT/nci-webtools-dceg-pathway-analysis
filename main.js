@@ -1372,7 +1372,7 @@ function showTitle(data, currentSizeCount, index) {
  * This routine will execute a click that will execute the onClick() of another
  * button
  */
-function proxyClickForHtmlInputFileType() {
+function proxyClickForHtmlInputFileType(event) {
   var uniqueId = retrieveUniqueId(event.target.name);
 
   clearButtonsOfErrors(uniqueId);
