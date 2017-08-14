@@ -902,11 +902,32 @@ $(function () {
                 return previousValid;
             });
 
-            // console.log("The number of invalid fields are " + validator.numberOfInvalids());
-            //s
-            if (parseInt(validator.numberOfInvalids()) == 0 )
+            // var proceed = $(pathForm).valid();
+            console.log("The number of invalid fields are " + validator.numberOfInvalids());
+            // if (parseInt(validator.numberOfInvalids()) == 0 ) {
+            if (previousValid) {
                 addStudy();
-                // updateStudyTitles();
+            }
+            else {
+              console.log("THERE IS SOME ERROR WITH VALIDATION");
+              console.log(validator.errorList);
+              // this.invalid = {};
+            }
+            // $(pathForm).validate();
+            // var proceed = $(pathForm).valid();
+            // console.log("The number of invalid fields are " + validator.numberOfInvalids());
+            // // if (parseInt(validator.numberOfInvalids()) == 0 ) {
+            // if (proceed) {
+            //     addStudy();
+            // }
+            // else {
+            //   console.log("THERE IS SOME ERROR WITH VALIDATION");
+            //   console.log(validator.errorList);
+            //   // this.invalid = {};
+            // }
+
+            // $(pathForm).validate();
+            // var proceed = $(pathForm).valid();
         });
 });
 
@@ -1249,6 +1270,7 @@ function clickCheckBox() {
 * Code that will delete a study
 */
 function deleteStudy(event) {
+  resetStudy(event);
   var uniquePartOfVariable = retrieveUniqueId(event.target.id);
   $("#studyclass_" + uniquePartOfVariable).remove();
   // var studyFilenameInput = "study_" + uniquePartOfVariable;
