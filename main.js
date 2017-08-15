@@ -902,7 +902,6 @@ $(function () {
                 return previousValid;
             });
 
-            // var proceed = $(pathForm).valid();
             console.log("The number of invalid fields are " + validator.numberOfInvalids());
             // if (parseInt(validator.numberOfInvalids()) == 0 ) {
             if (previousValid) {
@@ -911,7 +910,6 @@ $(function () {
             else {
               console.log("THERE IS SOME ERROR WITH VALIDATION");
               console.log(validator.errorList);
-              // this.invalid = {};
             }
             // $(pathForm).validate();
             // var proceed = $(pathForm).valid();
