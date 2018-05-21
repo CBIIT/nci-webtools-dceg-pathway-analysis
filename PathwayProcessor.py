@@ -16,7 +16,7 @@ from stompest.config import StompConfig
 from stompest.protocol import StompSpec
 from twisted.internet import reactor, defer
 
-class RequestProcessor(SubscriptionListener):
+class PathwayProcessor(SubscriptionListener):
   CONFIG = 'queue.config'
   NAME = 'queue.name'
   URL = 'queue.url'
@@ -40,7 +40,7 @@ class RequestProcessor(SubscriptionListener):
           Name=os.path.basename(file)
         ))
     config = self.CONFIG
-    smtp = smtplib.SMTP(config.getAsString(RequestProcessor.MAIL_HOST))
+    smtp = smtplib.SMTP(config.getAsString(PathwayProcessor.MAIL_HOST))
     smtp.sendmail("do.not.reply@nih.gov",recipients,packet.as_string())
 
   def rLength(self, tested):
@@ -84,8 +84,8 @@ class RequestProcessor(SubscriptionListener):
         json.dump(jsonout,outfile)
       message = "Error: " + artpResult["error"].strip() + "\n" + message + "\n\n" +frame.body
       print message
-      self.composeMail(self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN).split(","),message)
-      self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + self.CONFIG.getAsString(RequestProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
+      self.composeMail(self.CONFIG.getAsString(PathwayProcessor.MAIL_ADMIN).split(","),message)
+      self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + self.CONFIG.getAsString(PathwayProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
       return
     # email results
     files = [ os.path.join(parameters['outdir'],parameters['idstr']+'.Rdata') ]
@@ -127,23 +127,23 @@ class RequestProcessor(SubscriptionListener):
 
   @defer.inlineCallbacks
   def run(self):
-    client = yield Stomp(self.CONFIG[RequestProcessor.CONFIG]).connect()
+    client = yield Stomp(self.CONFIG[PathwayProcessor.CONFIG]).connect()
     headers = {
       # client-individual mode is necessary for concurrent processing (requires ActiveMQ >= 5.2)
       StompSpec.ACK_HEADER: StompSpec.ACK_CLIENT_INDIVIDUAL,
       # the maximal number of messages the broker will let you work on at the same time
       'activemq.prefetchSize': '100',
     }
-    client.subscribe(self.CONFIG[RequestProcessor.NAME], headers, listener=self)
-  
+    client.subscribe(self.CONFIG[PathwayProcessor.NAME], headers, listener=self)
+
   def onConnectionLost(self,connection,reason):
-    super(RequestProcessor,self).onConnectionLost(connection,reason)
+    super(PathwayProcessor,self).onConnectionLost(connection,reason)
     self.run()
 
   def __init__(self):
-    super(RequestProcessor,self).__init__(self.consume)
+    super(PathwayProcessor,self).__init__(self.consume)
     config = PropertyUtil(r"config.ini")
-    config[RequestProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(RequestProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
+    config[PathwayProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(PathwayProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     self.CONFIG = config
     robjects.r('''source('ARTPWrapper.R')''')
 
@@ -152,7 +152,7 @@ class RequestProcessor(SubscriptionListener):
 
 def main():
   logging.basicConfig(level=logging.INFO)
-  RequestProcessor().run()
+  PathwayProcessor().run()
   reactor.run()
 
 

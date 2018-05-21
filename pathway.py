@@ -6,7 +6,7 @@ import pprint
 from flask import Flask, Response, request, jsonify, send_from_directory
 from PropertyUtil import PropertyUtil
 from OptionGenerator import OptionGenerator
-import RequestProcessor
+import PathwayProcessor
 from stompest.config import StompConfig
 from stompest.sync import Stomp
 import threading
