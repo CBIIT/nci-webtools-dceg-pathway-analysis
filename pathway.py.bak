@@ -54,7 +54,7 @@ def calculate():
 
     num_studies = int(parameters['num_studies'])
 
-    for i in range(1,num_studies+1):
+    for i in xrange(1,num_studies+1):
       studyKey = "study_" + str(i)
       studyObj = {}
 
@@ -133,7 +133,7 @@ def calculate():
   except Exception as e:
     exc_type, exc_obj, exc_tb = sys.exc_info()
     fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-    print(("EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno))
+    print("EXCEPTION------------------------------", exc_type, fname, exc_tb.tb_lineno)
     return buildFailure(str(e))
 
 def main():
