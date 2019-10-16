@@ -131,6 +131,8 @@ def calculate():
     
     client = Stomp(pathwayConfig[QUEUE_CONFIG])
     client.connect()
+    print("pathwayConfig", pathwayConfig)
+    print("pathwayConfig.getAsString(QUEUE_NAME)", pathwayConfig.getAsString(QUEUE_NAME))
     client.send(pathwayConfig.getAsString(QUEUE_NAME), json.dumps(parameters))
     client.disconnect()
     return buildSuccess("The request has been received. An email will be sent when the calculation has completed.")
