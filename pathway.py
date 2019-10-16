@@ -46,6 +46,7 @@ def calculate():
     ts = str(time.time())
 
     parameters = dict(request.form)
+    print("parameters", parameters)
     for field in parameters:
       parameters[field] = parameters[field][0]
     parameters['idstr'] = ts
@@ -78,8 +79,11 @@ def calculate():
     del parameters['num_studies']
     parameters['studies'] = studyList
 
+    print("parameters['pathway_type']", parameters['pathway_type'])
     if parameters['pathway_type'] == 'file_pathway':
       pathFile = filelist['file_pathway']
+      print("pathFile", pathFile)
+      print("pathFile.filename", pathFile.filename)
       if pathFile.filename:
         filename = os.path.join(app.config['UPLOAD_FOLDER'],ts + '.pathway')
         parameters['pathway'] = filename
