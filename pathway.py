@@ -47,8 +47,8 @@ def calculate():
 
     parameters = dict(request.form)
     print("parameters", parameters)
-    for field in parameters:
-      parameters[field] = parameters[field][0]
+    # for field in parameters:
+    #   parameters[field] = parameters[field][0]
     parameters['idstr'] = ts
     filelist = request.files
     studyList = []
