@@ -135,6 +135,7 @@ class pathwayProcessor(SubscriptionListener):
       'activemq.prefetchSize': '100',
     }
     client.subscribe(self.CONFIG[pathwayProcessor.NAME], headers, listener=self)
+    client.add(listener=self)
 
   def onConnectionLost(self,connection,reason):
     super(pathwayProcessor,self).onConnectionLost(connection,reason)
