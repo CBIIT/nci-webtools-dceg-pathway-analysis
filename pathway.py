@@ -59,19 +59,22 @@ def calculate():
       studyKey = "study_" + str(i)
       studyObj = {}
 
-      studyObj['lambda'] = parameters['lambda_' + str(i)].encode('utf-8')
+      # studyObj['lambda'] = parameters['lambda_' + str(i)].encode('utf-8')
+      studyObj['lambda'] = parameters['lambda_' + str(i)]
       del parameters['lambda_'+str(i)]
 
       studyObj['sample_sizes'] = []
       for resourceInd in range(1,int(parameters['num_resource_' + str(i)])+1):
-        studyObj['sample_sizes'].append(parameters['sample_size_' + str(i) + '_' + str(resourceInd)].encode('utf-8'))
+        # studyObj['sample_sizes'].append(parameters['sample_size_' + str(i) + '_' + str(resourceInd)].encode('utf-8'))
+        studyObj['sample_sizes'].append(parameters['sample_size_' + str(i) + '_' + str(resourceInd)])
         del parameters['sample_size_' + str(i) + '_' + str(resourceInd)]
       del parameters['num_resource_' + str(i)]
 
       studyFile = filelist[studyKey]
       if studyFile.filename:
         filename = os.path.join(os.getcwd(),app.config['UPLOAD_FOLDER'],ts + '-' + str(i) + '.study')
-        studyObj['filename'] = filename.encode('utf-8')
+        # studyObj['filename'] = filename.encode('utf-8')
+        studyObj['filename'] = filename
         studyFile.save(filename)
       else:
         return buildFailure("The file seems to be missing from Study #" + i + ".")
