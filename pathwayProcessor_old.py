@@ -12,12 +12,11 @@ from email.mime.text import MIMEText
 from PropertyUtil import PropertyUtil
 from stompest.async import Stomp
 from stompest.async.listener import SubscriptionListener
-from stompest.async.listener import DisconnectListener
 from stompest.config import StompConfig
 from stompest.protocol import StompSpec
 from twisted.internet import reactor, defer
 
-class pathwayProcessor(DisconnectListener):
+class pathwayProcessor(SubscriptionListener):
   CONFIG = 'queue.config'
   NAME = 'queue.name'
   URL = 'queue.url'
@@ -128,19 +127,14 @@ class pathwayProcessor(DisconnectListener):
 
   @defer.inlineCallbacks
   def run(self):
-    # client = yield Stomp(self.CONFIG[pathwayProcessor.CONFIG]).connect()
-    client = Stomp(self.CONFIG)
-    yield client.connect()
+    client = yield Stomp(self.CONFIG[pathwayProcessor.CONFIG]).connect()
     headers = {
-        # client-individual mode is necessary for concurrent processing
-        # (requires ActiveMQ >= 5.2)
-        StompSpec.ACK_HEADER: StompSpec.ACK_CLIENT_INDIVIDUAL,
-        # the maximal number of messages the broker will let you work on at the same time
-        'activemq.prefetchSize': '100',
+      # client-individual mode is necessary for concurrent processing (requires ActiveMQ >= 5.2)
+      StompSpec.ACK_HEADER: StompSpec.ACK_CLIENT_INDIVIDUAL,
+      # the maximal number of messages the broker will let you work on at the same time
+      'activemq.prefetchSize': '100',
     }
-    # client.subscribe(self.CONFIG[pathwayProcessor.NAME], headers, listener=self)
-    client.subscribe(self.CONFIG[pathwayProcessor.NAME], headers, listener=SubscriptionListener(self.consume))
-    client.add(listener=self)
+    client.subscribe(self.CONFIG[pathwayProcessor.NAME], headers, listener=self)
 
   def onConnectionLost(self,connection,reason):
     super(pathwayProcessor,self).onConnectionLost(connection,reason)
@@ -149,8 +143,7 @@ class pathwayProcessor(DisconnectListener):
   def __init__(self):
     super(pathwayProcessor,self).__init__(self.consume)
     config = PropertyUtil(r"config.ini")
-    # config[pathwayProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(pathwayProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
-    config[pathwayProcessor.CONFIG] = StompConfig(config.getAsString(pathwayProcessor.URL))
+    config[pathwayProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(pathwayProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     self.CONFIG = config
     robjects.r('''source('ARTPWrapper.R')''')
 
