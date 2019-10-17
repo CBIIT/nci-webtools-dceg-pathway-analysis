@@ -46,7 +46,7 @@ def calculate():
     ts = str(time.time())
 
     parameters = dict(request.form)
-    print("parameters", parameters)
+    # print("parameters", parameters)
     # for field in parameters:
     #   parameters[field] = parameters[field].encode('utf-8')
     parameters['idstr'] = ts
@@ -82,11 +82,11 @@ def calculate():
     del parameters['num_studies']
     parameters['studies'] = studyList
 
-    print("parameters['pathway_type']", parameters['pathway_type'])
+    # print("parameters['pathway_type']", parameters['pathway_type'])
     if parameters['pathway_type'] == 'file_pathway':
       pathFile = filelist['file_pathway']
-      print("pathFile", pathFile)
-      print("pathFile.filename", pathFile.filename)
+      # print("pathFile", pathFile)
+      # print("pathFile.filename", pathFile.filename)
       if pathFile.filename:
         filename = os.path.join(app.config['UPLOAD_FOLDER'],ts + '.pathway')
         parameters['pathway'] = filename
@@ -134,35 +134,42 @@ def calculate():
     
     client = Stomp(pathwayConfig[QUEUE_CONFIG])
     client.connect()
-    print("pathwayConfig", pathwayConfig)
-    print("pathwayConfig.getAsString(QUEUE_NAME)", pathwayConfig.getAsString(QUEUE_NAME))
+    # print("pathwayConfig", pathwayConfig)
+    # print("pathwayConfig.getAsString(QUEUE_NAME)", pathwayConfig.getAsString(QUEUE_NAME))
 
 
 
-    parameters['snp_percent'] = parameters['snp_percent'].encode('utf-8')
-    parameters['plink'] = parameters['plink'].encode('utf-8')
-    parameters['gene_percent'] = parameters['gene_percent'].encode('utf-8')
-    parameters['selectAllpopulation'] = parameters['selectAllpopulation'].encode('utf-8')
-    parameters['snp_n'] = parameters['snp_n'].encode('utf-8')
-    parameters['gene_n'] = parameters['gene_n'].encode('utf-8')
-    parameters['pathway_type'] = parameters['pathway_type'].encode('utf-8')
-    parameters['maf'] = parameters['maf'].encode('utf-8')
-    parameters['miss_rate'] = parameters['miss_rate'].encode('utf-8')
-    parameters['selectItempopulation'] = parameters['selectItempopulation'].encode('utf-8')
-    parameters['nperm'] = parameters['nperm'].encode('utf-8')
-    parameters['hwep'] = parameters['hwep'].encode('utf-8')
-    parameters['file_pathway'] = parameters['file_pathway'].encode('utf-8')
-    parameters['pathway'] = parameters['pathway'].encode('utf-8')
-    parameters['chr'] = parameters['chr'].encode('utf-8')
-    parameters['super_population'] = parameters['super_population'].encode('utf-8')
-    parameters['gene'] = parameters['super_population'].encode('utf-8')
-    parameters['email'] = parameters['super_population'].encode('utf-8')
+    # parameters['snp_percent'] = parameters['snp_percent'].encode('utf-8')
+    # parameters['plink'] = parameters['plink'].encode('utf-8')
+    # parameters['gene_percent'] = parameters['gene_percent'].encode('utf-8')
+    # parameters['selectAllpopulation'] = parameters['selectAllpopulation'].encode('utf-8')
+    # parameters['snp_n'] = parameters['snp_n'].encode('utf-8')
+    # parameters['gene_n'] = parameters['gene_n'].encode('utf-8')
+    # parameters['pathway_type'] = parameters['pathway_type'].encode('utf-8')
+    # parameters['maf'] = parameters['maf'].encode('utf-8')
+    # parameters['miss_rate'] = parameters['miss_rate'].encode('utf-8')
+    # parameters['selectItempopulation'] = parameters['selectItempopulation'].encode('utf-8')
+    # parameters['nperm'] = parameters['nperm'].encode('utf-8')
+    # parameters['hwep'] = parameters['hwep'].encode('utf-8')
+    # parameters['file_pathway'] = parameters['file_pathway'].encode('utf-8')
+    # parameters['pathway'] = parameters['pathway'].encode('utf-8')
+    # parameters['chr'] = parameters['chr'].encode('utf-8')
+    # parameters['super_population'] = parameters['super_population'].encode('utf-8')
+    # parameters['gene'] = parameters['super_population'].encode('utf-8')
+    # parameters['email'] = parameters['super_population'].encode('utf-8')
 
 
 
-    for field in parameters:
-      print("parameters[" + field + "]: ", parameters[field])
+    # for field in parameters:
+    #   print("parameters[" + field + "]: ", parameters[field])
+
+    print("pathwayConfig.getAsString(QUEUE_NAME", pathwayConfig.getAsString(QUEUE_NAME))
+    print("json.dumps(parameters)", json.dumps(parameters))
+
     client.send(pathwayConfig.getAsString(QUEUE_NAME), json.dumps(parameters))
+
+
+
     client.disconnect()
     return buildSuccess("The request has been received. An email will be sent when the calculation has completed.")
   except Exception as e:
