@@ -143,11 +143,11 @@ class pathwayProcessor(DisconnectListener):
     client.add(listener=self)
 
   def onConnectionLost(self,connection,reason):
-    super(pathwayProcessor,self).onConnectionLost(connection,reason)
+    # super(pathwayProcessor,self).onConnectionLost(connection,reason)
     self.run()
 
   def __init__(self):
-    super(pathwayProcessor,self).__init__(self.consume)
+    # super(pathwayProcessor,self).__init__(self.consume)
     config = PropertyUtil(r"config.ini")
     # config[pathwayProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(pathwayProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
     config[pathwayProcessor.CONFIG] = StompConfig(config.getAsString(pathwayProcessor.URL))
@@ -157,11 +157,8 @@ class pathwayProcessor(DisconnectListener):
     self.r_runARTP = robjects.r['runARTPWithHandlers']
 
 
-def main():
+# def main():
+if __name__ == '__main__':
   logging.basicConfig(level=logging.INFO)
   pathwayProcessor().run()
   reactor.run()
-
-
-if __name__ == '__main__':
-  main()
