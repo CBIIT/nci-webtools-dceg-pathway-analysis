@@ -9,29 +9,36 @@ import logging
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+
+from twisted.internet import reactor, defer
 from PropertyUtil import PropertyUtil
+
 from stompest.async import Stomp
 from stompest.async.listener import SubscriptionListener
 from stompest.async.listener import DisconnectListener
 from stompest.config import StompConfig
 from stompest.protocol import StompSpec
-from twisted.internet import reactor, defer
 
 class pathwayProcessor(DisconnectListener):
   CONFIG = 'queue.config'
   NAME = 'queue.name'
   URL = 'queue.url'
+
   UPLOAD_FOLDER = 'pathway.folder.upload'
   MAIL_HOST = 'mail.host'
   MAIL_ADMIN = 'mail.admin'
 
   def composeMail(self,recipients,message,files=[]):
+    config = PropertyUtil(r"config.ini")
+    logging.info("sending message")
     if not isinstance(recipients,list):
       recipients = [recipients]
     packet = MIMEMultipart()
     packet['Subject'] = "Subject: Pathway Analysis Results"
     packet['From'] = "Pathway Analysis Tool <do.not.reply@nih.gov>"
     packet['To'] = ", ".join(recipients)
+    logging.info(recipients)
+    # print message
     packet.attach(MIMEText(message))
     for file in files:
       with open(file,"rb") as openfile:
@@ -40,9 +47,13 @@ class pathwayProcessor(DisconnectListener):
           Content_Disposition='attachment; filename="%s"' % os.path.basename(file),
           Name=os.path.basename(file)
         ))
-    config = self.CONFIG
-    smtp = smtplib.SMTP(config.getAsString(pathwayProcessor.MAIL_HOST))
+    MAIL_HOST=config.getAsString('mail.host')
+    logging.info(MAIL_HOST)
+    smtp = smtplib.SMTP(MAIL_HOST)
     smtp.sendmail("do.not.reply@nih.gov",recipients,packet.as_string())
+
+  def testQueue(self):
+    logging.debug("tested")
 
   def rLength(self, tested):
     if tested is None:
@@ -52,12 +63,22 @@ class pathwayProcessor(DisconnectListener):
     else:
       return 1
 
+  # @This is teh consume code which will listen to Queue server.
   def consume(self, client, frame):
+    logging.info("In consume")
+    config = PropertyUtil(r"config.ini")
     starttime = str(time.time())
     parameters = json.loads(frame.body)
     timestamp = frame.headers['timestamp']
-    outfileString = os.path.join(parameters['outdir'],str(parameters['idstr'])+'.json')
-    jsonout = {'submittedTime': parameters['idstr'], 'queuedTime':timestamp,'payload':parameters,'processStartTime': starttime}
+    outfileString = os.path.join(parameters['outdir'], str(parameters['idstr']) + '.json')
+
+    jsonout = {
+      'submittedTime': parameters['idstr'], 
+      'queuedTime':timestamp,
+      'payload':parameters,
+      'processStartTime': starttime
+    }
+
     with open(outfileString,'w') as outfile:
       json.dump(jsonout,outfile)
     try:
@@ -85,16 +106,18 @@ class pathwayProcessor(DisconnectListener):
         json.dump(jsonout,outfile)
       message = "Error: " + artpResult["error"].strip() + "\n" + message + "\n\n" +frame.body
       print(message)
-      self.composeMail(self.CONFIG.getAsString(pathwayProcessor.MAIL_ADMIN).split(","),message)
-      self.composeMail(parameters["email"],"Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + self.CONFIG.getAsString(pathwayProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
+      self.composeMail(config.getAsString(pathwayProcessor.MAIL_ADMIN).split(","), message)
+      self.composeMail(parameters["email"], "Unfortunately there was an error processing your request. The site administrators have been alerted to the problem. Please contact " + config.getAsString(pathwayProcessor.MAIL_ADMIN) + " if any question.\n\n" + message)
       return
     # email results
     files = [ os.path.join(parameters['outdir'],parameters['idstr']+'.Rdata') ]
     saveValue = artpResult["saveValue"]
     jsonout["saveValue"] = saveValue
     jsonout["status"] = "success"
+
     with open(outfileString,'w') as outfile:
       json.dump(jsonout,outfile)
+      
     message = ("Dear User,\n\n" +
               "We have analyzed your data using the ARTP2 package (version: " + ".".join([str(x) for x in saveValue['options']['version'][0]]) + "). " +
               "The sARTP test returned a pathway p-value " + str(round(saveValue['pathway.pvalue'],1-int(math.floor(math.log10(saveValue['pathway.pvalue']))))) + ". The p-value was estimated by " + str(saveValue['options']['nperm']) + " resampling steps.\n\n" +
@@ -116,8 +139,10 @@ class pathwayProcessor(DisconnectListener):
               "saveValue$options\n\n" +
               "For more information, please refer to the help document of function sARTP in R package ARTP2.\n\n" +
               message)
+
     print(message)
-    self.composeMail(parameters['email'],message,files)
+    self.composeMail(parameters['email'], message, files)
+
     # remove the already used files
     for study in parameters['studies']:
       os.remove(study['filename'])
@@ -129,7 +154,7 @@ class pathwayProcessor(DisconnectListener):
   @defer.inlineCallbacks
   def run(self):
     # client = yield Stomp(self.CONFIG[pathwayProcessor.CONFIG]).connect()
-    client = Stomp(self.CONFIG)
+    client = Stomp(self.config)
     yield client.connect()
     headers = {
         # client-individual mode is necessary for concurrent processing
@@ -139,8 +164,13 @@ class pathwayProcessor(DisconnectListener):
         'activemq.prefetchSize': '100',
     }
     # client.subscribe(self.CONFIG[pathwayProcessor.NAME], headers, listener=self)
-    client.subscribe(self.CONFIG[pathwayProcessor.NAME], headers, listener=SubscriptionListener(self.consume))
+    client.subscribe(self.QUEUE, headers, listener=SubscriptionListener(self.consume, errorDestination=self.ERROR_QUEUE))
     client.add(listener=self)
+
+  # Consumer for Jobs in Queue, needs to be rewrite by the individual projects
+
+  def onCleanup(self, connect):
+    logging.info('In clean up ...')
 
   def onConnectionLost(self,connection,reason):
     # super(pathwayProcessor,self).onConnectionLost(connection,reason)
@@ -150,15 +180,19 @@ class pathwayProcessor(DisconnectListener):
     # super(pathwayProcessor,self).__init__(self.consume)
     config = PropertyUtil(r"config.ini")
     # config[pathwayProcessor.CONFIG] = StompConfig(uri="failover:("+config.getAsString(pathwayProcessor.URL)+")?startupMaxReconnectAttempts=-1,initialReconnectDelay=300000")
-    config[pathwayProcessor.CONFIG] = StompConfig(config.getAsString(pathwayProcessor.URL))
-    self.CONFIG = config
-    robjects.r('''source('ARTPWrapper.R')''')
+    self.QUEUE=config.getAsString(pathwayProcessor.NAME)
+    self.ERROR_QUEUE=config.getAsString('queue.error.name')
+    # config[pathwayProcessor.CONFIG] = StompConfig(config.getAsString(pathwayProcessor.URL))
+    config = StompConfig(config.getAsString(pathwayProcessor.URL))
+    self.config = config
 
+    robjects.r('''source('ARTPWrapper.R')''')
     self.r_runARTP = robjects.r['runARTPWithHandlers']
 
 
 # def main():
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.INFO)
+  logging.basicConfig(level=logging.DEBUG, filename='../logs/queue.log', filemode='w')
+  logging.info("JPSurv processor has started")
   pathwayProcessor().run()
   reactor.run()
